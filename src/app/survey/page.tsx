@@ -134,7 +134,7 @@ export default function SurveyPage() {
   // 정보 입력 단계
   if (step === 'info') {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center px-6">
+      <main className="min-h-screen flex flex-col items-center justify-center px-6 pb-nav">
         <div className="max-w-md w-full animate-fade-in">
           <button
             onClick={() => router.push('/')}

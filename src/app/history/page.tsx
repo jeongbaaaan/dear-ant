@@ -42,7 +42,7 @@ const moodGradeColor: Record<string, string> = {
 
 // 미니 트렌드 차트 (SVG)
 function TrendChart({ reports }: { reports: HistoryReport[] }) {
-  const data = [...reports].reverse().slice(-7); // 최근 7개, 오래된→최신
+  const data = [...reports].reverse().slice(-7);
   if (data.length < 2) return null;
 
   const width = 280;
@@ -70,7 +70,7 @@ function TrendChart({ reports }: { reports: HistoryReport[] }) {
   const emotionPath = emotionPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
   return (
-    <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+    <div className="card-premium p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-slate-500 text-sm font-medium">투자 성향 트렌드</p>
         <p className="text-slate-400 text-xs">최근 {data.length}회</p>
@@ -135,24 +135,24 @@ function StatsSummary({ reports }: { reports: HistoryReport[] }) {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-4">
+      <div className="card-premium p-4">
         <p className="text-slate-400 text-xs mb-1">평균 감정 흔들림</p>
         <p className="text-2xl font-black text-slate-800">{avgMoodScore}<span className="text-sm font-normal text-slate-400">%</span></p>
         <p className="text-xs text-slate-400 mt-0.5">
           {avgMoodScore <= 35 ? '안정적 👍' : avgMoodScore <= 60 ? '보통' : '변동 높음'}
         </p>
       </div>
-      <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-4">
+      <div className="card-premium p-4">
         <p className="text-slate-400 text-xs mb-1">주요 판단 모드</p>
         <p className="text-2xl font-black text-slate-800">{topMode?.[0] || '-'}</p>
         <p className="text-xs text-slate-400 mt-0.5">{topMode ? `${topMode[1]}회 (${Math.round(topMode[1] / reports.length * 100)}%)` : ''}</p>
       </div>
-      <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-4">
+      <div className="card-premium p-4">
         <p className="text-slate-400 text-xs mb-1">최다 등급</p>
         <p className={`text-2xl font-black ${moodGradeColor[topGrade?.[0] || 'C']}`}>{topGrade?.[0] || '-'}</p>
         <p className="text-xs text-slate-400 mt-0.5">{topGrade ? `${topGrade[1]}회 기록` : ''}</p>
       </div>
-      <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-4">
+      <div className="card-premium p-4">
         <p className="text-slate-400 text-xs mb-1">총 리포트</p>
         <p className="text-2xl font-black text-purple-600">{streak}<span className="text-sm font-normal text-slate-400">회</span></p>
         <p className="text-xs text-slate-400 mt-0.5">기록이 쌓이는 중</p>
@@ -207,7 +207,7 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <main className="min-h-screen py-12 px-6">
+    <main className="min-h-screen py-12 px-6 pb-nav">
       <div className="max-w-md mx-auto animate-fade-in">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-6">
@@ -217,12 +217,6 @@ export default function HistoryPage() {
             </h1>
             <p className="text-slate-400 text-sm mt-1">나의 투자 판단 기록</p>
           </div>
-          <Link
-            href="/"
-            className="text-purple-400 hover:text-purple-600 text-sm font-medium transition-colors"
-          >
-            홈으로
-          </Link>
         </div>
 
         {loading ? (

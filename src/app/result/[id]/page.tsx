@@ -162,7 +162,7 @@ export default function ResultPage() {
   })();
 
   return (
-    <main className="min-h-screen flex flex-col items-center py-10 px-6">
+    <main className="min-h-screen flex flex-col items-center py-10 px-6 pb-nav">
       <div className="max-w-md w-full animate-fade-in space-y-5">
         {/* 헤더 + 캐릭터 */}
         <div className="text-center">
@@ -193,7 +193,7 @@ export default function ResultPage() {
         </div>
 
         {/* 핵심 지표 카드 */}
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 space-y-5">
+        <div className="card-premium p-5 space-y-5">
           {/* 감정 흔들림 지수 */}
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -227,7 +227,7 @@ export default function ResultPage() {
         </div>
 
         {/* 바이오리듬 */}
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+        <div className="card-premium p-5">
           <p className="text-slate-500 text-sm font-medium mb-4">오늘의 바이오리듬</p>
           <div className="space-y-3">
             <BiorhythmBar label="신체" value={report.biorhythm_physical} color="bg-purple-400" />
@@ -238,7 +238,7 @@ export default function ResultPage() {
 
         {/* 이전 리포트 비교 */}
         {prevComparison && (
-          <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+          <div className="card-premium p-5">
             <p className="text-slate-500 text-sm font-medium mb-3">이전 리포트와 비교</p>
 
             {/* 등급 변화 */}
@@ -273,7 +273,7 @@ export default function ResultPage() {
         )}
 
         {/* 오늘의 투자 키워드 */}
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+        <div className="card-premium p-5">
           <p className="text-slate-500 text-sm font-medium mb-3">오늘의 투자 키워드</p>
           <div className="flex flex-wrap gap-2">
             {(report.today_keywords || []).map((keyword, i) => (
@@ -296,7 +296,7 @@ export default function ResultPage() {
         </div>
 
         {/* 편지 본문 */}
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-6">
+        <div className="card-premium p-6">
           <p className="text-slate-400 text-xs font-medium mb-3">오늘의 편지</p>
           <div className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
             {report.today_letter}

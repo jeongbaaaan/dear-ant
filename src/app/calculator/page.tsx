@@ -145,19 +145,19 @@ export default function CalculatorPage() {
   );
 
   return (
-    <main className="min-h-screen py-12 px-6">
+    <main className="min-h-screen py-12 px-6 pb-nav">
       <div className="max-w-md mx-auto animate-fade-in">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-black text-slate-900">적금 vs 투자</h1>
-          <Link href="/" className="text-purple-400 hover:text-purple-600 text-sm font-medium transition-colors">
-            홈으로
+          <Link href="/tools" className="text-purple-400 hover:text-purple-600 text-sm font-medium transition-colors">
+            도구
           </Link>
         </div>
         <p className="text-slate-400 text-sm mb-6">리스크 포함 수익 비교 계산기</p>
 
         {/* 입력 폼 */}
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-5">
+        <div className="card-premium p-5 mb-5">
           {/* 월 투자금 */}
           <div className="mb-4">
             <label className="block text-slate-500 text-xs font-medium mb-1.5">월 투자금</label>
@@ -338,7 +338,7 @@ export default function CalculatorPage() {
             </div>
 
             {/* 주식 결과 */}
-            <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+            <div className="card-premium p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">📈</span>
@@ -380,7 +380,7 @@ export default function CalculatorPage() {
             </div>
 
             {/* 한눈에 비교 */}
-            <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+            <div className="card-premium p-5">
               <h3 className="text-slate-500 text-sm font-medium mb-4">한눈에 비교</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">

@@ -72,18 +72,52 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
           <p className="text-xl font-black mt-1">{totalSell > 0 ? `${(totalSell / 10000).toFixed(0)}만원` : '-'}</p>
           <p className="text-white/50 text-xs mt-1">{sellMemos.length}건</p>
         </div>
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-4">
+        <div className="card-premium p-4">
           <p className="text-slate-400 text-xs font-medium">보유 종목</p>
           <p className="text-2xl font-black text-emerald-600 mt-1">{holdMemos.length}<span className="text-sm font-normal text-slate-400">건</span></p>
         </div>
-        <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-4">
+        <div className="card-premium p-4">
           <p className="text-slate-400 text-xs font-medium">관심 종목</p>
           <p className="text-2xl font-black text-amber-500 mt-1">{watchMemos.length}<span className="text-sm font-normal text-slate-400">건</span></p>
         </div>
       </div>
 
+      {/* 트레이딩 성과 - TraderSync 벤치마킹 */}
+      {buyMemos.length > 0 && sellMemos.length > 0 && (
+        <div className="card-premium p-5">
+          <h3 className="text-slate-500 text-sm font-medium mb-4">트레이딩 성과</h3>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <div className="text-center">
+              <p className="text-xs text-slate-400 mb-1">총 거래</p>
+              <p className="text-xl font-black text-slate-800">{buyMemos.length + sellMemos.length}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-slate-400 mb-1">매수/매도 비율</p>
+              <p className="text-xl font-black text-purple-600">
+                {Math.round((buyMemos.length / (buyMemos.length + sellMemos.length)) * 100)}%
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-slate-400 mb-1">실현 손익</p>
+              <p className={`text-xl font-black ${totalSell - totalBuy >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                {totalSell - totalBuy >= 0 ? '+' : ''}{((totalSell - totalBuy) / 10000).toFixed(0)}만
+              </p>
+            </div>
+          </div>
+          {/* P&L 바 */}
+          <div className="h-2 rounded-full bg-slate-100 overflow-hidden flex">
+            <div className="bg-rose-400 h-full" style={{ width: `${Math.round((totalBuy / Math.max(totalBuy + totalSell, 1)) * 100)}%` }} />
+            <div className="bg-blue-400 h-full" style={{ width: `${Math.round((totalSell / Math.max(totalBuy + totalSell, 1)) * 100)}%` }} />
+          </div>
+          <div className="flex justify-between mt-1 text-[10px] text-slate-400">
+            <span>매수 {(totalBuy / 10000).toFixed(0)}만</span>
+            <span>매도 {(totalSell / 10000).toFixed(0)}만</span>
+          </div>
+        </div>
+      )}
+
       {/* 종목별 현황 */}
-      <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+      <div className="card-premium p-5">
         <h3 className="text-slate-500 text-sm font-medium mb-4">종목별 현황</h3>
         {Object.keys(stockGroups).length === 0 ? (
           <p className="text-slate-300 text-sm text-center py-4">기록된 종목이 없습니다</p>
@@ -209,7 +243,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
       </div>
 
       {/* 등급별 행동 분포 */}
-      <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+      <div className="card-premium p-5">
         <h3 className="text-slate-500 text-sm font-medium mb-4">투자 무드별 행동 분포</h3>
         <div className="space-y-3">
           {['A', 'B', 'C', 'D', 'F'].map(grade => {
@@ -381,19 +415,13 @@ export default function MemoPage() {
   }, [memos]);
 
   return (
-    <main className="min-h-screen py-12 px-6">
+    <main className="min-h-screen py-12 px-6 pb-nav">
       <div className="max-w-md mx-auto animate-fade-in">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-black text-slate-900">주식 메모장</h1>
-          <Link
-            href="/"
-            className="text-purple-400 hover:text-purple-600 text-sm font-medium transition-colors"
-          >
-            홈으로
-          </Link>
+          <h1 className="text-2xl font-black text-slate-900">트레이딩 저널</h1>
         </div>
-        <p className="text-slate-400 text-sm mb-5">나의 투자 기록 · 분석 · 인사이트</p>
+        <p className="text-slate-400 text-sm mb-5">매매 기록 · 포트폴리오 · 감정 분석</p>
 
         {/* 탭 네비게이션 */}
         <div className="flex bg-purple-50 rounded-xl p-1 mb-5">
@@ -504,6 +532,34 @@ export default function MemoPage() {
                           placeholder="0"
                           className="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-sm"
                         />
+                      </div>
+                    </div>
+
+                    {/* 전략 태그 - Edgewonk 벤치마킹 */}
+                    <div className="mb-3">
+                      <label className="block text-slate-500 text-xs font-medium mb-1.5">전략 태그 (선택)</label>
+                      <div className="flex gap-1.5 flex-wrap">
+                        {['스윙', '단타', '장기투자', '배당', 'ETF', '테마주', '실적', '기술적분석'].map(tag => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => {
+                              const current = memoText;
+                              if (current.includes(`#${tag}`)) {
+                                setMemoText(current.replace(`#${tag} `, '').replace(`#${tag}`, ''));
+                              } else {
+                                setMemoText(current ? `${current} #${tag}` : `#${tag}`);
+                              }
+                            }}
+                            className={`text-[11px] px-2.5 py-1 rounded-full border transition-all ${
+                              memoText.includes(`#${tag}`)
+                                ? 'bg-purple-100 text-purple-600 border-purple-300'
+                                : 'bg-white text-slate-400 border-slate-200 hover:border-purple-200'
+                            }`}
+                          >
+                            #{tag}
+                          </button>
+                        ))}
                       </div>
                     </div>
 

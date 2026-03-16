@@ -32,21 +32,28 @@
   --color-slate-800: #1e293b;
   --color-slate-900: #0f172a;
   --color-rose-50: #fff1f2;
+  --color-rose-100: #ffe4e6;
   --color-rose-500: #f43f5e;
   --color-rose-600: #e11d48;
   --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
   --color-amber-500: #f59e0b;
   --color-amber-600: #d97706;
   --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
   --color-blue-400: #60a5fa;
   --color-blue-500: #3b82f6;
   --color-blue-600: #2563eb;
   --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
   --color-emerald-400: #34d399;
   --color-emerald-500: #10b981;
   --color-emerald-600: #059669;
+  --color-orange-100: #ffedd5;
   --color-orange-400: #fb923c;
   --color-orange-500: #f97316;
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
   --color-red-400: #f87171;
   --color-red-500: #ef4444;
   --color-gray-50: #f9fafb;
@@ -57,12 +64,13 @@
 }
 
 body {
-  background: linear-gradient(135deg, var(--color-purple-50) 0%, #f5f0ff 50%, var(--color-mint-50) 100%);
+  background: linear-gradient(180deg, #faf5ff 0%, #f5f0ff 30%, #f0fdfa 100%);
   color: var(--color-slate-800);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
 }
 
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -73,9 +81,40 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes pulse-soft {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
@@ -86,6 +125,72 @@ body {
   animation: slideUp 0.6s ease-out forwards;
 }
 
+.animate-slide-down {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out forwards;
+}
+
 .animate-pulse-soft {
   animation: pulse-soft 2s ease-in-out infinite;
 }
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(168,85,247,0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(168, 85, 247, 0.1);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+/* Premium card styles */
+.card-premium {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(168, 85, 247, 0.1);
+  box-shadow: 0 4px 24px rgba(168, 85, 247, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.card-premium:hover {
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+/* Stagger animation delays */
+.stagger-1 { animation-delay: 0.1s; opacity: 0; }
+.stagger-2 { animation-delay: 0.2s; opacity: 0; }
+.stagger-3 { animation-delay: 0.3s; opacity: 0; }
+.stagger-4 { animation-delay: 0.4s; opacity: 0; }
+.stagger-5 { animation-delay: 0.5s; opacity: 0; }
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Bottom nav safe area */
+.pb-nav { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
