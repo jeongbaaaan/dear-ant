@@ -36,7 +36,7 @@ export default function Home() {
         </Link>
 
         {/* 하단 링크 */}
-        <div className="flex items-center justify-center gap-6 mt-5">
+        <div className="flex items-center justify-center gap-4 mt-5 flex-wrap">
           <Link
             href="/history"
             className="text-slate-400 hover:text-purple-500 text-sm transition-colors"
@@ -49,6 +49,13 @@ export default function Home() {
             className="text-slate-400 hover:text-purple-500 text-sm transition-colors"
           >
             주식 메모장
+          </Link>
+          <span className="text-slate-200">|</span>
+          <Link
+            href="/calculator"
+            className="text-slate-400 hover:text-purple-500 text-sm transition-colors"
+          >
+            적금 vs 투자
           </Link>
         </div>
       </div>
