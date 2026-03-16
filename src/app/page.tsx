@@ -35,13 +35,22 @@ export default function Home() {
           START
         </Link>
 
-        {/* 히스토리 링크 */}
-        <Link
-          href="/history"
-          className="inline-block mt-5 text-slate-400 hover:text-purple-500 text-sm transition-colors"
-        >
-          이전 리포트 보기
-        </Link>
+        {/* 하단 링크 */}
+        <div className="flex items-center justify-center gap-6 mt-5">
+          <Link
+            href="/history"
+            className="text-slate-400 hover:text-purple-500 text-sm transition-colors"
+          >
+            이전 리포트
+          </Link>
+          <span className="text-slate-200">|</span>
+          <Link
+            href="/memo"
+            className="text-slate-400 hover:text-purple-500 text-sm transition-colors"
+          >
+            주식 메모장
+          </Link>
+        </div>
       </div>
     </main>
   );
