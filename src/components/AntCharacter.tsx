@@ -6,6 +6,9 @@ interface AntCharacterProps {
 }
 
 export default function AntCharacter({ size = 120, className = '', expression = 'happy', speech }: AntCharacterProps) {
+  // Unique IDs to avoid SVG gradient conflicts when multiple characters render
+  const id = expression;
+
   return (
     <div className={`relative inline-block ${className}`}>
       {/* Speech bubble */}
@@ -19,147 +22,157 @@ export default function AntCharacter({ size = 120, className = '', expression = 
       <svg
         width={size}
         height={size}
-        viewBox="0 0 120 120"
+        viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <radialGradient id="headGrad" cx="0.4" cy="0.35" r="0.65">
-            <stop offset="0%" stopColor="#c084fc" />
+          <radialGradient id={`head-${id}`} cx="0.4" cy="0.3" r="0.7">
+            <stop offset="0%" stopColor="#d8b4fe" />
+            <stop offset="60%" stopColor="#c084fc" />
             <stop offset="100%" stopColor="#a855f7" />
           </radialGradient>
-          <radialGradient id="bodyGrad" cx="0.4" cy="0.35" r="0.65">
-            <stop offset="0%" stopColor="#a855f7" />
+          <radialGradient id={`body-${id}`} cx="0.45" cy="0.3" r="0.7">
+            <stop offset="0%" stopColor="#c084fc" />
             <stop offset="100%" stopColor="#9333ea" />
           </radialGradient>
-          <radialGradient id="cheekGrad" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="#5eead4" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#5eead4" stopOpacity="0" />
+          <radialGradient id={`cheek-${id}`} cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* === 더듬이 === */}
-        <path d="M47 22 Q38 6 26 3" stroke="#7e22ce" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-        <path d="M73 22 Q82 6 94 3" stroke="#7e22ce" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-        {/* 더듬이 끝 발광 */}
-        <circle cx="26" cy="3" r="4.5" fill="#2dd4bf" />
-        <circle cx="26" cy="3" r="2.5" fill="#5eead4" opacity="0.6" />
-        <circle cx="94" cy="3" r="4.5" fill="#2dd4bf" />
-        <circle cx="94" cy="3" r="2.5" fill="#5eead4" opacity="0.6" />
+        {/* === 더듬이 (부드러운 곡선) === */}
+        <path d="M40 18 Q34 5 24 2" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" fill="none" />
+        <path d="M60 18 Q66 5 76 2" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" fill="none" />
+        {/* 더듬이 끝 (동글동글 하트 모양) */}
+        <circle cx="24" cy="2" r="3.5" fill="#f0abfc" />
+        <circle cx="24" cy="2" r="2" fill="#e879f9" />
+        <circle cx="76" cy="2" r="3.5" fill="#f0abfc" />
+        <circle cx="76" cy="2" r="2" fill="#e879f9" />
 
-        {/* === 몸통 (아래) === */}
-        <ellipse cx="60" cy="88" rx="20" ry="19" fill="url(#bodyGrad)" />
+        {/* === 몸통 (작고 귀여운 콩 모양) === */}
+        <ellipse cx="50" cy="78" rx="16" ry="14" fill={`url(#body-${id})`} />
         {/* 몸통 하이라이트 */}
-        <ellipse cx="54" cy="82" rx="10" ry="8" fill="#c084fc" opacity="0.25" />
+        <ellipse cx="45" cy="73" rx="8" ry="6" fill="white" opacity="0.12" />
 
-        {/* === 팔 === */}
-        <ellipse cx="36" cy="80" rx="7" ry="4" fill="#a855f7" transform="rotate(-15 36 80)" />
-        <ellipse cx="84" cy="80" rx="7" ry="4" fill="#a855f7" transform="rotate(15 84 80)" />
+        {/* === 팔 (짧고 동글) === */}
+        <ellipse cx="31" cy="74" rx="5.5" ry="3.5" fill="#b47aee" transform="rotate(-20 31 74)" />
+        <ellipse cx="69" cy="74" rx="5.5" ry="3.5" fill="#b47aee" transform="rotate(20 69 74)" />
 
-        {/* === 발 === */}
-        <ellipse cx="48" cy="106" rx="7" ry="3.5" fill="#7e22ce" />
-        <ellipse cx="72" cy="106" rx="7" ry="3.5" fill="#7e22ce" />
+        {/* === 발 (동글동글) === */}
+        <ellipse cx="42" cy="91" rx="6" ry="3" fill="#9333ea" rx-ry="2" />
+        <ellipse cx="58" cy="91" rx="6" ry="3" fill="#9333ea" />
 
-        {/* === 머리 (위) === */}
-        <circle cx="60" cy="42" r="27" fill="url(#headGrad)" />
-        {/* 머리 하이라이트 */}
-        <ellipse cx="51" cy="33" rx="14" ry="10" fill="white" opacity="0.12" />
+        {/* === 머리 (크고 동글 - 카와이 비율) === */}
+        <circle cx="50" cy="36" r="26" fill={`url(#head-${id})`} />
+        {/* 머리 하이라이트 (광택) */}
+        <ellipse cx="42" cy="27" rx="12" ry="9" fill="white" opacity="0.18" />
 
         {/* === 눈 === */}
         {expression === 'cool' ? (
           <>
-            {/* 선글라스 */}
-            <rect x="36" y="35" width="17" height="12" rx="5" fill="#3b0764" />
-            <rect x="67" y="35" width="17" height="12" rx="5" fill="#3b0764" />
-            <line x1="53" y1="41" x2="67" y2="41" stroke="#3b0764" strokeWidth="2" />
-            {/* 반사광 */}
-            <line x1="39" y1="38" x2="44" y2="38" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
-            <line x1="70" y1="38" x2="75" y2="38" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
+            {/* 둥근 선글라스 */}
+            <circle cx="40" cy="36" r="8" fill="#3b0764" />
+            <circle cx="60" cy="36" r="8" fill="#3b0764" />
+            <line x1="48" y1="36" x2="52" y2="36" stroke="#3b0764" strokeWidth="2" />
+            {/* 렌즈 반사 */}
+            <path d="M35 33 Q38 31 41 33" stroke="white" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.35" />
+            <path d="M55 33 Q58 31 61 33" stroke="white" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.35" />
           </>
         ) : expression === 'thinking' ? (
           <>
-            {/* 한쪽 눈 크게, 한쪽 눈 ─ */}
-            <circle cx="48" cy="40" r="6.5" fill="white" />
-            <circle cx="48" cy="40" r="3.8" fill="#3b0764" />
-            <circle cx="46" cy="38" r="2" fill="white" />
-            <path d="M66 41 Q72 38 78 41" stroke="#3b0764" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            {/* 한쪽 크게 뜨고 한쪽 찡그린 눈 */}
+            <circle cx="40" cy="35" r="7" fill="white" />
+            <circle cx="40" cy="36" r="4" fill="#1e1b4b" />
+            <circle cx="38" cy="34" r="2" fill="white" />
+            {/* 오른눈 ─ (찡그림) */}
+            <path d="M54 37 Q60 34 66 37" stroke="#1e1b4b" strokeWidth="2.5" strokeLinecap="round" fill="none" />
           </>
         ) : expression === 'worried' ? (
           <>
-            {/* 걱정 눈 */}
-            <circle cx="48" cy="42" r="6" fill="white" />
-            <circle cx="72" cy="42" r="6" fill="white" />
-            <circle cx="48" cy="43" r="3.5" fill="#3b0764" />
-            <circle cx="72" cy="43" r="3.5" fill="#3b0764" />
-            <circle cx="46" cy="41" r="1.8" fill="white" />
-            <circle cx="70" cy="41" r="1.8" fill="white" />
-            {/* 걱정 눈썹 */}
-            <path d="M40 33 Q48 36 56 34" stroke="#7e22ce" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-            <path d="M64 34 Q72 36 80 33" stroke="#7e22ce" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+            {/* 불안한 큰 눈 (아래로 처진 느낌) */}
+            <circle cx="40" cy="37" r="6.5" fill="white" />
+            <circle cx="60" cy="37" r="6.5" fill="white" />
+            <circle cx="40" cy="38" r="3.5" fill="#1e1b4b" />
+            <circle cx="60" cy="38" r="3.5" fill="#1e1b4b" />
+            <circle cx="39" cy="36" r="1.8" fill="white" />
+            <circle cx="59" cy="36" r="1.8" fill="white" />
+            {/* 걱정 눈썹 (ㅅ자) */}
+            <path d="M33 28 Q40 32 47 29" stroke="#7e22ce" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+            <path d="M53 29 Q60 32 67 28" stroke="#7e22ce" strokeWidth="1.6" strokeLinecap="round" fill="none" />
           </>
         ) : expression === 'excited' ? (
           <>
-            {/* 큰 반짝 눈 */}
-            <circle cx="48" cy="40" r="7.5" fill="white" />
-            <circle cx="72" cy="40" r="7.5" fill="white" />
-            <circle cx="48" cy="40" r="4" fill="#3b0764" />
-            <circle cx="72" cy="40" r="4" fill="#3b0764" />
-            <circle cx="46" cy="38" r="2.2" fill="white" />
-            <circle cx="70" cy="38" r="2.2" fill="white" />
-            <circle cx="49.5" cy="42" r="1" fill="white" opacity="0.5" />
-            <circle cx="73.5" cy="42" r="1" fill="white" opacity="0.5" />
+            {/* 큰 반짝반짝 눈 (별처럼) */}
+            <circle cx="40" cy="35" r="8" fill="white" />
+            <circle cx="60" cy="35" r="8" fill="white" />
+            <circle cx="40" cy="35" r="4.5" fill="#1e1b4b" />
+            <circle cx="60" cy="35" r="4.5" fill="#1e1b4b" />
+            {/* 큰 하이라이트 */}
+            <circle cx="38" cy="33" r="2.5" fill="white" />
+            <circle cx="58" cy="33" r="2.5" fill="white" />
+            {/* 작은 하이라이트 */}
+            <circle cx="42" cy="37" r="1.2" fill="white" opacity="0.7" />
+            <circle cx="62" cy="37" r="1.2" fill="white" opacity="0.7" />
           </>
         ) : (
           <>
-            {/* 기본 행복한 눈 */}
-            <circle cx="48" cy="40" r="6.5" fill="white" />
-            <circle cx="72" cy="40" r="6.5" fill="white" />
-            <circle cx="48" cy="40" r="3.5" fill="#3b0764" />
-            <circle cx="72" cy="40" r="3.5" fill="#3b0764" />
-            <circle cx="46" cy="38" r="2" fill="white" />
-            <circle cx="70" cy="38" r="2" fill="white" />
+            {/* 기본 행복한 큰 눈 */}
+            <circle cx="40" cy="35" r="7" fill="white" />
+            <circle cx="60" cy="35" r="7" fill="white" />
+            <circle cx="40" cy="35" r="3.8" fill="#1e1b4b" />
+            <circle cx="60" cy="35" r="3.8" fill="#1e1b4b" />
+            <circle cx="38" cy="33" r="2.2" fill="white" />
+            <circle cx="58" cy="33" r="2.2" fill="white" />
           </>
         )}
 
-        {/* === 볼터치 === */}
+        {/* === 볼터치 (따뜻한 느낌) === */}
         {expression !== 'worried' && (
           <>
-            <circle cx="34" cy="50" r="6" fill="url(#cheekGrad)" />
-            <circle cx="86" cy="50" r="6" fill="url(#cheekGrad)" />
+            <circle cx="28" cy="44" r="5.5" fill={`url(#cheek-${id})`} />
+            <circle cx="72" cy="44" r="5.5" fill={`url(#cheek-${id})`} />
           </>
         )}
 
         {/* === 입 === */}
         {expression === 'happy' && (
-          <path d="M52 53 Q60 59 68 53" stroke="#3b0764" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+          <path d="M43 47 Q50 54 57 47" stroke="#581c87" strokeWidth="2" strokeLinecap="round" fill="none" />
         )}
         {expression === 'excited' && (
           <>
-            <ellipse cx="60" cy="55" rx="5" ry="3.5" fill="#3b0764" />
-            <ellipse cx="60" cy="54" rx="3.5" ry="1.5" fill="#6b21a8" opacity="0.3" />
+            {/* 크게 웃는 입 (ω) */}
+            <path d="M41 47 Q45 53 50 53 Q55 53 59 47" stroke="#581c87" strokeWidth="2" strokeLinecap="round" fill="#fce7f3" />
           </>
         )}
         {expression === 'thinking' && (
-          <circle cx="63" cy="53" r="2.5" fill="#3b0764" />
+          <>
+            {/* 삐죽 입 */}
+            <circle cx="54" cy="47" r="2.2" fill="#581c87" />
+          </>
         )}
         {expression === 'worried' && (
-          <path d="M52 56 Q60 52 68 56" stroke="#3b0764" strokeWidth="2" strokeLinecap="round" fill="none" />
+          <path d="M43 50 Q50 46 57 50" stroke="#581c87" strokeWidth="1.8" strokeLinecap="round" fill="none" />
         )}
         {expression === 'cool' && (
-          <path d="M52 52 Q60 57 68 52" stroke="#3b0764" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+          <path d="M43 47 Q50 52 57 47" stroke="#581c87" strokeWidth="2" strokeLinecap="round" fill="none" />
         )}
 
-        {/* === 반짝이 효과 === */}
+        {/* === 반짝이 (excited일 때) === */}
         {expression === 'excited' && (
           <>
-            <g opacity="0.6">
-              <line x1="92" y1="18" x2="92" y2="26" stroke="#2dd4bf" strokeWidth="1.5" strokeLinecap="round" />
-              <line x1="88" y1="22" x2="96" y2="22" stroke="#2dd4bf" strokeWidth="1.5" strokeLinecap="round" />
+            <g opacity="0.7">
+              <line x1="84" y1="14" x2="84" y2="22" stroke="#f0abfc" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="80" y1="18" x2="88" y2="18" stroke="#f0abfc" strokeWidth="1.5" strokeLinecap="round" />
             </g>
-            <g opacity="0.4">
-              <line x1="22" y1="22" x2="22" y2="28" stroke="#c084fc" strokeWidth="1.2" strokeLinecap="round" />
-              <line x1="19" y1="25" x2="25" y2="25" stroke="#c084fc" strokeWidth="1.2" strokeLinecap="round" />
+            <g opacity="0.5">
+              <line x1="14" y1="18" x2="14" y2="24" stroke="#c084fc" strokeWidth="1.2" strokeLinecap="round" />
+              <line x1="11" y1="21" x2="17" y2="21" stroke="#c084fc" strokeWidth="1.2" strokeLinecap="round" />
             </g>
+            {/* 작은 별 */}
+            <circle cx="90" cy="30" r="1.5" fill="#fbbf24" opacity="0.5" />
+            <circle cx="8" cy="12" r="1.2" fill="#f0abfc" opacity="0.4" />
           </>
         )}
       </svg>

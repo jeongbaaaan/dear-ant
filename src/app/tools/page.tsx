@@ -1,46 +1,68 @@
 'use client';
 
 import Link from 'next/link';
-import AntCharacter from '@/components/AntCharacter';
 
 const tools = [
   {
     href: '/calculator',
-    icon: '⚖️',
     title: '적금 vs 투자 비교',
     description: '같은 돈을 적금 vs 주식, 어디에?',
-    gradient: 'from-purple-500 to-blue-500',
-    border: 'border-purple-100',
     badge: null,
   },
   {
     href: '/compound',
-    icon: '📈',
     title: '복리 계산기',
     description: '복리의 마법, 직접 확인하기',
-    gradient: 'from-mint-500 to-emerald-500',
-    border: 'border-mint-100',
     badge: null,
   },
   {
     href: '/survey',
-    icon: '🎯',
     title: '투자 성향 분석',
     description: '오늘의 투자 분위기 체크',
-    gradient: 'from-amber-500 to-orange-500',
-    border: 'border-amber-100',
     badge: null,
   },
   {
     href: '/tools/returns',
-    icon: '🧮',
     title: '수익률 계산기',
     description: '매수·매도가로 수익률 계산',
-    gradient: 'from-rose-500 to-pink-500',
-    border: 'border-rose-100',
     badge: 'coming soon',
   },
 ];
+
+function ToolIcon({ index }: { index: number }) {
+  const icons = [
+    // 저울 (적금 vs 투자)
+    <svg key={0} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3v18" />
+      <path d="M4 7h16" />
+      <path d="M4 7l3 8h0a3 3 0 0 0 5.5 0h0L16 7" />
+      <path d="M16 7l-3 8" />
+      <path d="M8 7l-3 8" />
+    </svg>,
+    // 차트 (복리)
+    <svg key={1} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 20h18" />
+      <path d="M5 20V10l4-2 4 3 4-5 4 2v12" />
+    </svg>,
+    // 타겟 (투자 성향)
+    <svg key={2} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1" />
+    </svg>,
+    // 계산기 (수익률)
+    <svg key={3} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <line x1="8" y1="6" x2="16" y2="6" />
+      <line x1="8" y1="10" x2="10" y2="10" />
+      <line x1="14" y1="10" x2="16" y2="10" />
+      <line x1="8" y1="14" x2="10" y2="14" />
+      <line x1="14" y1="14" x2="16" y2="14" />
+      <line x1="8" y1="18" x2="16" y2="18" />
+    </svg>,
+  ];
+  return icons[index] || null;
+}
 
 export default function ToolsPage() {
   return (
@@ -51,7 +73,7 @@ export default function ToolsPage() {
           <h1 className="text-2xl font-black text-slate-900">도구 모음</h1>
           <Link
             href="/"
-            className="text-purple-400 hover:text-purple-600 text-sm font-medium transition-colors"
+            className="text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors"
           >
             홈으로
           </Link>
@@ -60,41 +82,43 @@ export default function ToolsPage() {
           Dear,ANT가 준비한 투자 도구들
         </p>
 
-        {/* 캐릭터 */}
-        <div className="flex justify-center mb-8">
-          <AntCharacter size={100} expression="cool" className="drop-shadow-lg" />
-        </div>
-
-        {/* 카드 그리드 */}
-        <div className="grid grid-cols-2 gap-3">
-          {tools.map((tool) => {
+        {/* 도구 리스트 */}
+        <div className="flex flex-col gap-3">
+          {tools.map((tool, index) => {
             const isComingSoon = tool.badge === 'coming soon';
             const cardClass = `
-              group relative bg-white/80 backdrop-blur-sm rounded-2xl border ${tool.border}
-              shadow-sm p-5 transition-all duration-300
+              flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 transition-colors
               ${isComingSoon
                 ? 'opacity-60 cursor-not-allowed'
-                : 'hover:shadow-lg hover:shadow-purple-100 hover:-translate-y-0.5 active:scale-[0.98]'
+                : 'hover:bg-slate-100 active:scale-[0.98]'
               }
             `;
 
             const inner = (
               <>
-                <div
-                  className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r ${tool.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                />
-                {isComingSoon && (
-                  <span className="absolute top-2 right-2 px-2 py-0.5 bg-slate-100 text-slate-400 text-[10px] font-bold rounded-full">
-                    SOON
-                  </span>
+                <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-500">
+                  <ToolIcon index={index} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-800 leading-tight">
+                      {tool.title}
+                    </h3>
+                    {isComingSoon && (
+                      <span className="px-2 py-0.5 bg-slate-200 text-slate-400 text-[10px] font-bold rounded-full">
+                        SOON
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed mt-0.5">
+                    {tool.description}
+                  </p>
+                </div>
+                {!isComingSoon && (
+                  <svg className="flex-shrink-0 w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
                 )}
-                <div className="text-3xl mb-3">{tool.icon}</div>
-                <h3 className="text-sm font-bold text-slate-800 mb-1 leading-tight">
-                  {tool.title}
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {tool.description}
-                </p>
               </>
             );
 
@@ -104,17 +128,6 @@ export default function ToolsPage() {
               <Link key={tool.href} href={tool.href} className={cardClass}>{inner}</Link>
             );
           })}
-        </div>
-
-        {/* 하단 인사이트 */}
-        <div className="mt-8 bg-purple-50/80 backdrop-blur-sm rounded-2xl border border-purple-100 p-5">
-          <p className="text-purple-600 text-xs font-bold mb-2">
-            💡 Dear,ANT의 한마디
-          </p>
-          <p className="text-purple-500 text-xs leading-relaxed">
-            도구는 판단을 돕기 위한 것이에요.
-            숫자만 보지 말고, 자신의 투자 성향과 상황을 함께 고려해보세요.
-          </p>
         </div>
       </div>
     </main>

@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import AntCharacter from '@/components/AntCharacter';
+import { SkeletonCard, SkeletonStats } from '@/components/Skeleton';
+import CountUp from '@/components/CountUp';
+import PullToRefresh from '@/components/PullToRefresh';
 
 interface HistoryReport {
   id: string;
@@ -70,7 +72,7 @@ function TrendChart({ reports }: { reports: HistoryReport[] }) {
   const emotionPath = emotionPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
   return (
-    <div className="card-premium p-5">
+    <div className="bg-white border border-slate-200 rounded-2xl p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-slate-500 text-sm font-medium">투자 성향 트렌드</p>
         <p className="text-slate-400 text-xs">최근 {data.length}회</p>
@@ -81,8 +83,8 @@ function TrendChart({ reports }: { reports: HistoryReport[] }) {
           const y = padding + chartH - ((v - 1) / 4) * chartH;
           return (
             <g key={v}>
-              <line x1={padding} y1={y} x2={width - padding} y2={y} stroke="#f3e8ff" strokeWidth="1" />
-              <text x={padding - 4} y={y + 3} fontSize="8" fill="#a78bfa" textAnchor="end">
+              <line x1={padding} y1={y} x2={width - padding} y2={y} stroke="#f1f5f9" strokeWidth="1" />
+              <text x={padding - 4} y={y + 3} fontSize="8" fill="#94a3b8" textAnchor="end">
                 {['', 'F', 'D', 'C', 'B', 'A'][v]}
               </text>
             </g>
@@ -135,26 +137,26 @@ function StatsSummary({ reports }: { reports: HistoryReport[] }) {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div className="card-premium p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4">
         <p className="text-slate-400 text-xs mb-1">평균 감정 흔들림</p>
-        <p className="text-2xl font-black text-slate-800">{avgMoodScore}<span className="text-sm font-normal text-slate-400">%</span></p>
+        <p className="text-2xl font-black text-slate-800"><CountUp end={avgMoodScore} /><span className="text-sm font-normal text-slate-400">%</span></p>
         <p className="text-xs text-slate-400 mt-0.5">
           {avgMoodScore <= 35 ? '안정적 👍' : avgMoodScore <= 60 ? '보통' : '변동 높음'}
         </p>
       </div>
-      <div className="card-premium p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4">
         <p className="text-slate-400 text-xs mb-1">주요 판단 모드</p>
         <p className="text-2xl font-black text-slate-800">{topMode?.[0] || '-'}</p>
         <p className="text-xs text-slate-400 mt-0.5">{topMode ? `${topMode[1]}회 (${Math.round(topMode[1] / reports.length * 100)}%)` : ''}</p>
       </div>
-      <div className="card-premium p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4">
         <p className="text-slate-400 text-xs mb-1">최다 등급</p>
         <p className={`text-2xl font-black ${moodGradeColor[topGrade?.[0] || 'C']}`}>{topGrade?.[0] || '-'}</p>
         <p className="text-xs text-slate-400 mt-0.5">{topGrade ? `${topGrade[1]}회 기록` : ''}</p>
       </div>
-      <div className="card-premium p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4">
         <p className="text-slate-400 text-xs mb-1">총 리포트</p>
-        <p className="text-2xl font-black text-purple-600">{streak}<span className="text-sm font-normal text-slate-400">회</span></p>
+        <p className="text-2xl font-black text-slate-800"><CountUp end={streak} /><span className="text-sm font-normal text-slate-400">회</span></p>
         <p className="text-xs text-slate-400 mt-0.5">기록이 쌓이는 중</p>
       </div>
     </div>
@@ -191,24 +193,26 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'dashboard' | 'list'>('dashboard');
 
-  useEffect(() => {
-    async function fetchHistory() {
-      try {
-        const res = await fetch('/api/history');
-        const data = await res.json();
-        setReports(data.reports || []);
-      } catch {
-        console.error('Failed to fetch history');
-      } finally {
-        setLoading(false);
-      }
+  const fetchHistory = useCallback(async () => {
+    try {
+      const res = await fetch('/api/history');
+      const data = await res.json();
+      setReports(data.reports || []);
+    } catch {
+      console.error('Failed to fetch history');
+    } finally {
+      setLoading(false);
     }
-    fetchHistory();
   }, []);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   return (
     <main className="min-h-screen py-12 px-6 pb-nav">
-      <div className="max-w-md mx-auto animate-fade-in">
+      <PullToRefresh onRefresh={async () => { setLoading(true); await fetchHistory(); }}>
+      <div className="max-w-md mx-auto">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -220,16 +224,18 @@ export default function HistoryPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-16">
-            <div className="w-10 h-10 rounded-full border-4 border-purple-200 border-t-purple-500 animate-spin" />
+          <div className="space-y-4">
+            <SkeletonStats />
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
           </div>
         ) : reports.length === 0 ? (
           <div className="text-center py-16">
-            <AntCharacter size={100} expression="thinking" className="mx-auto mb-4" />
             <p className="text-slate-400 mb-4">아직 리포트가 없습니다</p>
             <Link
               href="/survey"
-              className="inline-block bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium py-3 px-6 rounded-2xl transition-all"
+              className="inline-block bg-slate-900 text-white font-medium py-3 px-6 rounded-2xl transition-all"
             >
               첫 리포트 받기
             </Link>
@@ -237,11 +243,11 @@ export default function HistoryPage() {
         ) : (
           <>
             {/* 탭 전환 */}
-            <div className="flex bg-purple-50 rounded-xl p-1 mb-5">
+            <div className="flex bg-slate-100 rounded-xl p-1 mb-5">
               <button
                 onClick={() => setView('dashboard')}
                 className={`flex-1 text-sm font-medium py-2 rounded-lg transition-all ${
-                  view === 'dashboard' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-400'
+                  view === 'dashboard' ? 'bg-slate-900 text-white' : 'text-slate-400'
                 }`}
               >
                 대시보드
@@ -249,7 +255,7 @@ export default function HistoryPage() {
               <button
                 onClick={() => setView('list')}
                 className={`flex-1 text-sm font-medium py-2 rounded-lg transition-all ${
-                  view === 'list' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-400'
+                  view === 'list' ? 'bg-slate-900 text-white' : 'text-slate-400'
                 }`}
               >
                 전체 기록
@@ -257,7 +263,7 @@ export default function HistoryPage() {
             </div>
 
             {view === 'dashboard' ? (
-              <div className="space-y-4 animate-fade-in">
+              <div className="space-y-4">
                 {/* 트렌드 차트 */}
                 <TrendChart reports={reports} />
 
@@ -268,7 +274,7 @@ export default function HistoryPage() {
                 {reports[0] && (
                   <Link
                     href={`/result/${reports[0].id}`}
-                    className="block bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-5 text-white shadow-lg hover:shadow-xl transition-all"
+                    className="block bg-slate-900 rounded-2xl p-5 text-white transition-all"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-white/60 text-xs font-medium">최근 리포트</span>
@@ -284,7 +290,7 @@ export default function HistoryPage() {
                 )}
               </div>
             ) : (
-              <div className="space-y-3 animate-fade-in">
+              <div className="space-y-3">
                 {reports.map((report, idx) => {
                   const date = new Date(report.created_at).toLocaleDateString('ko-KR', {
                     month: 'short',
@@ -296,7 +302,7 @@ export default function HistoryPage() {
                     <Link
                       key={report.id}
                       href={`/result/${report.id}`}
-                      className="block bg-white rounded-2xl border border-purple-100 p-4 hover:shadow-md hover:border-purple-200 transition-all duration-200"
+                      className="block bg-white rounded-2xl border border-slate-200 p-4 hover:shadow-md hover:border-slate-300 transition-all duration-200"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -329,6 +335,7 @@ export default function HistoryPage() {
           </>
         )}
       </div>
+      </PullToRefresh>
     </main>
   );
 }

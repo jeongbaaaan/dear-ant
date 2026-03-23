@@ -1,117 +1,246 @@
+'use client';
+
 import Link from 'next/link';
-import AntCharacter from '@/components/AntCharacter';
+import { useEffect, useState } from 'react';
+
+interface HistoryReport {
+  id: string;
+  decision_mode: string;
+  mood_score: number;
+  invest_mood: string;
+  created_at: string;
+}
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour <= 11) return '좋은 아침이에요';
+  if (hour >= 12 && hour <= 17) return '오늘 하루도 화이팅';
+  if (hour >= 18 && hour <= 21) return '오늘 하루 수고했어요';
+  return '늦은 시간, 무리하지 마세요';
+}
+
+function getRelativeDate(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diffDays = Math.floor((todayStart.getTime() - dateStart.getTime()) / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return '오늘';
+  if (diffDays === 1) return '어제';
+  return `${diffDays}일 전`;
+}
+
+function getStreak(reports: HistoryReport[]): number {
+  if (reports.length === 0) return 0;
+
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  // Get unique dates (sorted descending, already from API)
+  const uniqueDates = Array.from(
+    new Set(
+      reports.map((r) => {
+        const d = new Date(r.created_at);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      })
+    )
+  );
+
+  // Streak must start from today or yesterday
+  if (uniqueDates[0] !== todayStr) {
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+    if (uniqueDates[0] !== yesterdayStr) return 0;
+  }
+
+  let streak = 1;
+  for (let i = 1; i < uniqueDates.length; i++) {
+    const prev = new Date(uniqueDates[i - 1]);
+    const curr = new Date(uniqueDates[i]);
+    const diffMs = prev.getTime() - curr.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+function gradeColor(grade: string): string {
+  switch (grade) {
+    case 'A+':
+    case 'A':
+      return 'text-emerald-500';
+    case 'B+':
+    case 'B':
+      return 'text-blue-500';
+    case 'C+':
+    case 'C':
+      return 'text-amber-500';
+    default:
+      return 'text-red-500';
+  }
+}
 
 export default function Home() {
-  return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 pb-nav">
-      <div className="max-w-md w-full text-center">
-        {/* Floating ant with sparkles */}
-        <div className="relative mb-4 animate-fade-in">
-          {/* Decorative sparkles */}
-          <div className="absolute -top-4 left-1/4 w-2 h-2 bg-mint-300 rounded-full animate-pulse-soft" />
-          <div className="absolute top-2 right-1/4 w-1.5 h-1.5 bg-purple-300 rounded-full animate-pulse-soft" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute -top-2 right-1/3 w-1 h-1 bg-purple-400 rounded-full animate-pulse-soft" style={{ animationDelay: '1s' }} />
+  const [reports, setReports] = useState<HistoryReport[]>([]);
+  const [greeting] = useState(getGreeting);
 
-          <div className="animate-float">
-            <AntCharacter size={130} expression="happy" className="mx-auto drop-shadow-xl" />
-          </div>
+  useEffect(() => {
+    fetch('/api/history')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.reports) setReports(data.reports);
+      })
+      .catch(() => {});
+  }, []);
+
+  const lastReport = reports.length > 0 ? reports[0] : null;
+  const streak = getStreak(reports);
+
+  return (
+    <main className="min-h-screen bg-white px-5 pt-16 pb-nav">
+      <div className="max-w-sm mx-auto">
+        {/* Logo */}
+        <div className="flex items-center gap-2 mb-10">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="#111" />
+            <polyline points="6,16 10,16 13,8 16,22 19,12 22,16 26,16" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
+          <span className="text-[17px] font-bold text-slate-900 tracking-tight">
+            Dear,ANT
+          </span>
         </div>
 
-        {/* Title */}
-        <div className="animate-fade-in stagger-1">
-          <h1 className="text-4xl font-black text-slate-900 mb-1 tracking-tight">
-            Dear<span className="text-purple-500">,</span><span className="bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent">ANT</span>
+        {/* Hero copy */}
+        <div className="mb-8">
+          <h1 className="text-[26px] font-extrabold text-slate-900 leading-tight">
+            오늘,<br />
+            투자해도 괜찮은<br />
+            날일까요?
           </h1>
-          <p className="text-slate-400 text-sm">
-            당신만을 위한 오늘의 투자 리포트
+          <p className="text-slate-400 text-[14px] mt-3 leading-relaxed">
+            감정과 컨디션을 분석해서<br />
+            오늘의 투자 판단을 도와드려요
           </p>
         </div>
 
-        {/* Main CTA Card */}
-        <div className="mt-8 animate-fade-in stagger-2">
+        {/* Main CTA */}
+        <div className="mb-8">
           <Link
             href="/survey"
-            className="block card-premium p-6 group cursor-pointer hover:border-purple-200"
+            className="flex items-center justify-between bg-slate-900 hover:bg-slate-800 text-white rounded-2xl px-5 py-4 transition-colors"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shrink-0 shadow-lg shadow-purple-200 group-hover:scale-105 transition-transform">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                </svg>
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-slate-800 text-base">오늘의 투자 리포트 받기</h3>
-                <p className="text-slate-400 text-xs mt-0.5">감정 분석 · 바이오리듬 · 투자 등급</p>
-              </div>
-              <svg className="w-5 h-5 text-purple-300 ml-auto group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
+            <div>
+              <p className="font-bold text-[15px]">오늘의 리포트 받기</p>
+              <p className="text-slate-400 text-[12px] mt-0.5">약 2분 소요</p>
             </div>
+            <svg className="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </Link>
+
+          {/* Streak badge */}
+          {streak > 0 && (
+            <p className="text-slate-400 text-[12px] mt-2 px-1">
+              🔥 {streak}일 연속 기록 중
+            </p>
+          )}
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-2 gap-3 mt-4 animate-fade-in stagger-3">
-          <Link href="/history" className="card-premium p-4 text-left group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center mb-3 shadow-md shadow-blue-100 group-hover:scale-105 transition-transform">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+        {/* Last report summary card */}
+        {lastReport && (
+          <div className="bg-slate-50 rounded-2xl px-5 py-4 mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-400 text-[11px] font-medium mb-1">
+                  최근 리포트 · {getRelativeDate(lastReport.created_at)}
+                </p>
+                <p className="text-slate-700 text-[13px] font-semibold">
+                  {lastReport.decision_mode === 'rational' ? '이성적' : lastReport.decision_mode === 'emotional' ? '감정적' : lastReport.decision_mode} · 감정 {lastReport.mood_score}점
+                </p>
+              </div>
+              <span className={`text-[28px] font-extrabold ${gradeColor(lastReport.invest_mood)}`}>
+                {lastReport.invest_mood}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Section label */}
+        <p className="text-slate-400 text-[12px] font-medium mb-3 px-1">둘러보기</p>
+
+        {/* Feature list */}
+        <div className="flex flex-col gap-2">
+          <Link href="/history" className="flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 hover:bg-slate-100 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.2" strokeLinecap="round">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
-            <h4 className="font-bold text-slate-800 text-sm">히스토리</h4>
-            <p className="text-slate-400 text-[11px] mt-0.5">트렌드 · 대시보드</p>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-slate-800 text-[14px]">히스토리</p>
+              <p className="text-slate-400 text-[12px]">내 투자 컨디션 변화 추이</p>
+            </div>
+            <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </Link>
 
-          <Link href="/memo" className="card-premium p-4 text-left group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center mb-3 shadow-md shadow-emerald-100 group-hover:scale-105 transition-transform">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+          <Link href="/memo" className="flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 hover:bg-slate-100 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M12 20h9" />
                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
               </svg>
             </div>
-            <h4 className="font-bold text-slate-800 text-sm">트레이딩 저널</h4>
-            <p className="text-slate-400 text-[11px] mt-0.5">매매 기록 · 감정 분석</p>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-slate-800 text-[14px]">트레이딩 저널</p>
+              <p className="text-slate-400 text-[12px]">매매 기록과 그때의 감정</p>
+            </div>
+            <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </Link>
 
-          <Link href="/calculator" className="card-premium p-4 text-left group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center mb-3 shadow-md shadow-amber-100 group-hover:scale-105 transition-transform">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+          <Link href="/calculator" className="flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 hover:bg-slate-100 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round">
                 <rect x="4" y="2" width="16" height="20" rx="2" />
                 <line x1="8" y1="6" x2="16" y2="6" />
-                <line x1="8" y1="10" x2="10" y2="10" />
-                <line x1="14" y1="10" x2="16" y2="10" />
                 <line x1="8" y1="14" x2="10" y2="14" />
                 <line x1="14" y1="14" x2="16" y2="14" />
                 <line x1="8" y1="18" x2="16" y2="18" />
               </svg>
             </div>
-            <h4 className="font-bold text-slate-800 text-sm">적금 vs 투자</h4>
-            <p className="text-slate-400 text-[11px] mt-0.5">리스크 포함 비교</p>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-slate-800 text-[14px]">적금 vs 투자</p>
+              <p className="text-slate-400 text-[12px]">리스크 포함 수익률 비교</p>
+            </div>
+            <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </Link>
 
-          <Link href="/compound" className="card-premium p-4 text-left group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center mb-3 shadow-md shadow-purple-100 group-hover:scale-105 transition-transform">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+          <Link href="/compound" className="flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 hover:bg-slate-100 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9333ea" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
               </svg>
             </div>
-            <h4 className="font-bold text-slate-800 text-sm">복리 계산기</h4>
-            <p className="text-slate-400 text-[11px] mt-0.5">복리의 마법 체험</p>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-slate-800 text-[14px]">복리 계산기</p>
+              <p className="text-slate-400 text-[12px]">시간이 만드는 수익 시뮬레이션</p>
+            </div>
+            <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </Link>
         </div>
-
-        {/* Motivational quote */}
-        <div className="mt-6 animate-fade-in stagger-4">
-          <div className="card-premium p-4 animate-shimmer">
-            <p className="text-purple-400 text-xs leading-relaxed">
-              &ldquo;성공적인 투자는 감정 관리에서 시작됩니다&rdquo;
-            </p>
-          </div>
-        </div>
-
-        {/* Version tag */}
-        <p className="text-slate-300 text-[10px] mt-6">Dear,ANT v2.0 · Made with 🐜</p>
       </div>
     </main>
   );

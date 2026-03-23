@@ -150,14 +150,14 @@ export default function CalculatorPage() {
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-black text-slate-900">적금 vs 투자</h1>
-          <Link href="/tools" className="text-purple-400 hover:text-purple-600 text-sm font-medium transition-colors">
+          <Link href="/tools" className="text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors">
             도구
           </Link>
         </div>
         <p className="text-slate-400 text-sm mb-6">리스크 포함 수익 비교 계산기</p>
 
         {/* 입력 폼 */}
-        <div className="card-premium p-5 mb-5">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-5">
           {/* 월 투자금 */}
           <div className="mb-4">
             <label className="block text-slate-500 text-xs font-medium mb-1.5">월 투자금</label>
@@ -166,7 +166,7 @@ export default function CalculatorPage() {
                 type="number"
                 value={monthly}
                 onChange={(e) => setMonthly(e.target.value)}
-                className="w-full px-4 py-3 pr-12 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-lg font-bold"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-lg font-bold"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">원</span>
             </div>
@@ -178,8 +178,8 @@ export default function CalculatorPage() {
                   onClick={() => setMonthly(String(v))}
                   className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                     Number(monthly) === v
-                      ? 'bg-purple-500 text-white border-purple-500'
-                      : 'border-purple-100 text-slate-400 hover:border-purple-300'
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'border-slate-200 text-slate-400 hover:border-slate-300'
                   }`}
                 >
                   {v >= 1000000 ? `${v / 10000}만` : `${v / 10000}만`}
@@ -198,8 +198,8 @@ export default function CalculatorPage() {
                   onClick={() => setPeriod(m)}
                   className={`py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
                     period === m
-                      ? 'border-purple-400 bg-purple-50 text-purple-600'
-                      : 'border-slate-100 text-slate-400 hover:border-purple-200'
+                      ? 'border-slate-900 bg-slate-50 text-slate-900'
+                      : 'border-slate-200 text-slate-400'
                   }`}
                 >
                   {m === 6 ? '6개월' : m === 12 ? '1년' : '2년'}
@@ -218,7 +218,7 @@ export default function CalculatorPage() {
                   step="0.1"
                   value={savingsRate}
                   onChange={(e) => setSavingsRate(e.target.value)}
-                  className="w-full px-4 py-2.5 pr-8 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-sm font-bold"
+                  className="w-full px-4 py-2.5 pr-8 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm font-bold"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">%</span>
               </div>
@@ -231,7 +231,7 @@ export default function CalculatorPage() {
                   step="1"
                   value={stockReturn}
                   onChange={(e) => setStockReturn(e.target.value)}
-                  className="w-full px-4 py-2.5 pr-8 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-sm font-bold"
+                  className="w-full px-4 py-2.5 pr-8 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm font-bold"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">%</span>
               </div>
@@ -253,8 +253,8 @@ export default function CalculatorPage() {
                   onClick={() => setStockReturn(p.value)}
                   className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                     stockReturn === p.value
-                      ? 'bg-purple-500 text-white border-purple-500'
-                      : 'border-purple-100 text-slate-400 hover:border-purple-300'
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'border-slate-200 text-slate-400 hover:border-slate-300'
                   }`}
                 >
                   {p.label}
@@ -266,7 +266,7 @@ export default function CalculatorPage() {
           <button
             onClick={() => setShowResult(true)}
             disabled={monthlyNum <= 0}
-            className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-purple-200 disabled:to-purple-200 text-white font-bold py-3.5 rounded-xl transition-all active:scale-[0.98]"
+            className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 text-white font-bold py-3.5 rounded-xl transition-all active:scale-[0.98]"
           >
             비교 계산하기
           </button>
@@ -276,11 +276,7 @@ export default function CalculatorPage() {
         {showResult && monthlyNum > 0 && (
           <div className="space-y-4 animate-slide-up">
             {/* 판정 카드 */}
-            <div className={`rounded-2xl p-5 text-white shadow-lg ${
-              comparison.verdict === 'stock' ? 'bg-gradient-to-br from-purple-600 to-purple-700' :
-              comparison.verdict === 'savings' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
-              'bg-gradient-to-br from-amber-500 to-orange-500'
-            }`}>
+            <div className="rounded-2xl p-5 text-white shadow-lg bg-slate-900">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">
                   {comparison.verdict === 'stock' ? '📈' : comparison.verdict === 'savings' ? '🏦' : '⚖️'}
@@ -338,20 +334,20 @@ export default function CalculatorPage() {
             </div>
 
             {/* 주식 결과 */}
-            <div className="card-premium p-5">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">📈</span>
                   <h3 className="font-bold text-slate-800">주식 투자</h3>
                 </div>
-                <span className="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-xs font-bold border border-purple-200">
+                <span className="px-3 py-1 bg-slate-50 text-slate-600 rounded-full text-xs font-bold border border-slate-200">
                   기대 연 {stockReturnNum}%
                 </span>
               </div>
 
               {/* 시나리오별 비교 */}
-              <CompareBar label="🚀 낙관 (×1.5)" value={stock.optimistic.netProfit} maxValue={maxProfit} color="bg-purple-500" />
-              <CompareBar label="📊 기대 수익" value={stock.expected.netProfit} maxValue={maxProfit} color="bg-purple-400" />
+              <CompareBar label="🚀 낙관 (×1.5)" value={stock.optimistic.netProfit} maxValue={maxProfit} color="bg-slate-700" />
+              <CompareBar label="📊 기대 수익" value={stock.expected.netProfit} maxValue={maxProfit} color="bg-slate-500" />
               <CompareBar label="😐 보수적 (×0.3)" value={stock.conservative.netProfit} maxValue={maxProfit} color="bg-amber-400" />
               <CompareBar label="📉 최악 (−0.8×)" value={stock.worst.netProfit} maxValue={maxProfit} color="bg-rose-400" />
 
@@ -364,7 +360,7 @@ export default function CalculatorPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-slate-400">기대 수익 (세후)</span>
-                  <span className="text-purple-600 font-bold">+{stock.expected.netProfit.toLocaleString()}원</span>
+                  <span className="text-slate-700 font-bold">+{stock.expected.netProfit.toLocaleString()}원</span>
                 </div>
                 {stock.expected.tax > 0 && (
                   <div className="flex justify-between">
@@ -380,34 +376,34 @@ export default function CalculatorPage() {
             </div>
 
             {/* 한눈에 비교 */}
-            <div className="card-premium p-5">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5">
               <h3 className="text-slate-500 text-sm font-medium mb-4">한눈에 비교</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-purple-50">
+                    <tr className="border-b border-slate-100">
                       <th className="text-left text-slate-400 font-medium py-2 text-xs"></th>
                       <th className="text-right text-blue-500 font-bold py-2 text-xs">🏦 적금</th>
-                      <th className="text-right text-purple-500 font-bold py-2 text-xs">📈 주식</th>
+                      <th className="text-right text-slate-500 font-bold py-2 text-xs">📈 주식</th>
                     </tr>
                   </thead>
                   <tbody className="text-slate-600">
-                    <tr className="border-b border-purple-50/50">
+                    <tr className="border-b border-slate-100/50">
                       <td className="py-2.5 text-slate-400 text-xs">원금</td>
                       <td className="py-2.5 text-right font-medium">{savings.totalPrincipal.toLocaleString()}</td>
                       <td className="py-2.5 text-right font-medium">{stock.totalPrincipal.toLocaleString()}</td>
                     </tr>
-                    <tr className="border-b border-purple-50/50">
+                    <tr className="border-b border-slate-100/50">
                       <td className="py-2.5 text-slate-400 text-xs">기대 수익</td>
                       <td className="py-2.5 text-right text-blue-600 font-bold">+{savings.netInterest.toLocaleString()}</td>
-                      <td className="py-2.5 text-right text-purple-600 font-bold">+{stock.expected.netProfit.toLocaleString()}</td>
+                      <td className="py-2.5 text-right text-slate-700 font-bold">+{stock.expected.netProfit.toLocaleString()}</td>
                     </tr>
-                    <tr className="border-b border-purple-50/50">
+                    <tr className="border-b border-slate-100/50">
                       <td className="py-2.5 text-slate-400 text-xs">최악 시</td>
                       <td className="py-2.5 text-right text-blue-600 font-bold">+{savings.netInterest.toLocaleString()}</td>
                       <td className="py-2.5 text-right text-rose-500 font-bold">{stock.worst.netProfit.toLocaleString()}</td>
                     </tr>
-                    <tr className="border-b border-purple-50/50">
+                    <tr className="border-b border-slate-100/50">
                       <td className="py-2.5 text-slate-400 text-xs">원금 보장</td>
                       <td className="py-2.5 text-right"><span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold">보장</span></td>
                       <td className="py-2.5 text-right"><span className="text-xs bg-rose-50 text-rose-500 px-2 py-0.5 rounded-full font-bold">미보장</span></td>
@@ -423,9 +419,9 @@ export default function CalculatorPage() {
             </div>
 
             {/* Dear,ANT 팁 */}
-            <div className="bg-purple-50 rounded-2xl border border-purple-100 p-5">
-              <p className="text-purple-600 text-xs font-bold mb-2">💡 Dear,ANT의 판단</p>
-              <div className="space-y-2 text-purple-500 text-xs leading-relaxed">
+            <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+              <p className="text-slate-600 text-xs font-bold mb-2">💡 Dear,ANT의 판단</p>
+              <div className="space-y-2 text-slate-500 text-xs leading-relaxed">
                 {comparison.verdict === 'stock' ? (
                   <>
                     <p>• 기대 수익이 적금 대비 <strong>{Math.round(stock.expected.netProfit / Math.max(savings.netInterest, 1))}배</strong> 높습니다</p>
@@ -451,7 +447,7 @@ export default function CalculatorPage() {
             {/* 다시 계산 */}
             <button
               onClick={() => { setShowResult(false); window.scrollTo(0, 0); }}
-              className="w-full text-center border-2 border-purple-200 text-purple-500 hover:bg-purple-50 font-medium py-3 rounded-2xl transition-all"
+              className="w-full text-center border-2 border-slate-200 text-slate-500 hover:bg-slate-50 font-medium py-3 rounded-2xl transition-all"
             >
               다시 계산하기
             </button>

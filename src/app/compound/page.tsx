@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import AntCharacter from '@/components/AntCharacter';
+import CountUp from '@/components/CountUp';
 
 // ─── 포맷 헬퍼 ───────────────────────────────────────────
 function formatKRW(value: number): string {
@@ -106,8 +106,8 @@ function QuickSelect<T extends string | number>({
           onClick={() => onChange(opt)}
           className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
             value === opt
-              ? 'bg-purple-500 text-white border-purple-500'
-              : 'border-purple-100 text-slate-400 hover:border-purple-300'
+              ? 'bg-slate-900 text-white border-slate-900'
+              : 'border-slate-200 text-slate-400 hover:border-slate-300'
           }`}
         >
           {format(opt)}
@@ -220,16 +220,6 @@ export default function CompoundPage() {
   // 복리 효과 (복리 - 단리)
   const compoundEffect = result.total - simpleTotal;
 
-  // ANT 표정 결정
-  const antExpression = useMemo(() => {
-    const returnRate = result.totalPrincipal > 0
-      ? (result.totalProfit / result.totalPrincipal) * 100
-      : 0;
-    if (returnRate >= 100) return 'excited' as const;
-    if (returnRate >= 30) return 'happy' as const;
-    return 'thinking' as const;
-  }, [result]);
-
   // 수익 비율 (도넛 시각화용)
   const profitRatio = result.total > 0
     ? (result.totalProfit / result.total) * 100
@@ -243,7 +233,7 @@ export default function CompoundPage() {
           <div className="flex items-center gap-2 text-sm">
             <Link
               href="/tools"
-              className="text-purple-400 hover:text-purple-600 transition-colors"
+              className="text-slate-400 hover:text-slate-600 transition-colors"
             >
               도구
             </Link>
@@ -255,7 +245,7 @@ export default function CompoundPage() {
         <p className="text-slate-400 text-sm mb-6">시간이 만드는 복리의 마법</p>
 
         {/* ─── 입력 섹션 ─── */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-sm p-5 mb-5 space-y-5">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-5 space-y-5">
           {/* 초기 투자금 */}
           <div>
             <label className="block text-slate-500 text-xs font-medium mb-1.5">초기 투자금</label>
@@ -264,7 +254,7 @@ export default function CompoundPage() {
                 type="number"
                 value={initialAmount}
                 onChange={(e) => setInitialAmount(Number(e.target.value) || 0)}
-                className="w-full px-4 py-3 pr-12 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-lg font-bold"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-lg font-bold"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">원</span>
             </div>
@@ -284,7 +274,7 @@ export default function CompoundPage() {
                 type="number"
                 value={monthlyAmount}
                 onChange={(e) => setMonthlyAmount(Number(e.target.value) || 0)}
-                className="w-full px-4 py-3 pr-12 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-lg font-bold"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-lg font-bold"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">원</span>
             </div>
@@ -300,7 +290,7 @@ export default function CompoundPage() {
           <div>
             <label className="block text-slate-500 text-xs font-medium mb-1.5">
               연 기대 수익률
-              <span className="ml-2 text-purple-500 font-bold">{annualRate}%</span>
+              <span className="ml-2 text-slate-900 font-bold">{annualRate}%</span>
             </label>
             <input
               type="range"
@@ -309,7 +299,7 @@ export default function CompoundPage() {
               step={0.5}
               value={annualRate}
               onChange={(e) => setAnnualRate(Number(e.target.value))}
-              className="w-full h-2 bg-purple-100 rounded-full appearance-none cursor-pointer accent-purple-500 mb-2"
+              className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-slate-900 mb-2"
             />
             <QuickSelect
               options={[5, 8, 12, 15, 20]}
@@ -334,19 +324,16 @@ export default function CompoundPage() {
         {/* ─── 결과 섹션 ─── */}
         <div className="space-y-4 animate-slide-up">
           {/* 히어로 카드: 최종 금액 */}
-          <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 text-white shadow-lg">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-purple-200 text-xs font-medium mb-1">{years}년 후 예상 자산</p>
-                <p className="text-3xl font-black tracking-tight">
-                  {formatKRW(result.total)}
-                  <span className="text-lg text-purple-200 ml-1">원</span>
-                </p>
-              </div>
-              <AntCharacter size={64} expression={antExpression} className="opacity-90" />
+          <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-lg">
+            <div className="mb-4">
+              <p className="text-slate-400 text-xs font-medium mb-1">{years}년 후 예상 자산</p>
+              <p className="text-3xl font-black tracking-tight">
+                <CountUp end={result.total} duration={1000} formatter={formatKRW} />
+                <span className="text-lg text-slate-400 ml-1">원</span>
+              </p>
             </div>
 
-            <div className="flex items-center gap-4 text-xs text-purple-200">
+            <div className="flex items-center gap-4 text-xs text-slate-400">
               <span>원금 {formatKRW(result.totalPrincipal)}원</span>
               <span>|</span>
               <span>수익 +{formatKRW(result.totalProfit)}원</span>
@@ -354,7 +341,7 @@ export default function CompoundPage() {
           </div>
 
           {/* 원금 vs 수익 비율 */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
             <h3 className="text-slate-500 text-sm font-medium mb-4">원금 vs 수익 비율</h3>
 
             {/* 스택 바 */}
@@ -382,19 +369,19 @@ export default function CompoundPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-purple-50 rounded-xl p-3 text-center">
-                <p className="text-purple-400 text-[10px] mb-1">원금 총액</p>
-                <p className="text-purple-700 text-sm font-black">{formatFullKRW(result.totalPrincipal)}</p>
+              <div className="bg-slate-50 rounded-xl p-3 text-center">
+                <p className="text-slate-400 text-[10px] mb-1">원금 총액</p>
+                <p className="text-slate-700 text-sm font-black">{formatFullKRW(result.totalPrincipal)}</p>
               </div>
-              <div className="bg-mint-50 rounded-xl p-3 text-center">
-                <p className="text-mint-500 text-[10px] mb-1">총 수익</p>
-                <p className="text-mint-700 text-sm font-black">+{formatFullKRW(result.totalProfit)}</p>
+              <div className="bg-emerald-50 rounded-xl p-3 text-center">
+                <p className="text-emerald-600 text-[10px] mb-1">총 수익</p>
+                <p className="text-emerald-600 text-sm font-black">+{formatFullKRW(result.totalProfit)}</p>
               </div>
             </div>
           </div>
 
           {/* 복리의 힘 인사이트 */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-mint-200 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">✨</span>
               <h3 className="text-slate-700 text-sm font-bold">복리의 힘</h3>
@@ -404,14 +391,14 @@ export default function CompoundPage() {
                 <p className="text-slate-400 text-[10px] mb-1">단리로 계산하면</p>
                 <p className="text-slate-600 text-sm font-bold">{formatFullKRW(simpleTotal)}</p>
               </div>
-              <div className="bg-mint-50 rounded-xl p-3 text-center">
-                <p className="text-mint-500 text-[10px] mb-1">복리 효과</p>
-                <p className="text-mint-700 text-sm font-black">+{formatFullKRW(compoundEffect)}</p>
+              <div className="bg-emerald-50 rounded-xl p-3 text-center">
+                <p className="text-emerald-600 text-[10px] mb-1">복리 효과</p>
+                <p className="text-emerald-600 text-sm font-black">+{formatFullKRW(compoundEffect)}</p>
               </div>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
               복리로 투자하면 단리보다{' '}
-              <strong className="text-mint-600">
+              <strong className="text-emerald-600">
                 {simpleTotal > 0
                   ? `${((compoundEffect / simpleTotal) * 100).toFixed(1)}%`
                   : '0%'}
@@ -423,7 +410,7 @@ export default function CompoundPage() {
 
           {/* 성장 차트 */}
           {result.snapshots.length > 0 && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-sm p-5">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
               <h3 className="text-slate-500 text-sm font-medium mb-4">연도별 자산 성장</h3>
               <GrowthChart snapshots={result.snapshots} />
             </div>
@@ -431,12 +418,12 @@ export default function CompoundPage() {
 
           {/* 연차별 상세 테이블 */}
           {result.snapshots.length > 0 && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-sm p-5">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
               <h3 className="text-slate-500 text-sm font-medium mb-4">연차별 상세</h3>
               <div className="overflow-x-auto -mx-2">
                 <table className="w-full text-xs min-w-[340px]">
                   <thead>
-                    <tr className="border-b border-purple-50">
+                    <tr className="border-b border-slate-100">
                       <th className="text-left text-slate-400 font-medium py-2 px-2">연차</th>
                       <th className="text-right text-slate-400 font-medium py-2 px-2">원금누적</th>
                       <th className="text-right text-slate-400 font-medium py-2 px-2">수익누적</th>
@@ -446,16 +433,16 @@ export default function CompoundPage() {
                   </thead>
                   <tbody className="text-slate-600">
                     {result.snapshots.map((snap) => (
-                      <tr key={snap.year} className="border-b border-purple-50/50">
+                      <tr key={snap.year} className="border-b border-slate-100/50">
                         <td className="py-2 px-2 font-medium">{snap.year}년</td>
                         <td className="py-2 px-2 text-right">{formatKRW(snap.principalCumulative)}</td>
-                        <td className="py-2 px-2 text-right text-mint-600 font-medium">
+                        <td className="py-2 px-2 text-right text-emerald-600 font-medium">
                           +{formatKRW(snap.profitCumulative)}
                         </td>
-                        <td className="py-2 px-2 text-right font-bold text-purple-700">
+                        <td className="py-2 px-2 text-right font-bold text-slate-900">
                           {formatKRW(snap.total)}
                         </td>
-                        <td className="py-2 px-2 text-right text-purple-500">
+                        <td className="py-2 px-2 text-right text-slate-500">
                           {snap.returnRate.toFixed(1)}%
                         </td>
                       </tr>
@@ -467,9 +454,9 @@ export default function CompoundPage() {
           )}
 
           {/* Dear,ANT 인사이트 */}
-          <div className="bg-purple-50/80 backdrop-blur-sm rounded-2xl border border-purple-100 p-5">
-            <p className="text-purple-600 text-xs font-bold mb-3">💡 Dear,ANT의 인사이트</p>
-            <div className="space-y-2.5 text-purple-500 text-xs leading-relaxed">
+          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+            <p className="text-slate-600 text-xs font-bold mb-3">💡 Dear,ANT의 인사이트</p>
+            <div className="space-y-2.5 text-slate-600 text-xs leading-relaxed">
               <p>
                 • 복리의 핵심은 <strong>시간</strong>입니다.
                 10년 투자의 복리 효과는 5년의 2배가 아니라 그 이상이에요.

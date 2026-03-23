@@ -4,100 +4,63 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions } from '@/lib/questions';
 import { Mood, Answer } from '@/lib/types';
-import AntCharacter from '@/components/AntCharacter';
 
-function MoodIcon({ type }: { type: string }) {
-  // 미니멀 라인아트 스타일 - 배경 없이 깔끔한 선으로만 표현
-  const color = '#6b21a8';
-  const sub = '#a78bfa';
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {type === '불안' ? (
-        <>
-          {/* 흔들리는 눈 */}
-          <circle cx="11" cy="13" r="1.5" fill={color} />
-          <circle cx="21" cy="13" r="1.5" fill={color} />
-          {/* 걱정 눈썹 ╱╲ */}
-          <line x1="8" y1="9.5" x2="14" y2="10.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="24" y1="9.5" x2="18" y2="10.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-          {/* 물결 입 */}
-          <path d="M10 20 Q13 18 16 20 Q19 22 22 20" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          {/* 세로선 (긴장) */}
-          <line x1="26" y1="7" x2="26" y2="11" stroke={sub} strokeWidth="1" strokeLinecap="round" opacity="0.6" />
-          <line x1="27.5" y1="8" x2="27.5" y2="10.5" stroke={sub} strokeWidth="1" strokeLinecap="round" opacity="0.4" />
-        </>
-      ) : type === '초조' ? (
-        <>
-          {/* 날카로운 눈 */}
-          <circle cx="11" cy="14" r="1.3" fill={color} />
-          <circle cx="21" cy="14" r="1.3" fill={color} />
-          {/* V자 눈썹 (화남+초조) */}
-          <line x1="7" y1="10" x2="14" y2="12" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
-          <line x1="25" y1="10" x2="18" y2="12" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
-          {/* 꾹 다문 입 */}
-          <line x1="11" y1="21" x2="21" y2="21" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-          {/* 진동 표시 */}
-          <path d="M5 15 L3 13 L5 11" stroke={sub} strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.5" />
-          <path d="M27 15 L29 13 L27 11" stroke={sub} strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.5" />
-        </>
-      ) : type === '평온' ? (
-        <>
-          {/* 감은 눈 ⌒ ⌒ */}
-          <path d="M8 14 Q11 11 14 14" stroke={color} strokeWidth="1.8" strokeLinecap="round" fill="none" />
-          <path d="M18 14 Q21 11 24 14" stroke={color} strokeWidth="1.8" strokeLinecap="round" fill="none" />
-          {/* 부드러운 미소 */}
-          <path d="M11 20 Q16 24 21 20" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          {/* 음표 */}
-          <circle cx="26" cy="7" r="1.2" fill={sub} opacity="0.5" />
-          <line x1="27.2" y1="7" x2="27.2" y2="4" stroke={sub} strokeWidth="0.8" opacity="0.5" />
-        </>
-      ) : type === '설렘' ? (
-        <>
-          {/* 반짝 큰 눈 */}
-          <circle cx="11" cy="13" r="2.5" fill={color} />
-          <circle cx="21" cy="13" r="2.5" fill={color} />
-          <circle cx="10" cy="12" r="1" fill="white" />
-          <circle cx="20" cy="12" r="1" fill="white" />
-          {/* 큰 미소 */}
-          <path d="M10 19 Q16 25 22 19" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          {/* 하트 */}
-          <path d="M26 8 C26 6.5 24.5 6 24 7.5 C23.5 6 22 6.5 22 8 C22 9.5 24 11 24 11 C24 11 26 9.5 26 8Z" fill="#c084fc" opacity="0.5" />
-        </>
-      ) : (
-        <>
-          {/* 선글라스 */}
-          <rect x="6" y="11" width="8" height="5" rx="2" fill={color} />
-          <rect x="18" y="11" width="8" height="5" rx="2" fill={color} />
-          <line x1="14" y1="13.5" x2="18" y2="13.5" stroke={color} strokeWidth="1.2" />
-          {/* 반사광 */}
-          <line x1="8" y1="12.5" x2="11" y2="12.5" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.25" />
-          <line x1="20" y1="12.5" x2="23" y2="12.5" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.25" />
-          {/* 씩 미소 */}
-          <path d="M11 21 Q16 25 21 21" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
-        </>
-      )}
-    </svg>
-  );
+interface CheckItem {
+  id: string;
+  label: string;
+  category: string;
+  weight: number;
 }
 
-const moods: { label: string; value: Mood }[] = [
-  { label: '불안', value: '불안' },
-  { label: '초조', value: '초조' },
-  { label: '평온', value: '평온' },
-  { label: '설렘', value: '설렘' },
-  { label: '자신감', value: '자신감' },
+const checklistItems: CheckItem[] = [
+  // 컨디션
+  { id: 'sleep', label: '어젯밤 5시간 이하로 잤다', category: '컨디션', weight: 3 },
+  { id: 'tired', label: '몸이 피곤하거나 컨디션이 안 좋다', category: '컨디션', weight: 2 },
+  { id: 'caffeine', label: '카페인을 3잔 이상 마셨다', category: '컨디션', weight: 1 },
+  // 심리
+  { id: 'revenge', label: '최근 손실을 빨리 만회하고 싶다', category: '심리', weight: 4 },
+  { id: 'gut', label: '근거 없이 오를 것 같은 느낌이 든다', category: '심리', weight: 3 },
+  { id: 'fomo', label: '매매를 안 하면 기회를 놓칠 것 같다', category: '심리', weight: 3 },
+  // 외부 영향
+  { id: 'sns', label: 'SNS에서 수익 인증글을 봤다', category: '외부 영향', weight: 2 },
+  { id: 'recommend', label: '주변에서 특정 종목을 추천받았다', category: '외부 영향', weight: 2 },
+  { id: 'news', label: '뉴스·유튜브를 30분 이상 봤다', category: '외부 영향', weight: 1 },
 ];
+
+function deriveChecklistMood(checked: Set<string>): { mood: Mood; score: number } {
+  const totalWeight = checklistItems
+    .filter(item => checked.has(item.id))
+    .reduce((sum, item) => sum + item.weight, 0);
+
+  // weight 0 → 평온, weight 21 (max) → 불안
+  if (totalWeight <= 2) return { mood: '평온', score: totalWeight };
+  if (totalWeight <= 5) return { mood: '자신감', score: totalWeight };
+  if (totalWeight <= 9) return { mood: '설렘', score: totalWeight };
+  if (totalWeight <= 14) return { mood: '초조', score: totalWeight };
+  return { mood: '불안', score: totalWeight };
+}
+
+const categories = ['컨디션', '심리', '외부 영향'];
 
 export default function SurveyPage() {
   const router = useRouter();
   const [step, setStep] = useState<'info' | 'questions' | 'loading'>('info');
   const [birthDate, setBirthDate] = useState('');
-  const [mood, setMood] = useState<Mood | null>(null);
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
 
+  const toggleCheck = (id: string) => {
+    setCheckedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   const handleInfoSubmit = () => {
-    if (!birthDate || !mood) return;
+    if (!birthDate) return;
     setStep('questions');
   };
 
@@ -109,6 +72,7 @@ export default function SurveyPage() {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       setStep('loading');
+      const { mood } = deriveChecklistMood(checkedItems);
       try {
         const res = await fetch('/api/reports', {
           method: 'POST',
@@ -131,63 +95,109 @@ export default function SurveyPage() {
     }
   };
 
-  // 정보 입력 단계
+  // 체크리스트 + 생년월일 입력
   if (step === 'info') {
+    const { mood } = deriveChecklistMood(checkedItems);
+    const riskLevel = checkedItems.size === 0
+      ? '안정'
+      : mood === '평온' || mood === '자신감'
+        ? '양호'
+        : mood === '설렘'
+          ? '주의'
+          : '위험';
+    const riskColor = {
+      '안정': 'text-emerald-500',
+      '양호': 'text-blue-500',
+      '주의': 'text-amber-500',
+      '위험': 'text-red-500',
+    }[riskLevel];
+
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center px-6 pb-nav">
-        <div className="max-w-md w-full animate-fade-in">
+      <main className="min-h-screen bg-white px-5 pt-14 pb-nav">
+        <div className="max-w-md mx-auto">
           <button
             onClick={() => router.push('/')}
-            className="text-slate-400 hover:text-purple-500 mb-8 text-sm transition-colors"
+            className="text-slate-400 hover:text-slate-600 mb-6 text-sm transition-colors"
           >
             &larr; 돌아가기
           </button>
 
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">기본 정보</h2>
-          <p className="text-slate-400 text-sm mb-8">
-            당신의 바이오리듬을 분석하기 위한 정보입니다
-          </p>
+          {/* 생년월일 */}
+          <div className="mb-8">
+            <label className="block text-slate-600 text-sm font-medium mb-2">
+              생년월일
+            </label>
+            <input
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800"
+            />
+          </div>
 
-          <div className="space-y-6">
-            <div>
-              <label className="block text-slate-600 text-sm font-medium mb-2">
-                생년월일
-              </label>
-              <input
-                type="date"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800"
-              />
+          {/* 체크리스트 */}
+          <div className="mb-6">
+            <h2 className="text-[22px] font-extrabold text-slate-900 leading-tight mb-1">
+              매매 전 셀프 체크
+            </h2>
+            <p className="text-slate-400 text-[13px] mb-6">
+              지금 해당되는 항목을 모두 체크해주세요
+            </p>
+
+            <div className="space-y-6">
+              {categories.map(cat => (
+                <div key={cat}>
+                  <p className="text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-2 px-1">{cat}</p>
+                  <div className="space-y-2">
+                    {checklistItems.filter(item => item.category === cat).map(item => (
+                      <button
+                        key={item.id}
+                        onClick={() => toggleCheck(item.id)}
+                        className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all text-left ${
+                          checkedItems.has(item.id)
+                            ? 'border-slate-900 bg-slate-900 text-white'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
+                          checkedItems.has(item.id)
+                            ? 'border-white bg-white'
+                            : 'border-slate-300'
+                        }`}>
+                          {checkedItems.has(item.id) && (
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-[14px] font-medium">{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
 
-            <div>
-              <label className="block text-slate-600 text-sm font-medium mb-3">
-                오늘의 기분은 어떠신가요?
-              </label>
-              <div className="grid grid-cols-5 gap-2">
-                {moods.map((m) => (
-                  <button
-                    key={m.value}
-                    onClick={() => setMood(m.value)}
-                    className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl border-2 transition-all ${
-                      mood === m.value
-                        ? 'border-purple-400 bg-purple-50'
-                        : 'border-purple-100 bg-white hover:border-purple-300'
-                    }`}
-                  >
-                    <MoodIcon type={m.value} />
-                    <span className="text-xs text-slate-600">{m.label}</span>
-                  </button>
-                ))}
+          {/* 현재 상태 표시 */}
+          <div className="bg-slate-50 rounded-2xl px-5 py-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-400 text-[11px] font-medium">현재 매매 위험도</p>
+                <p className={`text-[18px] font-extrabold mt-0.5 ${riskColor}`}>
+                  {riskLevel}
+                </p>
               </div>
+              <p className="text-slate-300 text-[28px] font-extrabold">
+                {checkedItems.size}<span className="text-[14px] font-normal text-slate-400">/{checklistItems.length}</span>
+              </p>
             </div>
           </div>
 
           <button
             onClick={handleInfoSubmit}
-            disabled={!birthDate || !mood}
-            className="w-full mt-8 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-purple-200 disabled:to-purple-200 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
+            disabled={!birthDate}
+            className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
           >
             다음
           </button>
@@ -196,45 +206,43 @@ export default function SurveyPage() {
     );
   }
 
-  // 로딩 단계
+  // 로딩
   if (step === 'loading') {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-6">
-        <div className="text-center animate-fade-in">
-          <AntCharacter size={100} expression="thinking" className="mx-auto mb-6 animate-pulse-soft" />
+        <div className="text-center">
+          <div className="w-10 h-10 rounded-full border-4 border-slate-200 border-t-slate-900 animate-spin mx-auto mb-6" />
           <p className="text-slate-700 text-lg font-bold">
-            리포트를 생성하고 있습니다...
+            리포트를 생성하고 있습니다
           </p>
           <p className="text-slate-400 text-sm mt-2">
-            바이오리듬과 투자 성향을 분석 중입니다
+            잠시만 기다려주세요
           </p>
         </div>
       </main>
     );
   }
 
-  // 질문 단계
+  // 질문
   const question = questions[currentQuestion];
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6">
       <div className="max-w-md w-full">
-        {/* 진행률 */}
         <div className="mb-8">
           <div className="flex justify-between text-sm text-slate-400 mb-2">
             <span>질문 {currentQuestion + 1} / {questions.length}</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full h-2 bg-purple-100 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-purple-400 to-mint-400 rounded-full transition-all duration-500"
+              className="h-full bg-slate-900 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
 
-        {/* 질문 카드 */}
         <div key={question.key} className="animate-slide-up">
           <h3 className="text-xl font-bold text-slate-800 mb-8 leading-relaxed">
             {question.text}
@@ -245,7 +253,7 @@ export default function SurveyPage() {
               <button
                 key={option.value}
                 onClick={() => handleAnswer(question.key, option.value, option.score)}
-                className="w-full text-left px-5 py-4 rounded-xl border-2 border-purple-100 bg-white hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 text-slate-700 font-medium active:scale-[0.98]"
+                className="w-full text-left px-5 py-4 rounded-xl border-2 border-slate-200 bg-white hover:border-slate-900 hover:bg-slate-50 transition-all duration-200 text-slate-700 font-medium active:scale-[0.98]"
               >
                 {option.label}
               </button>

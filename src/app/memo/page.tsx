@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import AntCharacter from '@/components/AntCharacter';
+import { useToast } from '@/components/Toast';
+import BottomSheet from '@/components/BottomSheet';
+import { SkeletonCard } from '@/components/Skeleton';
+import PullToRefresh from '@/components/PullToRefresh';
 
 interface Memo {
   id: string;
@@ -62,21 +65,21 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
     <div className="space-y-4 animate-fade-in">
       {/* 요약 카드 */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl p-4 text-white shadow-lg">
+        <div className="bg-rose-500 rounded-2xl p-4 text-white shadow-lg">
           <p className="text-white/60 text-xs font-medium">총 매수 금액</p>
           <p className="text-xl font-black mt-1">{totalBuy > 0 ? `${(totalBuy / 10000).toFixed(0)}만원` : '-'}</p>
           <p className="text-white/50 text-xs mt-1">{buyMemos.length}건</p>
         </div>
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-4 text-white shadow-lg">
+        <div className="bg-blue-500 rounded-2xl p-4 text-white shadow-lg">
           <p className="text-white/60 text-xs font-medium">총 매도 금액</p>
           <p className="text-xl font-black mt-1">{totalSell > 0 ? `${(totalSell / 10000).toFixed(0)}만원` : '-'}</p>
           <p className="text-white/50 text-xs mt-1">{sellMemos.length}건</p>
         </div>
-        <div className="card-premium p-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4">
           <p className="text-slate-400 text-xs font-medium">보유 종목</p>
           <p className="text-2xl font-black text-emerald-600 mt-1">{holdMemos.length}<span className="text-sm font-normal text-slate-400">건</span></p>
         </div>
-        <div className="card-premium p-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4">
           <p className="text-slate-400 text-xs font-medium">관심 종목</p>
           <p className="text-2xl font-black text-amber-500 mt-1">{watchMemos.length}<span className="text-sm font-normal text-slate-400">건</span></p>
         </div>
@@ -84,7 +87,7 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
 
       {/* 트레이딩 성과 - TraderSync 벤치마킹 */}
       {buyMemos.length > 0 && sellMemos.length > 0 && (
-        <div className="card-premium p-5">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5">
           <h3 className="text-slate-500 text-sm font-medium mb-4">트레이딩 성과</h3>
           <div className="grid grid-cols-3 gap-3 mb-3">
             <div className="text-center">
@@ -93,7 +96,7 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
             </div>
             <div className="text-center">
               <p className="text-xs text-slate-400 mb-1">매수/매도 비율</p>
-              <p className="text-xl font-black text-purple-600">
+              <p className="text-xl font-black text-slate-800">
                 {Math.round((buyMemos.length / (buyMemos.length + sellMemos.length)) * 100)}%
               </p>
             </div>
@@ -117,7 +120,7 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
       )}
 
       {/* 종목별 현황 */}
-      <div className="card-premium p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <h3 className="text-slate-500 text-sm font-medium mb-4">종목별 현황</h3>
         {Object.keys(stockGroups).length === 0 ? (
           <p className="text-slate-300 text-sm text-center py-4">기록된 종목이 없습니다</p>
@@ -130,7 +133,7 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
               const totalActions = group.buys.length + group.sells.length + group.holds.length + group.watches.length;
 
               return (
-                <div key={name} className="border border-purple-50 rounded-xl p-3.5">
+                <div key={name} className="border border-slate-100 rounded-xl p-3.5">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-bold text-slate-800">{name}</h4>
                     <div className="flex items-center gap-1">
@@ -191,12 +194,11 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
   if (memosWithMood.length === 0) {
     return (
       <div className="text-center py-12 animate-fade-in">
-        <AntCharacter size={80} expression="thinking" className="mx-auto mb-4" />
         <p className="text-slate-400 text-sm mb-1">투자 리포트를 먼저 받아보세요</p>
         <p className="text-slate-300 text-xs">리포트 후 메모를 작성하면 감정 분석이 시작됩니다</p>
         <Link
           href="/survey"
-          className="inline-block mt-4 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium py-2 px-5 rounded-xl transition-all"
+          className="inline-block mt-4 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium py-2 px-5 rounded-xl transition-all"
         >
           리포트 받으러 가기
         </Link>
@@ -207,7 +209,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
   return (
     <div className="space-y-4 animate-fade-in">
       {/* 핵심 인사이트 카드 */}
-      <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-5 text-white shadow-lg">
+      <div className="bg-slate-900 rounded-2xl p-5 text-white shadow-lg">
         <p className="text-white/60 text-xs font-medium mb-3">나의 투자 감정 패턴</p>
         <div className="space-y-2.5">
           {buyByGrade.length > 0 && (
@@ -243,7 +245,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
       </div>
 
       {/* 등급별 행동 분포 */}
-      <div className="card-premium p-5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5">
         <h3 className="text-slate-500 text-sm font-medium mb-4">투자 무드별 행동 분포</h3>
         <div className="space-y-3">
           {['A', 'B', 'C', 'D', 'F'].map(grade => {
@@ -289,9 +291,9 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
       </div>
 
       {/* 주의 메시지 */}
-      <div className="bg-purple-50 rounded-2xl border border-purple-100 p-4">
-        <p className="text-purple-600 text-xs font-medium mb-1">💡 Dear,ANT의 팁</p>
-        <p className="text-purple-500 text-xs leading-relaxed">
+      <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4">
+        <p className="text-slate-600 text-xs font-medium mb-1">💡 Dear,ANT의 팁</p>
+        <p className="text-slate-500 text-xs leading-relaxed">
           {avgMoodOnBuy !== null && avgMoodOnBuy > 50
             ? '감정이 높을 때 매수하는 경향이 있어요. 매수 전 한 번 더 생각해보는 습관을 길러보세요.'
             : '이성적으로 매수하는 좋은 습관을 가지고 있어요. 꾸준히 기록하면서 패턴을 확인해보세요.'}
@@ -302,6 +304,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
 }
 
 export default function MemoPage() {
+  const { toast } = useToast();
   const [memos, setMemos] = useState<Memo[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -381,6 +384,7 @@ export default function MemoPage() {
       resetForm();
       setShowForm(false);
       fetchMemos();
+      toast('메모가 저장되었어요');
     } catch {
       alert('저장에 실패했습니다.');
     }
@@ -402,6 +406,7 @@ export default function MemoPage() {
       await fetch(`/api/memos/${id}`, { method: 'DELETE' });
       setDeletingId(null);
       fetchMemos();
+      toast('메모가 삭제되었어요');
     } catch {
       alert('삭제에 실패했습니다.');
     }
@@ -416,6 +421,7 @@ export default function MemoPage() {
 
   return (
     <main className="min-h-screen py-12 px-6 pb-nav">
+      <PullToRefresh onRefresh={async () => { setLoading(true); await fetchMemos(); }}>
       <div className="max-w-md mx-auto animate-fade-in">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-2">
@@ -424,7 +430,7 @@ export default function MemoPage() {
         <p className="text-slate-400 text-sm mb-5">매매 기록 · 포트폴리오 · 감정 분석</p>
 
         {/* 탭 네비게이션 */}
-        <div className="flex bg-purple-50 rounded-xl p-1 mb-5">
+        <div className="flex bg-slate-100 rounded-xl p-1 mb-5">
           {[
             { key: 'all' as TabType, label: '전체 메모' },
             { key: 'portfolio' as TabType, label: '포트폴리오' },
@@ -434,7 +440,7 @@ export default function MemoPage() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`flex-1 text-sm font-medium py-2.5 rounded-lg transition-all ${
-                activeTab === tab.key ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-400'
+                activeTab === tab.key ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-400'
               }`}
             >
               {tab.label}
@@ -443,8 +449,10 @@ export default function MemoPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-16">
-            <div className="w-10 h-10 rounded-full border-4 border-purple-200 border-t-purple-500 animate-spin" />
+          <div className="space-y-3">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
           </div>
         ) : (
           <>
@@ -461,128 +469,120 @@ export default function MemoPage() {
                 {!showForm && (
                   <button
                     onClick={() => { resetForm(); setShowForm(true); }}
-                    className="w-full mb-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3.5 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    className="w-full mb-4 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   >
                     <span className="text-lg">+</span> 새 메모 작성
                   </button>
                 )}
 
-                {/* 메모 작성/수정 폼 */}
-                {showForm && (
-                  <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-4 animate-slide-up">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold text-slate-800">
-                        {editingId ? '메모 수정' : '새 메모'}
-                      </h3>
-                      <button
-                        onClick={() => { setShowForm(false); resetForm(); }}
-                        className="text-slate-400 hover:text-slate-600 text-sm"
-                      >
-                        취소
-                      </button>
-                    </div>
+                {/* 메모 작성/수정 BottomSheet */}
+                <BottomSheet
+                  isOpen={showForm}
+                  onClose={() => { setShowForm(false); resetForm(); }}
+                  title={editingId ? '메모 수정' : '새 메모'}
+                >
+                  <div className="mb-3">
+                    <label className="block text-slate-500 text-xs font-medium mb-1.5">종목명</label>
+                    <input
+                      type="text"
+                      value={stockName}
+                      onChange={(e) => setStockName(e.target.value)}
+                      placeholder="예: 삼성전자, AAPL"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm"
+                    />
+                  </div>
 
-                    <div className="mb-3">
-                      <label className="block text-slate-500 text-xs font-medium mb-1.5">종목명</label>
+                  <div className="mb-3">
+                    <label className="block text-slate-500 text-xs font-medium mb-1.5">구분</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {Object.entries(actionConfig).map(([key, config]) => (
+                        <button
+                          key={key}
+                          onClick={() => setAction(key as typeof action)}
+                          className={`text-xs font-bold py-2 rounded-xl border-2 transition-all ${
+                            action === key
+                              ? 'border-slate-900 bg-slate-900 text-white'
+                              : 'border-slate-200 text-slate-400'
+                          }`}
+                        >
+                          {config.icon} {config.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <label className="block text-slate-500 text-xs font-medium mb-1.5">가격 (선택)</label>
                       <input
-                        type="text"
-                        value={stockName}
-                        onChange={(e) => setStockName(e.target.value)}
-                        placeholder="예: 삼성전자, AAPL"
-                        className="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-sm"
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="0"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm"
                       />
                     </div>
-
-                    <div className="mb-3">
-                      <label className="block text-slate-500 text-xs font-medium mb-1.5">구분</label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {Object.entries(actionConfig).map(([key, config]) => (
-                          <button
-                            key={key}
-                            onClick={() => setAction(key as typeof action)}
-                            className={`text-xs font-bold py-2 rounded-xl border-2 transition-all ${
-                              action === key
-                                ? 'border-purple-400 bg-purple-50 text-purple-600'
-                                : 'border-slate-100 text-slate-400 hover:border-purple-200'
-                            }`}
-                          >
-                            {config.icon} {config.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                      <div>
-                        <label className="block text-slate-500 text-xs font-medium mb-1.5">가격 (선택)</label>
-                        <input
-                          type="number"
-                          value={price}
-                          onChange={(e) => setPrice(e.target.value)}
-                          placeholder="0"
-                          className="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-slate-500 text-xs font-medium mb-1.5">수량 (선택)</label>
-                        <input
-                          type="number"
-                          value={quantity}
-                          onChange={(e) => setQuantity(e.target.value)}
-                          placeholder="0"
-                          className="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-sm"
-                        />
-                      </div>
-                    </div>
-
-                    {/* 전략 태그 - Edgewonk 벤치마킹 */}
-                    <div className="mb-3">
-                      <label className="block text-slate-500 text-xs font-medium mb-1.5">전략 태그 (선택)</label>
-                      <div className="flex gap-1.5 flex-wrap">
-                        {['스윙', '단타', '장기투자', '배당', 'ETF', '테마주', '실적', '기술적분석'].map(tag => (
-                          <button
-                            key={tag}
-                            type="button"
-                            onClick={() => {
-                              const current = memoText;
-                              if (current.includes(`#${tag}`)) {
-                                setMemoText(current.replace(`#${tag} `, '').replace(`#${tag}`, ''));
-                              } else {
-                                setMemoText(current ? `${current} #${tag}` : `#${tag}`);
-                              }
-                            }}
-                            className={`text-[11px] px-2.5 py-1 rounded-full border transition-all ${
-                              memoText.includes(`#${tag}`)
-                                ? 'bg-purple-100 text-purple-600 border-purple-300'
-                                : 'bg-white text-slate-400 border-slate-200 hover:border-purple-200'
-                            }`}
-                          >
-                            #{tag}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block text-slate-500 text-xs font-medium mb-1.5">메모</label>
-                      <textarea
-                        value={memoText}
-                        onChange={(e) => setMemoText(e.target.value)}
-                        placeholder="투자 판단 근거, 느낌, 메모 등을 자유롭게 적어주세요"
-                        rows={3}
-                        className="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 text-slate-800 text-sm resize-none"
+                    <div>
+                      <label className="block text-slate-500 text-xs font-medium mb-1.5">수량 (선택)</label>
+                      <input
+                        type="number"
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                        placeholder="0"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm"
                       />
                     </div>
+                  </div>
 
+                  {/* 전략 태그 - Edgewonk 벤치마킹 */}
+                  <div className="mb-3">
+                    <label className="block text-slate-500 text-xs font-medium mb-1.5">전략 태그 (선택)</label>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {['스윙', '단타', '장기투자', '배당', 'ETF', '테마주', '실적', '기술적분석'].map(tag => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => {
+                            const current = memoText;
+                            if (current.includes(`#${tag}`)) {
+                              setMemoText(current.replace(`#${tag} `, '').replace(`#${tag}`, ''));
+                            } else {
+                              setMemoText(current ? `${current} #${tag}` : `#${tag}`);
+                            }
+                          }}
+                          className={`text-[11px] px-2.5 py-1 rounded-full border transition-all ${
+                            memoText.includes(`#${tag}`)
+                              ? 'bg-slate-100 text-slate-800 border-slate-300'
+                              : 'bg-white text-slate-400 border-slate-200'
+                          }`}
+                        >
+                          #{tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-slate-500 text-xs font-medium mb-1.5">메모</label>
+                    <textarea
+                      value={memoText}
+                      onChange={(e) => setMemoText(e.target.value)}
+                      placeholder="투자 판단 근거, 느낌, 메모 등을 자유롭게 적어주세요"
+                      rows={3}
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm resize-none"
+                    />
+                  </div>
+
+                  <div className="pb-[env(safe-area-inset-bottom)]">
                     <button
                       onClick={handleSubmit}
                       disabled={!stockName.trim() || !memoText.trim()}
-                      className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-purple-200 disabled:to-purple-200 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all active:scale-[0.98]"
+                      className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all active:scale-[0.98]"
                     >
                       {editingId ? '수정 완료' : '저장'}
                     </button>
                   </div>
-                )}
+                </BottomSheet>
 
                 {/* 검색 + 필터 */}
                 {memos.length > 0 && !showForm && (
@@ -598,7 +598,7 @@ export default function MemoPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="종목명 또는 메모 검색"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-purple-100 bg-white focus:outline-none focus:ring-2 focus:ring-purple-200 text-slate-800 text-sm"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm"
                       />
                     </div>
 
@@ -613,8 +613,8 @@ export default function MemoPage() {
                             onClick={() => setFilter(f)}
                             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                               filter === f
-                                ? 'bg-purple-500 text-white border-purple-500'
-                                : 'bg-white text-slate-400 border-purple-100 hover:border-purple-300'
+                                ? 'bg-slate-900 text-white border-slate-900'
+                                : 'bg-white text-slate-400 border-slate-200'
                             }`}
                           >
                             {label} {count > 0 && <span className="ml-0.5 opacity-70">{count}</span>}
@@ -628,7 +628,6 @@ export default function MemoPage() {
                 {/* 메모 목록 */}
                 {memos.length === 0 && !showForm ? (
                   <div className="text-center py-16">
-                    <AntCharacter size={100} expression="thinking" className="mx-auto mb-4" />
                     <p className="text-slate-400 mb-2">아직 메모가 없습니다</p>
                     <p className="text-slate-300 text-xs">투자 기록을 남겨보세요</p>
                   </div>
@@ -650,7 +649,7 @@ export default function MemoPage() {
                       return (
                         <div
                           key={memo.id}
-                          className="bg-white rounded-2xl border border-purple-100 p-4 transition-all hover:shadow-sm"
+                          className="bg-white rounded-2xl border border-slate-200 p-4 transition-all hover:shadow-sm"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
@@ -662,7 +661,7 @@ export default function MemoPage() {
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => handleEdit(memo)}
-                                className="text-slate-300 hover:text-purple-500 transition-colors p-1"
+                                className="text-slate-300 hover:text-slate-600 transition-colors p-1"
                               >
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                   <path d="M10 1.5L12.5 4L4.5 12H2V9.5L10 1.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
@@ -684,7 +683,7 @@ export default function MemoPage() {
                               {memo.price && <span>{memo.price.toLocaleString()}원</span>}
                               {memo.quantity && <span>{memo.quantity}주</span>}
                               {memo.price && memo.quantity && (
-                                <span className="text-purple-400 font-medium">
+                                <span className="text-slate-500 font-medium">
                                   = {(memo.price * memo.quantity).toLocaleString()}원
                                 </span>
                               )}
@@ -708,7 +707,7 @@ export default function MemoPage() {
                           </div>
 
                           {deletingId === memo.id && (
-                            <div className="mt-3 pt-3 border-t border-purple-50 flex items-center justify-between">
+                            <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
                               <span className="text-xs text-slate-400">정말 삭제할까요?</span>
                               <div className="flex gap-2">
                                 <button
@@ -736,6 +735,7 @@ export default function MemoPage() {
           </>
         )}
       </div>
+      </PullToRefresh>
     </main>
   );
 }
