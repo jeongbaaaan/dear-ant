@@ -298,16 +298,94 @@ rounds:
       - enum 타입 + CHECK 제약이 TEXT보다 안전하지만, 기존 데이터 마이그레이션 필요 시 주의.
       - GitHub Actions CI는 npm ci + lint + build + test 순서가 최적.
 
+  - round: 3
+    timestamp: "2026-03-25T14:10:00"
+    status: completed
+    baseline_scores:
+      code_quality: 7.5
+      security: 7.0
+      architecture: 7.5
+      db: 6.5
+      test_coverage: 7.0
+      repo_health: 8.0
+      ux_ui: 7.5
+    final_scores:
+      code_quality: 8.0
+      security: 7.5
+      architecture: 8.0
+      db: 6.5
+      test_coverage: 8.0
+      repo_health: 8.0
+      ux_ui: 8.0
+    items_addressed:
+      - id: "UX-004"
+        title: "ARIA attributes added (BottomNav, BottomSheet, Toast, Survey progress)"
+        area: ux_ui
+        priority: P0
+      - id: "UX-005"
+        title: "Birth date purpose explained with helper text"
+        area: ux_ui
+        priority: P1
+      - id: "UX-007"
+        title: "Form label connected via htmlFor/id on birth date"
+        area: ux_ui
+        priority: P1
+      - id: "TEST-006"
+        title: "Calculator/compound function tests (14 tests)"
+        area: test
+        priority: P1
+      - id: "CODE-006"
+        title: "ApiReport shared type eliminates 3 duplicate interfaces"
+        area: code_quality
+        priority: P2
+      - id: "SEC-007"
+        title: "POST /api/memos input validation strengthened"
+        area: security
+        priority: P1
+    items_remaining:
+      - id: "DB-003"
+        title: "RLS policies still open (needs auth integration)"
+        area: db
+        priority: P0
+      - id: "DB-005"
+        title: "Multi-step insert without transaction"
+        area: db
+        priority: P0
+      - id: "DB-006"
+        title: "No migration system"
+        area: db
+        priority: P1
+      - id: "SEC-004"
+        title: "No rate limiting on any endpoint"
+        area: security
+        priority: P1
+      - id: "SEC-005"
+        title: "History returns all users reports (no scoping)"
+        area: security
+        priority: P1
+      - id: "UX-006"
+        title: "Home page no loading/error state"
+        area: ux_ui
+        priority: P1
+      - id: "CODE-008"
+        title: "MemoPage 13 state atoms"
+        area: code_quality
+        priority: P2
+    learnings: |
+      - ApiReport의 optional 필드를 공유 타입으로 바꿀 때 모든 사용처에서 nullish coalescing (??) 필요.
+      - ARIA는 적은 노력으로 접근성 점수를 크게 올림. aria-label, role, aria-live가 핵심.
+      - 페이지 컴포넌트 내부 함수(calcSavings 등)를 테스트하려면 복사 후 테스트하거나 추출해야 함.
+
 # 현재 상태 요약
-current_round: 2
+current_round: 3
 overall_status: in_progress
 latest_scores:
-  code_quality: 7.5
-  security: 7.0
-  architecture: 7.5
+  code_quality: 8.0
+  security: 7.5
+  architecture: 8.0
   db: 6.5
-  test_coverage: 7.0
+  test_coverage: 8.0
   repo_health: 8.0
-  ux_ui: 7.5
-remaining_p0_p1: 10
+  ux_ui: 8.0
+remaining_p0_p1: 5
 all_scores_above_target: false
