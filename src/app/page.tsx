@@ -2,14 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-
-interface HistoryReport {
-  id: string;
-  decision_mode: string;
-  mood_score: number;
-  invest_mood: string;
-  created_at: string;
-}
+import { ApiReport } from '@/lib/types';
 
 function getRelativeDate(dateStr: string): string {
   const now = new Date();
@@ -22,7 +15,7 @@ function getRelativeDate(dateStr: string): string {
   return `${diffDays}일 전`;
 }
 
-function getStreak(reports: HistoryReport[]): number {
+function getStreak(reports: ApiReport[]): number {
   if (reports.length === 0) return 0;
 
   const today = new Date();
@@ -79,7 +72,7 @@ function gradeColor(grade: string): string {
 }
 
 export default function Home() {
-  const [reports, setReports] = useState<HistoryReport[]>([]);
+  const [reports, setReports] = useState<ApiReport[]>([]);
 
   useEffect(() => {
     fetch('/api/history')
@@ -160,8 +153,8 @@ export default function Home() {
                   {lastReport.decision_mode === 'rational' ? '이성적' : lastReport.decision_mode === 'emotional' ? '감정적' : lastReport.decision_mode} · 감정 {lastReport.mood_score}점
                 </p>
               </div>
-              <span className={`text-[28px] font-extrabold ${gradeColor(lastReport.invest_mood)}`}>
-                {lastReport.invest_mood}
+              <span className={`text-[28px] font-extrabold ${gradeColor(lastReport.invest_mood || '')}`}>
+                {lastReport.invest_mood || '-'}
               </span>
             </div>
           </div>

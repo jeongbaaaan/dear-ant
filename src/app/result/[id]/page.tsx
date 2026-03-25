@@ -4,25 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
-
-interface ReportData {
-  id: string;
-  decision_mode: string;
-  mood_score: number;
-  risk_tendency: string;
-  invest_mood: string;
-  biorhythm_physical: number;
-  biorhythm_emotional: number;
-  biorhythm_intellectual: number;
-  today_keywords: string[];
-  today_message: string;
-  today_letter: string;
-  created_at: string;
-  sessions?: {
-    mood: string;
-    birth_date: string;
-  };
-}
+import { ApiReport } from '@/lib/types';
 
 const modeConfig: Record<string, { bg: string; text: string; desc: string }> = {
   '방어': { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-600', desc: '시장으로부터 자산을 보호하는 모드' },
@@ -83,7 +65,7 @@ function DiffBadge({ value, label, unit = '' }: { value: number; label: string; 
 export default function ResultPage() {
   const params = useParams();
   const { toast } = useToast();
-  const [report, setReport] = useState<ReportData | null>(null);
+  const [report, setReport] = useState<ApiReport | null>(null);
   const [prevComparison, setPrevComparison] = useState<PrevComparison | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -151,7 +133,7 @@ export default function ResultPage() {
   });
 
   const mode = modeConfig[report.decision_mode] || modeConfig['신중'];
-  const investMood = investMoodConfig[report.invest_mood] || investMoodConfig['C'];
+  const investMood = investMoodConfig[report.invest_mood || 'C'] || investMoodConfig['C'];
 
   return (
     <main className="min-h-screen flex flex-col items-center py-10 px-6 pb-nav">
@@ -221,9 +203,9 @@ export default function ResultPage() {
         <div className="bg-white border border-slate-200 rounded-2xl p-5">
           <p className="text-slate-500 text-sm font-medium mb-4">오늘의 바이오리듬</p>
           <div className="space-y-3">
-            <BiorhythmBar label="신체" value={report.biorhythm_physical} color="bg-slate-500" />
-            <BiorhythmBar label="감정" value={report.biorhythm_emotional} color="bg-mint-400" />
-            <BiorhythmBar label="지성" value={report.biorhythm_intellectual} color="bg-blue-400" />
+            <BiorhythmBar label="신체" value={report.biorhythm_physical ?? 0} color="bg-slate-500" />
+            <BiorhythmBar label="감정" value={report.biorhythm_emotional ?? 0} color="bg-mint-400" />
+            <BiorhythmBar label="지성" value={report.biorhythm_intellectual ?? 0} color="bg-blue-400" />
           </div>
         </div>
 

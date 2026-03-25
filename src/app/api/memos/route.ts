@@ -21,12 +21,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '종목명과 메모는 필수입니다.' }, { status: 400 });
     }
 
+    const validActions = ['buy', 'sell', 'hold', 'watch'];
+    const safeAction = validActions.includes(action) ? action : 'watch';
+
     const created = localStore.createMemo({
-      stock_name,
-      action: action || 'watch',
-      price: price || undefined,
-      quantity: quantity || undefined,
-      memo,
+      stock_name: String(stock_name).slice(0, 100),
+      action: safeAction,
+      price: price ? Number(price) || undefined : undefined,
+      quantity: quantity ? Number(quantity) || undefined : undefined,
+      memo: String(memo).slice(0, 2000),
     });
 
     return NextResponse.json({ memo: created });

@@ -23,11 +23,12 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Bottom
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={title || '바텀시트'}>
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 animate-fade-backdrop"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Sheet */}
@@ -44,6 +45,7 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Bottom
             <button
               onClick={onClose}
               className="text-slate-400 hover:text-slate-600 p-1"
+              aria-label="닫기"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18" />

@@ -65,7 +65,7 @@ export default function BottomNav() {
   if (hideOn.some(p => pathname.startsWith(p))) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 z-50" aria-label="메인 내비게이션">
       <div className="bg-white border-t border-slate-100">
         <div className="max-w-md mx-auto flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
           {navItems.map((item) => {
@@ -77,6 +77,8 @@ export default function BottomNav() {
                 key={item.href}
                 href={item.href}
                 className="flex flex-col items-center gap-1 py-2.5 px-3"
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
               >
                 {item.icon(isActive)}
                 <span className={`text-[10px] ${isActive ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>

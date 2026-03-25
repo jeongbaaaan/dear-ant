@@ -133,10 +133,12 @@ export default function SurveyPage() {
 
           {/* 생년월일 */}
           <div className="mb-8">
-            <label className="block text-slate-600 text-sm font-medium mb-2">
+            <label htmlFor="birthDate" className="block text-slate-600 text-sm font-medium mb-1">
               생년월일
             </label>
+            <p className="text-slate-400 text-xs mb-2">바이오리듬 계산에 사용돼요</p>
             <input
+              id="birthDate"
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
@@ -255,7 +257,7 @@ export default function SurveyPage() {
             </div>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="설문 진행률">
             <div
               className="h-full bg-slate-900 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}

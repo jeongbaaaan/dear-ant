@@ -5,23 +5,7 @@ import Link from 'next/link';
 import { SkeletonCard, SkeletonStats } from '@/components/Skeleton';
 import CountUp from '@/components/CountUp';
 import PullToRefresh from '@/components/PullToRefresh';
-
-interface HistoryReport {
-  id: string;
-  decision_mode: string;
-  mood_score: number;
-  risk_tendency: string;
-  invest_mood?: string;
-  biorhythm_physical?: number;
-  biorhythm_emotional?: number;
-  biorhythm_intellectual?: number;
-  today_keywords?: string[];
-  today_message: string;
-  created_at: string;
-  sessions?: {
-    mood: string;
-  };
-}
+import { ApiReport } from '@/lib/types';
 
 const modeColors: Record<string, string> = {
   '방어': 'bg-blue-50 text-blue-600 border-blue-200',
@@ -43,7 +27,7 @@ const moodGradeColor: Record<string, string> = {
 };
 
 // 미니 트렌드 차트 (SVG)
-function TrendChart({ reports }: { reports: HistoryReport[] }) {
+function TrendChart({ reports }: { reports: ApiReport[] }) {
   const data = [...reports].reverse().slice(-7);
   if (data.length < 2) return null;
 
@@ -117,7 +101,7 @@ function TrendChart({ reports }: { reports: HistoryReport[] }) {
 }
 
 // 통계 요약 카드
-function StatsSummary({ reports }: { reports: HistoryReport[] }) {
+function StatsSummary({ reports }: { reports: ApiReport[] }) {
   if (reports.length === 0) return null;
 
   const avgMoodScore = Math.round(reports.reduce((s, r) => s + r.mood_score, 0) / reports.length);
@@ -164,7 +148,7 @@ function StatsSummary({ reports }: { reports: HistoryReport[] }) {
 }
 
 // 이전 비교 뱃지
-function ComparisonBadge({ current, previous }: { current: HistoryReport; previous: HistoryReport }) {
+function ComparisonBadge({ current, previous }: { current: ApiReport; previous: ApiReport }) {
   const moodDiff = current.mood_score - previous.mood_score;
   const currentGrade = moodGradeToNum[current.invest_mood || 'C'];
   const prevGrade = moodGradeToNum[previous.invest_mood || 'C'];
@@ -189,7 +173,7 @@ function ComparisonBadge({ current, previous }: { current: HistoryReport; previo
 }
 
 export default function HistoryPage() {
-  const [reports, setReports] = useState<HistoryReport[]>([]);
+  const [reports, setReports] = useState<ApiReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'dashboard' | 'list'>('dashboard');
 
