@@ -183,16 +183,131 @@ rounds:
       - vitest + @vitejs/plugin-react 조합이 Next.js 16과 잘 호환됨.
       - scripts/ 디렉토리의 CommonJS 파일들이 ESLint를 22개 오염시킴. ignores로 제외 필수.
 
+  - round: 2
+    timestamp: "2026-03-25T14:02:00"
+    status: completed
+    baseline_scores:
+      code_quality: 7.0
+      security: 6.5
+      architecture: 6.5
+      db: 2.8
+      test_coverage: 5.5
+      repo_health: 6.5
+      ux_ui: 7.5
+    final_scores:
+      code_quality: 7.5
+      security: 7.0
+      architecture: 7.5
+      db: 6.5
+      test_coverage: 7.0
+      repo_health: 8.0
+      ux_ui: 7.5
+    items_addressed:
+      - id: "DB-001"
+        title: "reports table missing 5 columns"
+        area: db
+        priority: P0
+      - id: "DB-002"
+        title: "No memos table in schema"
+        area: db
+        priority: P0
+      - id: "DB-004"
+        title: "Zero indexes on FK/query columns"
+        area: db
+        priority: P0
+      - id: "SEC-006"
+        title: "No input validation on POST /api/reports"
+        area: security
+        priority: P1
+      - id: "TEST-004"
+        title: "API route integration tests (17 tests)"
+        area: test
+        priority: P1
+      - id: "REPO-003"
+        title: "CI/CD pipeline (GitHub Actions)"
+        area: repo_health
+        priority: P0
+      - id: "CODE-007"
+        title: "useSupabase flag duplicated in 3 route files → shared config.ts"
+        area: code_quality
+        priority: P2
+      - id: "ARCH-001"
+        title: "Schema-application mismatch - Supabase insert now includes all columns"
+        area: architecture
+        priority: P0
+    items_remaining:
+      - id: "DB-003"
+        title: "RLS policies still open (needs auth integration)"
+        area: db
+        priority: P0
+      - id: "DB-005"
+        title: "Multi-step insert without transaction"
+        area: db
+        priority: P0
+      - id: "DB-006"
+        title: "No migration system"
+        area: db
+        priority: P1
+      - id: "SEC-004"
+        title: "No rate limiting on any endpoint"
+        area: security
+        priority: P1
+      - id: "SEC-005"
+        title: "History returns all users reports (no scoping)"
+        area: security
+        priority: P1
+      - id: "TEST-005"
+        title: "Component tests missing"
+        area: test
+        priority: P2
+      - id: "TEST-006"
+        title: "Calculator/compound function tests"
+        area: test
+        priority: P1
+      - id: "REPO-004"
+        title: "No CONTRIBUTING.md"
+        area: repo_health
+        priority: P1
+      - id: "CODE-006"
+        title: "HistoryReport type duplication across files"
+        area: code_quality
+        priority: P2
+      - id: "CODE-008"
+        title: "MemoPage 13 state atoms"
+        area: code_quality
+        priority: P2
+      - id: "UX-004"
+        title: "Zero ARIA attributes across entire app"
+        area: ux_ui
+        priority: P0
+      - id: "UX-005"
+        title: "Birth date purpose unexplained"
+        area: ux_ui
+        priority: P1
+      - id: "UX-006"
+        title: "Home page no loading/error state"
+        area: ux_ui
+        priority: P1
+      - id: "UX-007"
+        title: "Form labels not associated with inputs"
+        area: ux_ui
+        priority: P1
+    learnings: |
+      - Supabase schema와 앱 코드 정합은 StoredReport 인터페이스를 기준으로 작업해야 함.
+      - App Router API route 테스트: NextRequest로 래핑 + params는 Promise.resolve()로 전달.
+      - enum 타입 + CHECK 제약이 TEXT보다 안전하지만, 기존 데이터 마이그레이션 필요 시 주의.
+      - GitHub Actions CI는 npm ci + lint + build + test 순서가 최적.
+
 # 현재 상태 요약
-current_round: 1
+current_round: 2
 overall_status: in_progress
 latest_scores:
-  code_quality: 7.0
-  security: 6.5
-  architecture: 6.5
-  db: 2.8
-  test_coverage: 5.5
-  repo_health: 6.5
+  code_quality: 7.5
+  security: 7.0
+  architecture: 7.5
+  db: 6.5
+  test_coverage: 7.0
+  repo_health: 8.0
   ux_ui: 7.5
-remaining_p0_p1: 15
+remaining_p0_p1: 10
 all_scores_above_target: false
