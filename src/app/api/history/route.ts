@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
 import { localStore } from '@/lib/local-store';
-
-const useSupabase = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+import { isSupabaseEnabled } from '@/lib/config';
 
 export async function GET() {
   try {
-    if (useSupabase) {
+    if (isSupabaseEnabled) {
       const { getSupabase } = await import('@/lib/supabase');
       const supabase = getSupabase();
       const { data: reports, error } = await supabase

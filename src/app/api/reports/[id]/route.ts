@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { localStore } from '@/lib/local-store';
-
-const useSupabase = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+import { isSupabaseEnabled } from '@/lib/config';
 
 export async function GET(
   request: NextRequest,
@@ -10,7 +9,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    if (useSupabase) {
+    if (isSupabaseEnabled) {
       const { getSupabase } = await import('@/lib/supabase');
       const supabase = getSupabase();
       const { data: report, error } = await supabase

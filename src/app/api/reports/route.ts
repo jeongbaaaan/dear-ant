@@ -2,15 +2,31 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateReport } from '@/lib/report-engine';
 import { SurveyData } from '@/lib/types';
 import { localStore } from '@/lib/local-store';
+import { isSupabaseEnabled } from '@/lib/config';
 
-const useSupabase = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+const VALID_MOODS = ['불안', '설렘', '평온', '초조', '자신감'];
 
 export async function POST(request: NextRequest) {
   try {
     const body: SurveyData = await request.json();
+
+    // Input validation
+    if (!body?.userInfo?.birthDate || !body?.userInfo?.mood || !Array.isArray(body?.answers)) {
+      return NextResponse.json({ error: '잘못된 입력입니다.' }, { status: 400 });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(body.userInfo.birthDate)) {
+      return NextResponse.json({ error: '생년월일 형식이 잘못되었습니다.' }, { status: 400 });
+    }
+    if (!VALID_MOODS.includes(body.userInfo.mood)) {
+      return NextResponse.json({ error: '유효하지 않은 감정 값입니다.' }, { status: 400 });
+    }
+    if (body.answers.length === 0 || body.answers.length > 20) {
+      return NextResponse.json({ error: '답변 수가 유효하지 않습니다.' }, { status: 400 });
+    }
+
     const reportData = generateReport(body);
 
-    if (useSupabase) {
+    if (isSupabaseEnabled) {
       const { getSupabase } = await import('@/lib/supabase');
       const supabase = getSupabase();
 
@@ -44,6 +60,11 @@ export async function POST(request: NextRequest) {
           decision_mode: reportData.decisionMode,
           mood_score: reportData.moodScore,
           risk_tendency: reportData.riskTendency,
+          invest_mood: reportData.investMood,
+          biorhythm_physical: reportData.biorhythmPhysical,
+          biorhythm_emotional: reportData.biorhythmEmotional,
+          biorhythm_intellectual: reportData.biorhythmIntellectual,
+          today_keywords: reportData.todayKeywords,
           today_message: reportData.todayMessage,
           today_letter: reportData.todayLetter,
         })
