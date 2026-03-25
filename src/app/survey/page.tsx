@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions } from '@/lib/questions';
 import { Mood, Answer } from '@/lib/types';
+import { useToast } from '@/components/Toast';
 
 interface CheckItem {
   id: string;
@@ -44,6 +45,7 @@ const categories = ['컨디션', '심리', '외부 영향'];
 
 export default function SurveyPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [step, setStep] = useState<'info' | 'questions' | 'loading'>('info');
   const [birthDate, setBirthDate] = useState('');
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
@@ -65,7 +67,7 @@ export default function SurveyPage() {
   };
 
   const handleAnswer = async (questionKey: string, value: string, score: number) => {
-    const newAnswers = [...answers, { questionKey, answerValue: value, score }];
+    const newAnswers = [...answers.slice(0, currentQuestion), { questionKey, answerValue: value, score }];
     setAnswers(newAnswers);
 
     if (currentQuestion < questions.length - 1) {
@@ -82,16 +84,23 @@ export default function SurveyPage() {
             answers: newAnswers,
           }),
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data.report) {
           router.push(`/result/${data.report.id}`);
         }
       } catch {
-        alert('리포트 생성에 실패했습니다. 다시 시도해주세요.');
+        toast('리포트 생성에 실패했습니다. 다시 시도해주세요.');
         setStep('questions');
         setCurrentQuestion(questions.length - 1);
-        setAnswers(answers);
+        setAnswers(newAnswers.slice(0, -1));
       }
+    }
+  };
+
+  const handlePrevQuestion = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
     }
   };
 
@@ -231,8 +240,19 @@ export default function SurveyPage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6">
       <div className="max-w-md w-full">
         <div className="mb-8">
-          <div className="flex justify-between text-sm text-slate-400 mb-2">
-            <span>질문 {currentQuestion + 1} / {questions.length}</span>
+          <div className="flex items-center justify-between text-sm text-slate-400 mb-2">
+            <div className="flex items-center gap-2">
+              {currentQuestion > 0 && (
+                <button
+                  onClick={handlePrevQuestion}
+                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                  aria-label="이전 질문"
+                >
+                  &larr;
+                </button>
+              )}
+              <span>질문 {currentQuestion + 1} / {questions.length}</span>
+            </div>
             <span>{Math.round(progress)}%</span>
           </div>
           <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">

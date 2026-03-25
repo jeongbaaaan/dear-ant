@@ -196,10 +196,11 @@ export default function HistoryPage() {
   const fetchHistory = useCallback(async () => {
     try {
       const res = await fetch('/api/history');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setReports(data.reports || []);
-    } catch {
-      console.error('Failed to fetch history');
+    } catch (err) {
+      console.error('Failed to fetch history', err);
     } finally {
       setLoading(false);
     }

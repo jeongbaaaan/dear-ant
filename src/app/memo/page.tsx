@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
 import BottomSheet from '@/components/BottomSheet';
@@ -321,19 +321,20 @@ export default function MemoPage() {
   const [quantity, setQuantity] = useState('');
   const [memoText, setMemoText] = useState('');
 
-  const fetchMemos = async () => {
+  const fetchMemos = useCallback(async () => {
     try {
       const res = await fetch('/api/memos');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setMemos(data.memos || []);
-    } catch {
-      console.error('Failed to fetch memos');
+    } catch (err) {
+      console.error('Failed to fetch memos', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchMemos(); }, []);
+  useEffect(() => { fetchMemos(); }, [fetchMemos]);
 
   const filteredMemos = useMemo(() => {
     let result = memos;
@@ -386,7 +387,7 @@ export default function MemoPage() {
       fetchMemos();
       toast('메모가 저장되었어요');
     } catch {
-      alert('저장에 실패했습니다.');
+      toast('저장에 실패했습니다.');
     }
   };
 
@@ -408,7 +409,7 @@ export default function MemoPage() {
       fetchMemos();
       toast('메모가 삭제되었어요');
     } catch {
-      alert('삭제에 실패했습니다.');
+      toast('삭제에 실패했습니다.');
     }
   };
 
@@ -658,10 +659,11 @@ export default function MemoPage() {
                               </span>
                               <h4 className="font-bold text-slate-800">{memo.stock_name}</h4>
                             </div>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center">
                               <button
                                 onClick={() => handleEdit(memo)}
-                                className="text-slate-300 hover:text-slate-600 transition-colors p-1"
+                                className="text-slate-300 hover:text-slate-600 transition-colors p-2.5"
+                                aria-label="메모 수정"
                               >
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                   <path d="M10 1.5L12.5 4L4.5 12H2V9.5L10 1.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
@@ -669,7 +671,8 @@ export default function MemoPage() {
                               </button>
                               <button
                                 onClick={() => setDeletingId(memo.id)}
-                                className="text-slate-300 hover:text-rose-500 transition-colors p-1"
+                                className="text-slate-300 hover:text-rose-500 transition-colors p-2.5"
+                                aria-label="메모 삭제"
                               >
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                   <path d="M2 4H12M5 4V2.5H9V4M5.5 6.5V10.5M8.5 6.5V10.5M3 4L3.5 11.5H10.5L11 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />

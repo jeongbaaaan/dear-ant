@@ -91,12 +91,14 @@ export default function ResultPage() {
     async function fetchReport() {
       try {
         const res = await fetch(`/api/reports/${params.id}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setReport(data.report);
 
         // 이전 리포트와 비교
         try {
           const histRes = await fetch('/api/history');
+          if (!histRes.ok) throw new Error(`HTTP ${histRes.status}`);
           const histData = await histRes.json();
           const allReports = histData.reports || [];
           const currentIdx = allReports.findIndex((r: { id: string }) => r.id === params.id);

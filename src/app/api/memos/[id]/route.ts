@@ -27,7 +27,13 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const updated = localStore.updateMemo(id, body);
+    const allowed: Parameters<typeof localStore.updateMemo>[1] = {};
+    if (body.stock_name !== undefined) allowed.stock_name = String(body.stock_name).slice(0, 100);
+    if (body.action !== undefined && ['buy', 'sell', 'hold', 'watch'].includes(body.action)) allowed.action = body.action;
+    if (body.price !== undefined) allowed.price = Number(body.price) || undefined;
+    if (body.quantity !== undefined) allowed.quantity = Number(body.quantity) || undefined;
+    if (body.memo !== undefined) allowed.memo = String(body.memo).slice(0, 2000);
+    const updated = localStore.updateMemo(id, allowed);
     if (!updated) {
       return NextResponse.json({ error: '메모를 찾을 수 없습니다.' }, { status: 404 });
     }

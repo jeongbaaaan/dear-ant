@@ -1,0 +1,198 @@
+# auto-improve-loop 진행 상태
+target_score: 8.0
+max_rounds: 5
+focus_areas: null
+
+rounds:
+  - round: 1
+    timestamp: "2026-03-25T14:00:00"
+    status: completed
+    baseline_scores:
+      code_quality: 5.8
+      security: 5.0
+      architecture: 6.1
+      db: 2.8
+      test_coverage: 2.0
+      repo_health: 5.5
+      ux_ui: 7.0
+    final_scores:
+      code_quality: 7.0
+      security: 6.5
+      architecture: 6.5
+      db: 2.8
+      test_coverage: 5.5
+      repo_health: 6.5
+      ux_ui: 7.5
+    items_addressed:
+      - id: "CODE-001"
+        title: "fetch res.ok checks missing (7 sites)"
+        area: code_quality
+        priority: P0
+      - id: "CODE-002"
+        title: "useCountUp missing cancelAnimationFrame cleanup"
+        area: code_quality
+        priority: P0
+      - id: "CODE-003"
+        title: "PageTransition setState-in-effect anti-pattern"
+        area: code_quality
+        priority: P0
+      - id: "CODE-004"
+        title: "alert() instead of toast() (3 sites)"
+        area: code_quality
+        priority: P1
+      - id: "CODE-005"
+        title: "Unused getGreeting function"
+        area: code_quality
+        priority: P2
+      - id: "SEC-001"
+        title: "No HTTP security headers"
+        area: security
+        priority: P0
+      - id: "SEC-002"
+        title: "PATCH body validation missing (mass assignment)"
+        area: security
+        priority: P1
+      - id: "SEC-003"
+        title: ".env.example template missing"
+        area: security
+        priority: P1
+      - id: "TEST-001"
+        title: "No test framework configured"
+        area: test
+        priority: P0
+      - id: "TEST-002"
+        title: "report-engine.ts unit tests"
+        area: test
+        priority: P0
+      - id: "TEST-003"
+        title: "local-store.ts unit tests"
+        area: test
+        priority: P0
+      - id: "REPO-001"
+        title: "ESLint errors in src/ (scripts/ excluded)"
+        area: repo_health
+        priority: P0
+      - id: "REPO-002"
+        title: "test script missing in package.json"
+        area: repo_health
+        priority: P1
+      - id: "UX-001"
+        title: "Survey questions no back button"
+        area: ux_ui
+        priority: P0
+      - id: "UX-002"
+        title: "Memo edit/delete touch targets too small"
+        area: ux_ui
+        priority: P0
+      - id: "UX-003"
+        title: "Memo buttons missing aria-label"
+        area: ux_ui
+        priority: P1
+    items_remaining:
+      - id: "DB-001"
+        title: "reports table missing 5 columns"
+        area: db
+        priority: P0
+      - id: "DB-002"
+        title: "No memos table in schema"
+        area: db
+        priority: P0
+      - id: "DB-003"
+        title: "RLS policies completely open"
+        area: db
+        priority: P0
+      - id: "DB-004"
+        title: "Zero indexes on FK/query columns"
+        area: db
+        priority: P0
+      - id: "DB-005"
+        title: "Multi-step insert without transaction"
+        area: db
+        priority: P0
+      - id: "DB-006"
+        title: "No migration system"
+        area: db
+        priority: P0
+      - id: "SEC-004"
+        title: "No rate limiting on any endpoint"
+        area: security
+        priority: P1
+      - id: "SEC-005"
+        title: "History returns all users reports (no scoping)"
+        area: security
+        priority: P1
+      - id: "SEC-006"
+        title: "No input validation on POST /api/reports"
+        area: security
+        priority: P1
+      - id: "TEST-004"
+        title: "API route integration tests missing"
+        area: test
+        priority: P1
+      - id: "TEST-005"
+        title: "Component tests missing"
+        area: test
+        priority: P2
+      - id: "TEST-006"
+        title: "Calculator/compound function tests"
+        area: test
+        priority: P1
+      - id: "REPO-003"
+        title: "No CI/CD pipeline"
+        area: repo_health
+        priority: P0
+      - id: "REPO-004"
+        title: "No CONTRIBUTING.md"
+        area: repo_health
+        priority: P1
+      - id: "CODE-006"
+        title: "HistoryReport type duplication across files"
+        area: code_quality
+        priority: P2
+      - id: "CODE-007"
+        title: "useSupabase flag duplicated in 3 route files"
+        area: code_quality
+        priority: P2
+      - id: "CODE-008"
+        title: "MemoPage 13 state atoms (extract useMemoForm hook)"
+        area: code_quality
+        priority: P2
+      - id: "UX-004"
+        title: "Zero ARIA attributes across entire app"
+        area: ux_ui
+        priority: P0
+      - id: "UX-005"
+        title: "Birth date purpose unexplained"
+        area: ux_ui
+        priority: P1
+      - id: "UX-006"
+        title: "Home page no loading/error state"
+        area: ux_ui
+        priority: P1
+      - id: "UX-007"
+        title: "Form labels not associated with inputs"
+        area: ux_ui
+        priority: P1
+      - id: "ARCH-001"
+        title: "Schema-application mismatch (local vs Supabase)"
+        area: architecture
+        priority: P0
+    learnings: |
+      - React 19 + ESLint react-hooks/set-state-in-effect 규칙이 매우 엄격. useEffect 내 동기 setState 금지. useSyncExternalStore 또는 CSS-only 패턴으로 대체 필요.
+      - PageTransition은 key 기반 CSS 애니메이션이 가장 깔끔한 해법.
+      - vitest + @vitejs/plugin-react 조합이 Next.js 16과 잘 호환됨.
+      - scripts/ 디렉토리의 CommonJS 파일들이 ESLint를 22개 오염시킴. ignores로 제외 필수.
+
+# 현재 상태 요약
+current_round: 1
+overall_status: in_progress
+latest_scores:
+  code_quality: 7.0
+  security: 6.5
+  architecture: 6.5
+  db: 2.8
+  test_coverage: 5.5
+  repo_health: 6.5
+  ux_ui: 7.5
+remaining_p0_p1: 15
+all_scores_above_target: false

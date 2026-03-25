@@ -11,14 +11,6 @@ interface HistoryReport {
   created_at: string;
 }
 
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour >= 6 && hour <= 11) return '좋은 아침이에요';
-  if (hour >= 12 && hour <= 17) return '오늘 하루도 화이팅';
-  if (hour >= 18 && hour <= 21) return '오늘 하루 수고했어요';
-  return '늦은 시간, 무리하지 마세요';
-}
-
 function getRelativeDate(dateStr: string): string {
   const now = new Date();
   const date = new Date(dateStr);
@@ -88,15 +80,19 @@ function gradeColor(grade: string): string {
 
 export default function Home() {
   const [reports, setReports] = useState<HistoryReport[]>([]);
-  const [greeting] = useState(getGreeting);
 
   useEffect(() => {
     fetch('/api/history')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         if (data.reports) setReports(data.reports);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error('Failed to fetch history', err);
+      });
   }, []);
 
   const lastReport = reports.length > 0 ? reports[0] : null;
