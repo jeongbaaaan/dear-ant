@@ -69,12 +69,12 @@ function CompareBar({ label, value, maxValue, color, suffix = '원' }: {
   return (
     <div className="mb-3">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-slate-500">{label}</span>
-        <span className={`text-xs font-bold ${isNegative ? 'text-rose-500' : 'text-slate-700'}`}>
+        <span className="text-xs text-green-700">{label}</span>
+        <span className={`text-xs font-bold ${isNegative ? 'text-rose-500' : 'text-green-800'}`}>
           {isNegative ? '-' : '+'}{Math.abs(value).toLocaleString()}{suffix}
         </span>
       </div>
-      <div className="w-full h-3 bg-slate-50 rounded-full overflow-hidden">
+      <div className="w-full h-3 bg-green-50 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ${isNegative ? 'bg-rose-400' : color}`}
           style={{ width: `${width}%` }}
@@ -149,26 +149,26 @@ export default function CalculatorPage() {
       <div className="max-w-md mx-auto animate-fade-in">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-black text-slate-900">적금 vs 투자</h1>
-          <Link href="/tools" className="text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors">
+          <h1 className="text-2xl font-black text-green-900">적금 vs 투자</h1>
+          <Link href="/tools" className="text-green-500 hover:text-green-700 text-sm font-medium transition-colors">
             도구
           </Link>
         </div>
-        <p className="text-slate-400 text-sm mb-6">리스크 포함 수익 비교 계산기</p>
+        <p className="text-green-500 text-sm mb-6">리스크 포함 수익 비교 계산기</p>
 
         {/* 입력 폼 */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-5">
+        <div className="bg-white border border-green-200 rounded-2xl p-5 mb-5">
           {/* 월 투자금 */}
           <div className="mb-4">
-            <label className="block text-slate-500 text-xs font-medium mb-1.5">월 투자금</label>
+            <label className="block text-green-700 text-xs font-medium mb-1.5">월 투자금</label>
             <div className="relative">
               <input
                 type="number"
                 value={monthly}
                 onChange={(e) => setMonthly(e.target.value)}
-                className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-lg font-bold"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-lg font-bold"
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">원</span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500 text-sm">원</span>
             </div>
             {/* 빠른 선택 */}
             <div className="flex gap-2 mt-2">
@@ -178,8 +178,8 @@ export default function CalculatorPage() {
                   onClick={() => setMonthly(String(v))}
                   className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                     Number(monthly) === v
-                      ? 'bg-slate-900 text-white border-slate-900'
-                      : 'border-slate-200 text-slate-400 hover:border-slate-300'
+                      ? 'bg-green-900 text-white border-green-900'
+                      : 'border-green-200 text-green-500 hover:border-green-400'
                   }`}
                 >
                   {v >= 1000000 ? `${v / 10000}만` : `${v / 10000}만`}
@@ -190,7 +190,7 @@ export default function CalculatorPage() {
 
           {/* 기간 */}
           <div className="mb-4">
-            <label className="block text-slate-500 text-xs font-medium mb-1.5">투자 기간</label>
+            <label className="block text-green-700 text-xs font-medium mb-1.5">투자 기간</label>
             <div className="grid grid-cols-3 gap-2">
               {([6, 12, 24] as const).map(m => (
                 <button
@@ -198,8 +198,8 @@ export default function CalculatorPage() {
                   onClick={() => setPeriod(m)}
                   className={`py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
                     period === m
-                      ? 'border-slate-900 bg-slate-50 text-slate-900'
-                      : 'border-slate-200 text-slate-400'
+                      ? 'border-green-900 bg-green-50 text-green-900'
+                      : 'border-green-200 text-green-500'
                   }`}
                 >
                   {m === 6 ? '6개월' : m === 12 ? '1년' : '2년'}
@@ -211,36 +211,36 @@ export default function CalculatorPage() {
           {/* 이자율 & 기대수익률 */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
-              <label className="block text-slate-500 text-xs font-medium mb-1.5">적금 이자율 (연)</label>
+              <label className="block text-green-700 text-xs font-medium mb-1.5">적금 이자율 (연)</label>
               <div className="relative">
                 <input
                   type="number"
                   step="0.1"
                   value={savingsRate}
                   onChange={(e) => setSavingsRate(e.target.value)}
-                  className="w-full px-4 py-2.5 pr-8 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm font-bold"
+                  className="w-full px-4 py-2.5 pr-8 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm font-bold"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">%</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-xs">%</span>
               </div>
             </div>
             <div>
-              <label className="block text-slate-500 text-xs font-medium mb-1.5">주식 기대수익률 (연)</label>
+              <label className="block text-green-700 text-xs font-medium mb-1.5">주식 기대수익률 (연)</label>
               <div className="relative">
                 <input
                   type="number"
                   step="1"
                   value={stockReturn}
                   onChange={(e) => setStockReturn(e.target.value)}
-                  className="w-full px-4 py-2.5 pr-8 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm font-bold"
+                  className="w-full px-4 py-2.5 pr-8 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm font-bold"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">%</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-xs">%</span>
               </div>
             </div>
           </div>
 
           {/* 빠른 수익률 프리셋 */}
           <div className="mb-4">
-            <label className="block text-slate-400 text-xs mb-1.5">주식 수익률 참고</label>
+            <label className="block text-green-500 text-xs mb-1.5">주식 수익률 참고</label>
             <div className="flex gap-2 flex-wrap">
               {[
                 { label: '안정 (8%)', value: '8' },
@@ -253,8 +253,8 @@ export default function CalculatorPage() {
                   onClick={() => setStockReturn(p.value)}
                   className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                     stockReturn === p.value
-                      ? 'bg-slate-900 text-white border-slate-900'
-                      : 'border-slate-200 text-slate-400 hover:border-slate-300'
+                      ? 'bg-green-900 text-white border-green-900'
+                      : 'border-green-200 text-green-500 hover:border-green-400'
                   }`}
                 >
                   {p.label}
@@ -266,7 +266,7 @@ export default function CalculatorPage() {
           <button
             onClick={() => setShowResult(true)}
             disabled={monthlyNum <= 0}
-            className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 text-white font-bold py-3.5 rounded-xl transition-all active:scale-[0.98]"
+            className="w-full bg-green-900 hover:bg-green-800 disabled:bg-green-200 text-white font-bold py-3.5 rounded-xl transition-all active:scale-[0.98]"
           >
             비교 계산하기
           </button>
@@ -276,7 +276,7 @@ export default function CalculatorPage() {
         {showResult && monthlyNum > 0 && (
           <div className="space-y-4 animate-slide-up">
             {/* 판정 카드 */}
-            <div className="rounded-2xl p-5 text-white shadow-lg bg-slate-900">
+            <div className="rounded-2xl p-5 text-white shadow-lg bg-green-900">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">
                   {comparison.verdict === 'stock' ? '📈' : comparison.verdict === 'savings' ? '🏦' : '⚖️'}
@@ -299,7 +299,7 @@ export default function CalculatorPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🏦</span>
-                  <h3 className="font-bold text-slate-800">적금</h3>
+                  <h3 className="font-bold text-green-900">적금</h3>
                 </div>
                 <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold border border-blue-200">
                   연 {savingsRateNum}%
@@ -308,19 +308,19 @@ export default function CalculatorPage() {
 
               <div className="space-y-2.5 mb-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">원금</span>
-                  <span className="text-slate-700 font-medium">{savings.totalPrincipal.toLocaleString()}원</span>
+                  <span className="text-green-500">원금</span>
+                  <span className="text-green-800 font-medium">{savings.totalPrincipal.toLocaleString()}원</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">이자 (세전)</span>
-                  <span className="text-slate-700 font-medium">+{savings.grossInterest.toLocaleString()}원</span>
+                  <span className="text-green-500">이자 (세전)</span>
+                  <span className="text-green-800 font-medium">+{savings.grossInterest.toLocaleString()}원</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">이자소득세 (15.4%)</span>
+                  <span className="text-green-500">이자소득세 (15.4%)</span>
                   <span className="text-rose-400 font-medium">-{savings.tax.toLocaleString()}원</span>
                 </div>
                 <div className="border-t border-blue-50 pt-2 flex justify-between">
-                  <span className="text-slate-600 font-bold text-sm">세후 수령액</span>
+                  <span className="text-green-700 font-bold text-sm">세후 수령액</span>
                   <span className="text-blue-600 font-black text-lg">{savings.total.toLocaleString()}원</span>
                 </div>
               </div>
@@ -334,20 +334,20 @@ export default function CalculatorPage() {
             </div>
 
             {/* 주식 결과 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5">
+            <div className="bg-white border border-green-200 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">📈</span>
-                  <h3 className="font-bold text-slate-800">주식 투자</h3>
+                  <h3 className="font-bold text-green-900">주식 투자</h3>
                 </div>
-                <span className="px-3 py-1 bg-slate-50 text-slate-600 rounded-full text-xs font-bold border border-slate-200">
+                <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-200">
                   기대 연 {stockReturnNum}%
                 </span>
               </div>
 
               {/* 시나리오별 비교 */}
-              <CompareBar label="🚀 낙관 (×1.5)" value={stock.optimistic.netProfit} maxValue={maxProfit} color="bg-slate-700" />
-              <CompareBar label="📊 기대 수익" value={stock.expected.netProfit} maxValue={maxProfit} color="bg-slate-500" />
+              <CompareBar label="🚀 낙관 (×1.5)" value={stock.optimistic.netProfit} maxValue={maxProfit} color="bg-green-700" />
+              <CompareBar label="📊 기대 수익" value={stock.expected.netProfit} maxValue={maxProfit} color="bg-green-500" />
               <CompareBar label="😐 보수적 (×0.3)" value={stock.conservative.netProfit} maxValue={maxProfit} color="bg-amber-400" />
               <CompareBar label="📉 최악 (−0.8×)" value={stock.worst.netProfit} maxValue={maxProfit} color="bg-rose-400" />
 
@@ -359,57 +359,57 @@ export default function CalculatorPage() {
               {/* 세부 수치 */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">기대 수익 (세후)</span>
-                  <span className="text-slate-700 font-bold">+{stock.expected.netProfit.toLocaleString()}원</span>
+                  <span className="text-green-500">기대 수익 (세후)</span>
+                  <span className="text-green-800 font-bold">+{stock.expected.netProfit.toLocaleString()}원</span>
                 </div>
                 {stock.expected.tax > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-slate-400">금투세 (250만 초과분 22%)</span>
+                    <span className="text-green-500">금투세 (250만 초과분 22%)</span>
                     <span className="text-rose-400">-{stock.expected.tax.toLocaleString()}원</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-slate-400">최악 시 손실</span>
+                  <span className="text-green-500">최악 시 손실</span>
                   <span className="text-rose-500 font-bold">{stock.worst.netProfit.toLocaleString()}원</span>
                 </div>
               </div>
             </div>
 
             {/* 한눈에 비교 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5">
-              <h3 className="text-slate-500 text-sm font-medium mb-4">한눈에 비교</h3>
+            <div className="bg-white border border-green-200 rounded-2xl p-5">
+              <h3 className="text-green-700 text-sm font-medium mb-4">한눈에 비교</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-100">
-                      <th className="text-left text-slate-400 font-medium py-2 text-xs"></th>
+                    <tr className="border-b border-green-100">
+                      <th className="text-left text-green-500 font-medium py-2 text-xs"></th>
                       <th className="text-right text-blue-500 font-bold py-2 text-xs">🏦 적금</th>
-                      <th className="text-right text-slate-500 font-bold py-2 text-xs">📈 주식</th>
+                      <th className="text-right text-green-700 font-bold py-2 text-xs">📈 주식</th>
                     </tr>
                   </thead>
-                  <tbody className="text-slate-600">
-                    <tr className="border-b border-slate-100/50">
-                      <td className="py-2.5 text-slate-400 text-xs">원금</td>
+                  <tbody className="text-green-700">
+                    <tr className="border-b border-green-100/50">
+                      <td className="py-2.5 text-green-500 text-xs">원금</td>
                       <td className="py-2.5 text-right font-medium">{savings.totalPrincipal.toLocaleString()}</td>
                       <td className="py-2.5 text-right font-medium">{stock.totalPrincipal.toLocaleString()}</td>
                     </tr>
-                    <tr className="border-b border-slate-100/50">
-                      <td className="py-2.5 text-slate-400 text-xs">기대 수익</td>
+                    <tr className="border-b border-green-100/50">
+                      <td className="py-2.5 text-green-500 text-xs">기대 수익</td>
                       <td className="py-2.5 text-right text-blue-600 font-bold">+{savings.netInterest.toLocaleString()}</td>
-                      <td className="py-2.5 text-right text-slate-700 font-bold">+{stock.expected.netProfit.toLocaleString()}</td>
+                      <td className="py-2.5 text-right text-green-800 font-bold">+{stock.expected.netProfit.toLocaleString()}</td>
                     </tr>
-                    <tr className="border-b border-slate-100/50">
-                      <td className="py-2.5 text-slate-400 text-xs">최악 시</td>
+                    <tr className="border-b border-green-100/50">
+                      <td className="py-2.5 text-green-500 text-xs">최악 시</td>
                       <td className="py-2.5 text-right text-blue-600 font-bold">+{savings.netInterest.toLocaleString()}</td>
                       <td className="py-2.5 text-right text-rose-500 font-bold">{stock.worst.netProfit.toLocaleString()}</td>
                     </tr>
-                    <tr className="border-b border-slate-100/50">
-                      <td className="py-2.5 text-slate-400 text-xs">원금 보장</td>
+                    <tr className="border-b border-green-100/50">
+                      <td className="py-2.5 text-green-500 text-xs">원금 보장</td>
                       <td className="py-2.5 text-right"><span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold">보장</span></td>
                       <td className="py-2.5 text-right"><span className="text-xs bg-rose-50 text-rose-500 px-2 py-0.5 rounded-full font-bold">미보장</span></td>
                     </tr>
                     <tr>
-                      <td className="py-2.5 text-slate-400 text-xs">수익 확정성</td>
+                      <td className="py-2.5 text-green-500 text-xs">수익 확정성</td>
                       <td className="py-2.5 text-right"><span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold">확정</span></td>
                       <td className="py-2.5 text-right"><span className="text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full font-bold">변동</span></td>
                     </tr>
@@ -419,9 +419,9 @@ export default function CalculatorPage() {
             </div>
 
             {/* Dear,ANT 팁 */}
-            <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
-              <p className="text-slate-600 text-xs font-bold mb-2">💡 Dear,ANT의 판단</p>
-              <div className="space-y-2 text-slate-500 text-xs leading-relaxed">
+            <div className="bg-green-50 rounded-2xl border border-green-200 p-5">
+              <p className="text-green-800 text-xs font-bold mb-2">💡 Dear,ANT의 판단</p>
+              <div className="space-y-2 text-green-700 text-xs leading-relaxed">
                 {comparison.verdict === 'stock' ? (
                   <>
                     <p>• 기대 수익이 적금 대비 <strong>{Math.round(stock.expected.netProfit / Math.max(savings.netInterest, 1))}배</strong> 높습니다</p>
@@ -447,7 +447,7 @@ export default function CalculatorPage() {
             {/* 다시 계산 */}
             <button
               onClick={() => { setShowResult(false); window.scrollTo(0, 0); }}
-              className="w-full text-center border-2 border-slate-200 text-slate-500 hover:bg-slate-50 font-medium py-3 rounded-2xl transition-all"
+              className="w-full text-center border-2 border-green-200 text-green-700 hover:bg-green-50 font-medium py-3 rounded-2xl transition-all"
             >
               다시 계산하기
             </button>

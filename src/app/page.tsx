@@ -92,27 +92,27 @@ export default function Home() {
   const streak = getStreak(reports);
 
   return (
-    <main className="min-h-screen bg-white px-5 pt-16 pb-nav">
+    <main className="min-h-screen bg-green-50 px-5 pt-16 pb-nav">
       <div className="max-w-sm mx-auto">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-10">
           <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="8" fill="#111" />
+            <rect width="32" height="32" rx="8" fill="#1B4332" />
             <polyline points="6,16 10,16 13,8 16,22 19,12 22,16 26,16" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </svg>
-          <span className="text-[17px] font-bold text-slate-900 tracking-tight">
+          <span className="text-[17px] font-bold text-green-900 tracking-tight">
             Dear,ANT
           </span>
         </div>
 
         {/* Hero copy */}
         <div className="mb-8">
-          <h1 className="text-[26px] font-extrabold text-slate-900 leading-tight">
+          <h1 className="text-[26px] font-extrabold text-green-900 leading-tight">
             오늘,<br />
             투자해도 괜찮은<br />
             날일까요?
           </h1>
-          <p className="text-slate-400 text-[14px] mt-3 leading-relaxed">
+          <p className="text-green-500 text-[14px] mt-3 leading-relaxed">
             감정과 컨디션을 분석해서<br />
             오늘의 투자 판단을 도와드려요
           </p>
@@ -122,20 +122,20 @@ export default function Home() {
         <div className="mb-8">
           <Link
             href="/survey"
-            className="flex items-center justify-between bg-slate-900 hover:bg-slate-800 text-white rounded-2xl px-5 py-4 transition-colors"
+            className="flex items-center justify-between bg-green-900 hover:bg-green-800 text-white rounded-2xl px-5 py-4 transition-colors"
           >
             <div>
               <p className="font-bold text-[15px]">오늘의 리포트 받기</p>
-              <p className="text-slate-400 text-[12px] mt-0.5">약 2분 소요</p>
+              <p className="text-green-400 text-[12px] mt-0.5">약 2분 소요</p>
             </div>
-            <svg className="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg className="w-5 h-5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </Link>
 
           {/* Streak badge */}
           {streak > 0 && (
-            <p className="text-slate-400 text-[12px] mt-2 px-1">
+            <p className="text-green-500 text-[12px] mt-2 px-1">
               🔥 {streak}일 연속 기록 중
             </p>
           )}
@@ -143,13 +143,13 @@ export default function Home() {
 
         {/* Last report summary card */}
         {lastReport && (
-          <div className="bg-slate-50 rounded-2xl px-5 py-4 mb-8">
+          <div className="bg-white border border-green-200 rounded-2xl px-5 py-4 mb-8 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-400 text-[11px] font-medium mb-1">
+                <p className="text-green-500 text-[11px] font-medium mb-1">
                   최근 리포트 · {getRelativeDate(lastReport.created_at)}
                 </p>
-                <p className="text-slate-700 text-[13px] font-semibold">
+                <p className="text-green-800 text-[13px] font-semibold">
                   {lastReport.decision_mode === 'rational' ? '이성적' : lastReport.decision_mode === 'emotional' ? '감정적' : lastReport.decision_mode} · 감정 {lastReport.mood_score}점
                 </p>
               </div>
@@ -161,26 +161,26 @@ export default function Home() {
         )}
 
         {/* Section label */}
-        <p className="text-slate-400 text-[12px] font-medium mb-3 px-1">둘러보기</p>
+        <p className="text-green-500 text-[12px] font-medium mb-3 px-1">둘러보기</p>
 
         {/* Feature list */}
         <div className="flex flex-col gap-2">
-          <Link href="/history" className="flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 hover:bg-slate-100 transition-colors">
+          <Link href="/history" className="flex items-center gap-4 bg-white border border-green-200 rounded-2xl px-5 py-4 hover:border-green-400 shadow-sm transition-colors">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.2" strokeLinecap="round">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-slate-800 text-[14px]">히스토리</p>
-              <p className="text-slate-400 text-[12px]">내 투자 컨디션 변화 추이</p>
+              <p className="font-semibold text-green-900 text-[14px]">히스토리</p>
+              <p className="text-green-500 text-[12px]">내 투자 컨디션 변화 추이</p>
             </div>
-            <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg className="w-4 h-4 text-green-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </Link>
 
-          <Link href="/memo" className="flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 hover:bg-slate-100 transition-colors">
+          <Link href="/memo" className="flex items-center gap-4 bg-white border border-green-200 rounded-2xl px-5 py-4 hover:border-green-400 shadow-sm transition-colors">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M12 20h9" />
@@ -188,15 +188,15 @@ export default function Home() {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-slate-800 text-[14px]">트레이딩 저널</p>
-              <p className="text-slate-400 text-[12px]">매매 기록과 그때의 감정</p>
+              <p className="font-semibold text-green-900 text-[14px]">트레이딩 저널</p>
+              <p className="text-green-500 text-[12px]">매매 기록과 그때의 감정</p>
             </div>
-            <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg className="w-4 h-4 text-green-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </Link>
 
-          <Link href="/calculator" className="flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 hover:bg-slate-100 transition-colors">
+          <Link href="/calculator" className="flex items-center gap-4 bg-white border border-green-200 rounded-2xl px-5 py-4 hover:border-green-400 shadow-sm transition-colors">
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round">
                 <rect x="4" y="2" width="16" height="20" rx="2" />
@@ -207,25 +207,25 @@ export default function Home() {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-slate-800 text-[14px]">적금 vs 투자</p>
-              <p className="text-slate-400 text-[12px]">리스크 포함 수익률 비교</p>
+              <p className="font-semibold text-green-900 text-[14px]">적금 vs 투자</p>
+              <p className="text-green-500 text-[12px]">리스크 포함 수익률 비교</p>
             </div>
-            <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg className="w-4 h-4 text-green-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </Link>
 
-          <Link href="/compound" className="flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 hover:bg-slate-100 transition-colors">
+          <Link href="/compound" className="flex items-center gap-4 bg-white border border-green-200 rounded-2xl px-5 py-4 hover:border-green-400 shadow-sm transition-colors">
             <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9333ea" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-slate-800 text-[14px]">복리 계산기</p>
-              <p className="text-slate-400 text-[12px]">시간이 만드는 수익 시뮬레이션</p>
+              <p className="font-semibold text-green-900 text-[14px]">복리 계산기</p>
+              <p className="text-green-500 text-[12px]">시간이 만드는 수익 시뮬레이션</p>
             </div>
-            <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg className="w-4 h-4 text-green-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </Link>

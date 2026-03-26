@@ -122,43 +122,43 @@ export default function SurveyPage() {
     }[riskLevel];
 
     return (
-      <main className="min-h-screen bg-white px-5 pt-14 pb-nav">
+      <main className="min-h-screen bg-green-50 px-5 pt-14 pb-nav">
         <div className="max-w-md mx-auto">
           <button
             onClick={() => router.push('/')}
-            className="text-slate-400 hover:text-slate-600 mb-6 text-sm transition-colors"
+            className="text-green-500 hover:text-green-700 mb-6 text-sm transition-colors"
           >
             &larr; 돌아가기
           </button>
 
           {/* 생년월일 */}
           <div className="mb-8">
-            <label htmlFor="birthDate" className="block text-slate-600 text-sm font-medium mb-1">
+            <label htmlFor="birthDate" className="block text-green-700 text-sm font-medium mb-1">
               생년월일
             </label>
-            <p className="text-slate-400 text-xs mb-2">바이오리듬 계산에 사용돼요</p>
+            <p className="text-green-500 text-xs mb-2">바이오리듬 계산에 사용돼요</p>
             <input
               id="birthDate"
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800"
+              className="w-full px-4 py-3 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900"
             />
           </div>
 
           {/* 체크리스트 */}
           <div className="mb-6">
-            <h2 className="text-[22px] font-extrabold text-slate-900 leading-tight mb-1">
+            <h2 className="text-[22px] font-extrabold text-green-900 leading-tight mb-1">
               매매 전 셀프 체크
             </h2>
-            <p className="text-slate-400 text-[13px] mb-6">
+            <p className="text-green-500 text-[13px] mb-6">
               지금 해당되는 항목을 모두 체크해주세요
             </p>
 
             <div className="space-y-6">
               {categories.map(cat => (
                 <div key={cat}>
-                  <p className="text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-2 px-1">{cat}</p>
+                  <p className="text-green-500 text-[11px] font-semibold uppercase tracking-wider mb-2 px-1">{cat}</p>
                   <div className="space-y-2">
                     {checklistItems.filter(item => item.category === cat).map(item => (
                       <button
@@ -166,18 +166,18 @@ export default function SurveyPage() {
                         onClick={() => toggleCheck(item.id)}
                         className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all text-left ${
                           checkedItems.has(item.id)
-                            ? 'border-slate-900 bg-slate-900 text-white'
-                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                            ? 'border-green-900 bg-green-900 text-white'
+                            : 'border-green-200 bg-white text-green-800 hover:border-green-400'
                         }`}
                       >
                         <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
                           checkedItems.has(item.id)
                             ? 'border-white bg-white'
-                            : 'border-slate-300'
+                            : 'border-green-300'
                         }`}>
                           {checkedItems.has(item.id) && (
                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#1B4332" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           )}
                         </div>
@@ -191,16 +191,16 @@ export default function SurveyPage() {
           </div>
 
           {/* 현재 상태 표시 */}
-          <div className="bg-slate-50 rounded-2xl px-5 py-4 mb-6">
+          <div className="bg-white border border-green-200 rounded-2xl px-5 py-4 mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-400 text-[11px] font-medium">현재 매매 위험도</p>
+                <p className="text-green-500 text-[11px] font-medium">현재 매매 위험도</p>
                 <p className={`text-[18px] font-extrabold mt-0.5 ${riskColor}`}>
                   {riskLevel}
                 </p>
               </div>
-              <p className="text-slate-300 text-[28px] font-extrabold">
-                {checkedItems.size}<span className="text-[14px] font-normal text-slate-400">/{checklistItems.length}</span>
+              <p className="text-green-400 text-[28px] font-extrabold">
+                {checkedItems.size}<span className="text-[14px] font-normal text-green-500">/{checklistItems.length}</span>
               </p>
             </div>
           </div>
@@ -208,7 +208,7 @@ export default function SurveyPage() {
           <button
             onClick={handleInfoSubmit}
             disabled={!birthDate}
-            className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
+            className="w-full bg-green-900 hover:bg-green-800 disabled:bg-green-200 disabled:text-green-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
           >
             다음
           </button>
@@ -222,11 +222,11 @@ export default function SurveyPage() {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-6">
         <div className="text-center">
-          <div className="w-10 h-10 rounded-full border-4 border-slate-200 border-t-slate-900 animate-spin mx-auto mb-6" />
-          <p className="text-slate-700 text-lg font-bold">
+          <div className="w-10 h-10 rounded-full border-4 border-green-200 border-t-green-900 animate-spin mx-auto mb-6" />
+          <p className="text-green-800 text-lg font-bold">
             리포트를 생성하고 있습니다
           </p>
-          <p className="text-slate-400 text-sm mt-2">
+          <p className="text-green-500 text-sm mt-2">
             잠시만 기다려주세요
           </p>
         </div>
@@ -242,12 +242,12 @@ export default function SurveyPage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6">
       <div className="max-w-md w-full">
         <div className="mb-8">
-          <div className="flex items-center justify-between text-sm text-slate-400 mb-2">
+          <div className="flex items-center justify-between text-sm text-green-500 mb-2">
             <div className="flex items-center gap-2">
               {currentQuestion > 0 && (
                 <button
                   onClick={handlePrevQuestion}
-                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                  className="text-green-500 hover:text-green-700 transition-colors"
                   aria-label="이전 질문"
                 >
                   &larr;
@@ -257,16 +257,16 @@ export default function SurveyPage() {
             </div>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="설문 진행률">
+          <div className="w-full h-2 bg-green-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="설문 진행률">
             <div
-              className="h-full bg-slate-900 rounded-full transition-all duration-500"
+              className="h-full bg-green-900 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
 
         <div key={question.key} className="animate-slide-up">
-          <h3 className="text-xl font-bold text-slate-800 mb-8 leading-relaxed">
+          <h3 className="text-xl font-bold text-green-900 mb-8 leading-relaxed">
             {question.text}
           </h3>
 
@@ -275,7 +275,7 @@ export default function SurveyPage() {
               <button
                 key={option.value}
                 onClick={() => handleAnswer(question.key, option.value, option.score)}
-                className="w-full text-left px-5 py-4 rounded-xl border-2 border-slate-200 bg-white hover:border-slate-900 hover:bg-slate-50 transition-all duration-200 text-slate-700 font-medium active:scale-[0.98]"
+                className="w-full text-left px-5 py-4 rounded-xl border-2 border-green-200 bg-white hover:border-green-900 hover:bg-green-50 transition-all duration-200 text-green-800 font-medium active:scale-[0.98]"
               >
                 {option.label}
               </button>

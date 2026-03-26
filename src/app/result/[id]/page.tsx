@@ -25,15 +25,15 @@ function BiorhythmBar({ label, value, color }: { label: string; value: number; c
   const normalized = (value + 100) / 2; // -100~100 → 0~100
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-slate-400 w-8 shrink-0">{label}</span>
-      <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden relative">
-        <div className="absolute left-1/2 w-px h-full bg-slate-300 z-10" />
+      <span className="text-xs text-green-700 w-8 shrink-0">{label}</span>
+      <div className="flex-1 h-2 bg-green-100 rounded-full overflow-hidden relative">
+        <div className="absolute left-1/2 w-px h-full bg-green-300 z-10" />
         <div
           className={`h-full rounded-full transition-all duration-1000 ${color}`}
           style={{ width: `${normalized}%` }}
         />
       </div>
-      <span className="text-xs font-bold text-slate-600 w-10 text-right">{value > 0 ? '+' : ''}{value}</span>
+      <span className="text-xs font-bold text-green-800 w-10 text-right">{value > 0 ? '+' : ''}{value}</span>
     </div>
   );
 }
@@ -54,7 +54,7 @@ function DiffBadge({ value, label, unit = '' }: { value: number; label: string; 
   const isPositive = value > 0;
   return (
     <div className="flex items-center justify-between py-2">
-      <span className="text-slate-500 text-sm">{label}</span>
+      <span className="text-green-700 text-sm">{label}</span>
       <span className={`text-sm font-bold ${isPositive ? 'text-rose-500' : 'text-emerald-500'}`}>
         {isPositive ? '↑' : '↓'} {Math.abs(Math.round(value))}{unit}
       </span>
@@ -110,7 +110,7 @@ export default function ResultPage() {
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full border-4 border-slate-300 border-t-slate-900 animate-spin" />
+        <div className="w-12 h-12 rounded-full border-4 border-green-300 border-t-green-900 animate-spin" />
       </main>
     );
   }
@@ -118,8 +118,8 @@ export default function ResultPage() {
   if (!report) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-6">
-        <p className="text-slate-400 mb-4">리포트를 찾을 수 없습니다.</p>
-        <Link href="/" className="text-slate-500 hover:text-slate-700 underline">
+        <p className="text-green-500 mb-4">리포트를 찾을 수 없습니다.</p>
+        <Link href="/" className="text-green-700 hover:text-green-900 underline">
           홈으로 돌아가기
         </Link>
       </main>
@@ -140,9 +140,9 @@ export default function ResultPage() {
       <div className="max-w-md w-full animate-fade-in space-y-5">
         {/* 헤더 */}
         <div className="text-center">
-          <p className="text-slate-400 text-sm">{date}</p>
-          <h1 className="text-2xl font-black text-slate-900 mt-1">
-            Dear<span className="text-slate-400">,</span>ANT Report
+          <p className="text-green-500 text-sm">{date}</p>
+          <h1 className="text-2xl font-black text-green-900 mt-1">
+            Dear<span className="text-green-500">,</span>ANT Report
           </h1>
         </div>
 
@@ -159,27 +159,27 @@ export default function ResultPage() {
         {/* 판단 모드 */}
         <div className={`rounded-2xl border p-5 ${mode.bg}`}>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-slate-500 text-sm">판단 모드</span>
+            <span className="text-green-700 text-sm">판단 모드</span>
             <span className={`text-xl font-black ${mode.text}`}>{report.decision_mode}</span>
           </div>
-          <p className="text-slate-400 text-xs">{mode.desc}</p>
+          <p className="text-green-500 text-xs">{mode.desc}</p>
         </div>
 
         {/* 핵심 지표 카드 */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-5">
+        <div className="bg-white border border-green-200 rounded-2xl p-5 space-y-5">
           {/* 감정 흔들림 지수 */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-slate-500 text-sm">감정 흔들림 지수</span>
-              <span className="text-slate-800 font-black text-lg">{report.mood_score}%</span>
+              <span className="text-green-700 text-sm">감정 흔들림 지수</span>
+              <span className="text-green-900 font-black text-lg">{report.mood_score}%</span>
             </div>
-            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+            <div className="w-full h-3 bg-green-100 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-emerald-300 via-slate-400 to-slate-600"
+                className="h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-emerald-300 via-green-400 to-green-600"
                 style={{ width: `${report.mood_score}%` }}
               />
             </div>
-            <p className="text-slate-400 text-xs mt-1.5">
+            <p className="text-green-500 text-xs mt-1.5">
               {report.mood_score <= 30 ? '안정적인 감정 상태입니다' :
                report.mood_score <= 60 ? '약간의 감정 변동이 감지됩니다' :
                '감정 변동이 높습니다. 신중한 판단이 필요합니다'}
@@ -187,8 +187,8 @@ export default function ResultPage() {
           </div>
 
           {/* 리스크 성향 */}
-          <div className="flex items-center justify-between py-3 border-t border-slate-100">
-            <span className="text-slate-500 text-sm">리스크 성향</span>
+          <div className="flex items-center justify-between py-3 border-t border-green-100">
+            <span className="text-green-700 text-sm">리스크 성향</span>
             <span className={`font-bold ${
               report.risk_tendency === '높음' ? 'text-rose-500' :
               report.risk_tendency === '중간' ? 'text-amber-500' :
@@ -200,10 +200,10 @@ export default function ResultPage() {
         </div>
 
         {/* 바이오리듬 */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5">
-          <p className="text-slate-500 text-sm font-medium mb-4">오늘의 바이오리듬</p>
+        <div className="bg-white border border-green-200 rounded-2xl p-5">
+          <p className="text-green-700 text-sm font-medium mb-4">오늘의 바이오리듬</p>
           <div className="space-y-3">
-            <BiorhythmBar label="신체" value={report.biorhythm_physical ?? 0} color="bg-slate-500" />
+            <BiorhythmBar label="신체" value={report.biorhythm_physical ?? 0} color="bg-green-500" />
             <BiorhythmBar label="감정" value={report.biorhythm_emotional ?? 0} color="bg-mint-400" />
             <BiorhythmBar label="지성" value={report.biorhythm_intellectual ?? 0} color="bg-blue-400" />
           </div>
@@ -211,29 +211,29 @@ export default function ResultPage() {
 
         {/* 이전 리포트 비교 */}
         {prevComparison && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-5">
-            <p className="text-slate-500 text-sm font-medium mb-3">이전 리포트와 비교</p>
+          <div className="bg-white border border-green-200 rounded-2xl p-5">
+            <p className="text-green-700 text-sm font-medium mb-3">이전 리포트와 비교</p>
 
             {/* 등급 변화 */}
             {prevComparison.gradeBefore !== prevComparison.gradeAfter && (
-              <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-500 text-sm">투자 무드</span>
+              <div className="flex items-center justify-between py-2 border-b border-green-100">
+                <span className="text-green-700 text-sm">투자 무드</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-400 font-bold">{prevComparison.gradeBefore}</span>
-                  <span className="text-slate-400">→</span>
-                  <span className="text-slate-900 font-black">{prevComparison.gradeAfter}</span>
+                  <span className="text-green-500 font-bold">{prevComparison.gradeBefore}</span>
+                  <span className="text-green-500">→</span>
+                  <span className="text-green-900 font-black">{prevComparison.gradeAfter}</span>
                 </div>
               </div>
             )}
 
             {/* 모드 변화 */}
             {prevComparison.modeBefore !== prevComparison.modeAfter && (
-              <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-500 text-sm">판단 모드</span>
+              <div className="flex items-center justify-between py-2 border-b border-green-100">
+                <span className="text-green-700 text-sm">판단 모드</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-400">{prevComparison.modeBefore}</span>
-                  <span className="text-slate-400">→</span>
-                  <span className="text-slate-900 font-bold">{prevComparison.modeAfter}</span>
+                  <span className="text-green-500">{prevComparison.modeBefore}</span>
+                  <span className="text-green-500">→</span>
+                  <span className="text-green-900 font-bold">{prevComparison.modeAfter}</span>
                 </div>
               </div>
             )}
@@ -246,13 +246,13 @@ export default function ResultPage() {
         )}
 
         {/* 오늘의 투자 키워드 */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5">
-          <p className="text-slate-500 text-sm font-medium mb-3">오늘의 투자 키워드</p>
+        <div className="bg-white border border-green-200 rounded-2xl p-5">
+          <p className="text-green-700 text-sm font-medium mb-3">오늘의 투자 키워드</p>
           <div className="flex flex-wrap gap-2">
             {(report.today_keywords || []).map((keyword, i) => (
               <span
                 key={i}
-                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-full text-sm font-medium border border-slate-200"
+                className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium border border-green-200"
               >
                 #{keyword}
               </span>
@@ -261,7 +261,7 @@ export default function ResultPage() {
         </div>
 
         {/* 오늘의 한마디 */}
-        <div className="bg-slate-900 rounded-2xl p-5 text-white">
+        <div className="bg-green-900 rounded-2xl p-5 text-white">
           <p className="text-white/70 text-xs font-medium mb-2">오늘의 한마디</p>
           <p className="font-bold leading-relaxed">
             {report.today_message}
@@ -269,9 +269,9 @@ export default function ResultPage() {
         </div>
 
         {/* 편지 본문 */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6">
-          <p className="text-slate-400 text-xs font-medium mb-3">오늘의 편지</p>
-          <div className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
+        <div className="bg-white border border-green-200 rounded-2xl p-6">
+          <p className="text-green-500 text-xs font-medium mb-3">오늘의 편지</p>
+          <div className="text-green-700 text-sm leading-relaxed whitespace-pre-line">
             {report.today_letter}
           </div>
         </div>
@@ -280,14 +280,14 @@ export default function ResultPage() {
         <div className="space-y-3 pt-2">
           <Link
             href="/survey"
-            className="block w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
+            className="block w-full text-center bg-green-900 hover:bg-green-800 text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
           >
             다시 하기
           </Link>
           <div className="flex gap-3">
             <Link
               href="/history"
-              className="flex-1 text-center border-2 border-slate-200 text-slate-500 hover:bg-slate-50 font-medium py-3 rounded-2xl transition-all"
+              className="flex-1 text-center border-2 border-green-200 text-green-700 hover:bg-green-50 font-medium py-3 rounded-2xl transition-all"
             >
               히스토리
             </Link>
@@ -304,7 +304,7 @@ export default function ResultPage() {
                   toast('링크가 복사되었어요');
                 }
               }}
-              className="flex-1 text-center border-2 border-slate-200 text-slate-500 hover:bg-slate-50 font-medium py-3 rounded-2xl transition-all"
+              className="flex-1 text-center border-2 border-green-200 text-green-700 hover:bg-green-50 font-medium py-3 rounded-2xl transition-all"
             >
               공유하기
             </button>

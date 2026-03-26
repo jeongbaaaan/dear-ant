@@ -35,16 +35,16 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Bottom
       <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl animate-slide-up-sheet max-h-[85vh] flex flex-col">
         {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-slate-200 rounded-full" />
+          <div className="w-10 h-1 bg-green-200 rounded-full" />
         </div>
 
         {/* Header */}
         {title && (
           <div className="flex items-center justify-between px-6 pb-3">
-            <h3 className="font-bold text-slate-900 text-lg">{title}</h3>
+            <h3 className="font-bold text-green-900 text-lg">{title}</h3>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 p-1"
+              className="text-green-400 hover:text-green-700 p-1"
               aria-label="닫기"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

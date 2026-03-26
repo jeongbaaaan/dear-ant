@@ -75,44 +75,44 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
           <p className="text-xl font-black mt-1">{totalSell > 0 ? `${(totalSell / 10000).toFixed(0)}만원` : '-'}</p>
           <p className="text-white/50 text-xs mt-1">{sellMemos.length}건</p>
         </div>
-        <div className="bg-white border border-slate-200 rounded-2xl p-4">
-          <p className="text-slate-400 text-xs font-medium">보유 종목</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">{holdMemos.length}<span className="text-sm font-normal text-slate-400">건</span></p>
+        <div className="bg-white border border-green-200 rounded-2xl p-4">
+          <p className="text-green-500 text-xs font-medium">보유 종목</p>
+          <p className="text-2xl font-black text-emerald-600 mt-1">{holdMemos.length}<span className="text-sm font-normal text-green-500">건</span></p>
         </div>
-        <div className="bg-white border border-slate-200 rounded-2xl p-4">
-          <p className="text-slate-400 text-xs font-medium">관심 종목</p>
-          <p className="text-2xl font-black text-amber-500 mt-1">{watchMemos.length}<span className="text-sm font-normal text-slate-400">건</span></p>
+        <div className="bg-white border border-green-200 rounded-2xl p-4">
+          <p className="text-green-500 text-xs font-medium">관심 종목</p>
+          <p className="text-2xl font-black text-amber-500 mt-1">{watchMemos.length}<span className="text-sm font-normal text-green-500">건</span></p>
         </div>
       </div>
 
       {/* 트레이딩 성과 - TraderSync 벤치마킹 */}
       {buyMemos.length > 0 && sellMemos.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5">
-          <h3 className="text-slate-500 text-sm font-medium mb-4">트레이딩 성과</h3>
+        <div className="bg-white border border-green-200 rounded-2xl p-5">
+          <h3 className="text-green-700 text-sm font-medium mb-4">트레이딩 성과</h3>
           <div className="grid grid-cols-3 gap-3 mb-3">
             <div className="text-center">
-              <p className="text-xs text-slate-400 mb-1">총 거래</p>
-              <p className="text-xl font-black text-slate-800">{buyMemos.length + sellMemos.length}</p>
+              <p className="text-xs text-green-500 mb-1">총 거래</p>
+              <p className="text-xl font-black text-green-900">{buyMemos.length + sellMemos.length}</p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-slate-400 mb-1">매수/매도 비율</p>
-              <p className="text-xl font-black text-slate-800">
+              <p className="text-xs text-green-500 mb-1">매수/매도 비율</p>
+              <p className="text-xl font-black text-green-900">
                 {Math.round((buyMemos.length / (buyMemos.length + sellMemos.length)) * 100)}%
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-slate-400 mb-1">실현 손익</p>
+              <p className="text-xs text-green-500 mb-1">실현 손익</p>
               <p className={`text-xl font-black ${totalSell - totalBuy >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                 {totalSell - totalBuy >= 0 ? '+' : ''}{((totalSell - totalBuy) / 10000).toFixed(0)}만
               </p>
             </div>
           </div>
           {/* P&L 바 */}
-          <div className="h-2 rounded-full bg-slate-100 overflow-hidden flex">
+          <div className="h-2 rounded-full bg-green-100 overflow-hidden flex">
             <div className="bg-rose-400 h-full" style={{ width: `${Math.round((totalBuy / Math.max(totalBuy + totalSell, 1)) * 100)}%` }} />
             <div className="bg-blue-400 h-full" style={{ width: `${Math.round((totalSell / Math.max(totalBuy + totalSell, 1)) * 100)}%` }} />
           </div>
-          <div className="flex justify-between mt-1 text-[10px] text-slate-400">
+          <div className="flex justify-between mt-1 text-[10px] text-green-500">
             <span>매수 {(totalBuy / 10000).toFixed(0)}만</span>
             <span>매도 {(totalSell / 10000).toFixed(0)}만</span>
           </div>
@@ -120,10 +120,10 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
       )}
 
       {/* 종목별 현황 */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5">
-        <h3 className="text-slate-500 text-sm font-medium mb-4">종목별 현황</h3>
+      <div className="bg-white border border-green-200 rounded-2xl p-5">
+        <h3 className="text-green-700 text-sm font-medium mb-4">종목별 현황</h3>
         {Object.keys(stockGroups).length === 0 ? (
-          <p className="text-slate-300 text-sm text-center py-4">기록된 종목이 없습니다</p>
+          <p className="text-green-400 text-sm text-center py-4">기록된 종목이 없습니다</p>
         ) : (
           <div className="space-y-3">
             {Object.entries(stockGroups).map(([name, group]) => {
@@ -133,9 +133,9 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
               const totalActions = group.buys.length + group.sells.length + group.holds.length + group.watches.length;
 
               return (
-                <div key={name} className="border border-slate-100 rounded-xl p-3.5">
+                <div key={name} className="border border-green-100 rounded-xl p-3.5">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-bold text-slate-800">{name}</h4>
+                    <h4 className="font-bold text-green-900">{name}</h4>
                     <div className="flex items-center gap-1">
                       {group.buys.length > 0 && <span className="w-2 h-2 rounded-full bg-rose-400" />}
                       {group.sells.length > 0 && <span className="w-2 h-2 rounded-full bg-blue-400" />}
@@ -143,7 +143,7 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
                       {group.watches.length > 0 && <span className="w-2 h-2 rounded-full bg-amber-400" />}
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-slate-400">
+                  <div className="flex items-center gap-4 text-xs text-green-500">
                     <span>총 {totalActions}건 기록</span>
                     {avgPrice > 0 && <span>평균 매수가 {avgPrice.toLocaleString()}원</span>}
                     {totalBuyQty > 0 && <span>{totalBuyQty}주</span>}
@@ -194,11 +194,11 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
   if (memosWithMood.length === 0) {
     return (
       <div className="text-center py-12 animate-fade-in">
-        <p className="text-slate-400 text-sm mb-1">투자 리포트를 먼저 받아보세요</p>
-        <p className="text-slate-300 text-xs">리포트 후 메모를 작성하면 감정 분석이 시작됩니다</p>
+        <p className="text-green-500 text-sm mb-1">투자 리포트를 먼저 받아보세요</p>
+        <p className="text-green-400 text-xs">리포트 후 메모를 작성하면 감정 분석이 시작됩니다</p>
         <Link
           href="/survey"
-          className="inline-block mt-4 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium py-2 px-5 rounded-xl transition-all"
+          className="inline-block mt-4 bg-green-900 hover:bg-green-800 text-white text-sm font-medium py-2 px-5 rounded-xl transition-all"
         >
           리포트 받으러 가기
         </Link>
@@ -209,7 +209,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
   return (
     <div className="space-y-4 animate-fade-in">
       {/* 핵심 인사이트 카드 */}
-      <div className="bg-slate-900 rounded-2xl p-5 text-white shadow-lg">
+      <div className="bg-green-900 rounded-2xl p-5 text-white shadow-lg">
         <p className="text-white/60 text-xs font-medium mb-3">나의 투자 감정 패턴</p>
         <div className="space-y-2.5">
           {buyByGrade.length > 0 && (
@@ -245,8 +245,8 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
       </div>
 
       {/* 등급별 행동 분포 */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5">
-        <h3 className="text-slate-500 text-sm font-medium mb-4">투자 무드별 행동 분포</h3>
+      <div className="bg-white border border-green-200 rounded-2xl p-5">
+        <h3 className="text-green-700 text-sm font-medium mb-4">투자 무드별 행동 분포</h3>
         <div className="space-y-3">
           {['A', 'B', 'C', 'D', 'F'].map(grade => {
             const actions = moodActionMap[grade];
@@ -261,10 +261,10 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${moodGradeColor[grade]}`}>
                       {grade}등급
                     </span>
-                    <span className="text-xs text-slate-400">{total}건</span>
+                    <span className="text-xs text-green-500">{total}건</span>
                   </div>
                 </div>
-                <div className="flex h-3 rounded-full overflow-hidden bg-slate-50">
+                <div className="flex h-3 rounded-full overflow-hidden bg-green-50">
                   {actions.buy > 0 && (
                     <div className="bg-rose-400 transition-all" style={{ width: `${(actions.buy / total) * 100}%` }} />
                   )}
@@ -282,7 +282,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
             );
           })}
         </div>
-        <div className="flex items-center gap-3 mt-4 text-xs text-slate-400">
+        <div className="flex items-center gap-3 mt-4 text-xs text-green-500">
           <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-rose-400" />매수</div>
           <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" />매도</div>
           <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-400" />보유</div>
@@ -291,9 +291,9 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
       </div>
 
       {/* 주의 메시지 */}
-      <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4">
-        <p className="text-slate-600 text-xs font-medium mb-1">💡 Dear,ANT의 팁</p>
-        <p className="text-slate-500 text-xs leading-relaxed">
+      <div className="bg-green-50 rounded-2xl border border-green-200 p-4">
+        <p className="text-green-800 text-xs font-medium mb-1">💡 Dear,ANT의 팁</p>
+        <p className="text-green-700 text-xs leading-relaxed">
           {avgMoodOnBuy !== null && avgMoodOnBuy > 50
             ? '감정이 높을 때 매수하는 경향이 있어요. 매수 전 한 번 더 생각해보는 습관을 길러보세요.'
             : '이성적으로 매수하는 좋은 습관을 가지고 있어요. 꾸준히 기록하면서 패턴을 확인해보세요.'}
@@ -426,12 +426,12 @@ export default function MemoPage() {
       <div className="max-w-md mx-auto animate-fade-in">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-black text-slate-900">트레이딩 저널</h1>
+          <h1 className="text-2xl font-black text-green-900">트레이딩 저널</h1>
         </div>
-        <p className="text-slate-400 text-sm mb-5">매매 기록 · 포트폴리오 · 감정 분석</p>
+        <p className="text-green-500 text-sm mb-5">매매 기록 · 포트폴리오 · 감정 분석</p>
 
         {/* 탭 네비게이션 */}
-        <div className="flex bg-slate-100 rounded-xl p-1 mb-5">
+        <div className="flex bg-green-100 rounded-xl p-1 mb-5">
           {[
             { key: 'all' as TabType, label: '전체 메모' },
             { key: 'portfolio' as TabType, label: '포트폴리오' },
@@ -441,7 +441,7 @@ export default function MemoPage() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`flex-1 text-sm font-medium py-2.5 rounded-lg transition-all ${
-                activeTab === tab.key ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-400'
+                activeTab === tab.key ? 'bg-green-900 text-white shadow-sm' : 'text-green-500'
               }`}
             >
               {tab.label}
@@ -470,7 +470,7 @@ export default function MemoPage() {
                 {!showForm && (
                   <button
                     onClick={() => { resetForm(); setShowForm(true); }}
-                    className="w-full mb-4 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    className="w-full mb-4 bg-green-900 hover:bg-green-800 text-white font-bold py-3.5 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   >
                     <span className="text-lg">+</span> 새 메모 작성
                   </button>
@@ -483,18 +483,18 @@ export default function MemoPage() {
                   title={editingId ? '메모 수정' : '새 메모'}
                 >
                   <div className="mb-3">
-                    <label className="block text-slate-500 text-xs font-medium mb-1.5">종목명</label>
+                    <label className="block text-green-700 text-xs font-medium mb-1.5">종목명</label>
                     <input
                       type="text"
                       value={stockName}
                       onChange={(e) => setStockName(e.target.value)}
                       placeholder="예: 삼성전자, AAPL"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm"
+                      className="w-full px-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
                     />
                   </div>
 
                   <div className="mb-3">
-                    <label className="block text-slate-500 text-xs font-medium mb-1.5">구분</label>
+                    <label className="block text-green-700 text-xs font-medium mb-1.5">구분</label>
                     <div className="grid grid-cols-4 gap-2">
                       {Object.entries(actionConfig).map(([key, config]) => (
                         <button
@@ -502,8 +502,8 @@ export default function MemoPage() {
                           onClick={() => setAction(key as typeof action)}
                           className={`text-xs font-bold py-2 rounded-xl border-2 transition-all ${
                             action === key
-                              ? 'border-slate-900 bg-slate-900 text-white'
-                              : 'border-slate-200 text-slate-400'
+                              ? 'border-green-900 bg-green-900 text-white'
+                              : 'border-green-200 text-green-500'
                           }`}
                         >
                           {config.icon} {config.label}
@@ -514,30 +514,30 @@ export default function MemoPage() {
 
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                      <label className="block text-slate-500 text-xs font-medium mb-1.5">가격 (선택)</label>
+                      <label className="block text-green-700 text-xs font-medium mb-1.5">가격 (선택)</label>
                       <input
                         type="number"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                         placeholder="0"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm"
+                        className="w-full px-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-500 text-xs font-medium mb-1.5">수량 (선택)</label>
+                      <label className="block text-green-700 text-xs font-medium mb-1.5">수량 (선택)</label>
                       <input
                         type="number"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
                         placeholder="0"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm"
+                        className="w-full px-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
                       />
                     </div>
                   </div>
 
                   {/* 전략 태그 - Edgewonk 벤치마킹 */}
                   <div className="mb-3">
-                    <label className="block text-slate-500 text-xs font-medium mb-1.5">전략 태그 (선택)</label>
+                    <label className="block text-green-700 text-xs font-medium mb-1.5">전략 태그 (선택)</label>
                     <div className="flex gap-1.5 flex-wrap">
                       {['스윙', '단타', '장기투자', '배당', 'ETF', '테마주', '실적', '기술적분석'].map(tag => (
                         <button
@@ -553,8 +553,8 @@ export default function MemoPage() {
                           }}
                           className={`text-[11px] px-2.5 py-1 rounded-full border transition-all ${
                             memoText.includes(`#${tag}`)
-                              ? 'bg-slate-100 text-slate-800 border-slate-300'
-                              : 'bg-white text-slate-400 border-slate-200'
+                              ? 'bg-green-100 text-green-900 border-green-300'
+                              : 'bg-white text-green-500 border-green-200'
                           }`}
                         >
                           #{tag}
@@ -564,13 +564,13 @@ export default function MemoPage() {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-slate-500 text-xs font-medium mb-1.5">메모</label>
+                    <label className="block text-green-700 text-xs font-medium mb-1.5">메모</label>
                     <textarea
                       value={memoText}
                       onChange={(e) => setMemoText(e.target.value)}
                       placeholder="투자 판단 근거, 느낌, 메모 등을 자유롭게 적어주세요"
                       rows={3}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm resize-none"
+                      className="w-full px-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm resize-none"
                     />
                   </div>
 
@@ -578,7 +578,7 @@ export default function MemoPage() {
                     <button
                       onClick={handleSubmit}
                       disabled={!stockName.trim() || !memoText.trim()}
-                      className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all active:scale-[0.98]"
+                      className="w-full bg-green-900 hover:bg-green-800 disabled:bg-green-200 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all active:scale-[0.98]"
                     >
                       {editingId ? '수정 완료' : '저장'}
                     </button>
@@ -590,7 +590,7 @@ export default function MemoPage() {
                   <div className="space-y-3 mb-4">
                     {/* 검색 */}
                     <div className="relative">
-                      <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-green-300" width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
                         <line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
@@ -599,7 +599,7 @@ export default function MemoPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="종목명 또는 메모 검색"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 text-slate-800 text-sm"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
                       />
                     </div>
 
@@ -614,8 +614,8 @@ export default function MemoPage() {
                             onClick={() => setFilter(f)}
                             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                               filter === f
-                                ? 'bg-slate-900 text-white border-slate-900'
-                                : 'bg-white text-slate-400 border-slate-200'
+                                ? 'bg-green-900 text-white border-green-900'
+                                : 'bg-white text-green-500 border-green-200'
                             }`}
                           >
                             {label} {count > 0 && <span className="ml-0.5 opacity-70">{count}</span>}
@@ -629,12 +629,12 @@ export default function MemoPage() {
                 {/* 메모 목록 */}
                 {memos.length === 0 && !showForm ? (
                   <div className="text-center py-16">
-                    <p className="text-slate-400 mb-2">아직 메모가 없습니다</p>
-                    <p className="text-slate-300 text-xs">투자 기록을 남겨보세요</p>
+                    <p className="text-green-500 mb-2">아직 메모가 없습니다</p>
+                    <p className="text-green-400 text-xs">투자 기록을 남겨보세요</p>
                   </div>
                 ) : filteredMemos.length === 0 ? (
                   <div className="text-center py-12">
-                    <p className="text-slate-300 text-sm">검색 결과가 없습니다</p>
+                    <p className="text-green-400 text-sm">검색 결과가 없습니다</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -650,19 +650,19 @@ export default function MemoPage() {
                       return (
                         <div
                           key={memo.id}
-                          className="bg-white rounded-2xl border border-slate-200 p-4 transition-all hover:shadow-sm"
+                          className="bg-white rounded-2xl border border-green-200 p-4 transition-all hover:shadow-sm"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                               <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${ac.bg} ${ac.color}`}>
                                 {ac.icon} {ac.label}
                               </span>
-                              <h4 className="font-bold text-slate-800">{memo.stock_name}</h4>
+                              <h4 className="font-bold text-green-900">{memo.stock_name}</h4>
                             </div>
                             <div className="flex items-center">
                               <button
                                 onClick={() => handleEdit(memo)}
-                                className="text-slate-300 hover:text-slate-600 transition-colors p-2.5"
+                                className="text-green-300 hover:text-green-700 transition-colors p-2.5"
                                 aria-label="메모 수정"
                               >
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -671,7 +671,7 @@ export default function MemoPage() {
                               </button>
                               <button
                                 onClick={() => setDeletingId(memo.id)}
-                                className="text-slate-300 hover:text-rose-500 transition-colors p-2.5"
+                                className="text-green-300 hover:text-rose-500 transition-colors p-2.5"
                                 aria-label="메모 삭제"
                               >
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -682,40 +682,40 @@ export default function MemoPage() {
                           </div>
 
                           {(memo.price || memo.quantity) && (
-                            <div className="flex items-center gap-3 mb-2 text-xs text-slate-400">
+                            <div className="flex items-center gap-3 mb-2 text-xs text-green-500">
                               {memo.price && <span>{memo.price.toLocaleString()}원</span>}
                               {memo.quantity && <span>{memo.quantity}주</span>}
                               {memo.price && memo.quantity && (
-                                <span className="text-slate-500 font-medium">
+                                <span className="text-green-700 font-medium">
                                   = {(memo.price * memo.quantity).toLocaleString()}원
                                 </span>
                               )}
                             </div>
                           )}
 
-                          <p className="text-slate-600 text-sm leading-relaxed mb-2">{memo.memo}</p>
+                          <p className="text-green-700 text-sm leading-relaxed mb-2">{memo.memo}</p>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-slate-300 text-xs">{date}</span>
+                            <span className="text-green-400 text-xs">{date}</span>
                             <div className="flex items-center gap-1.5">
                               {memo.invest_mood && (
-                                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${moodGradeColor[memo.invest_mood] || 'bg-slate-100 text-slate-500'}`}>
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${moodGradeColor[memo.invest_mood] || 'bg-green-100 text-green-700'}`}>
                                   {memo.invest_mood}등급
                                 </span>
                               )}
                               {memo.decision_mode && (
-                                <span className="text-xs text-slate-400">{memo.decision_mode}</span>
+                                <span className="text-xs text-green-500">{memo.decision_mode}</span>
                               )}
                             </div>
                           </div>
 
                           {deletingId === memo.id && (
-                            <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-                              <span className="text-xs text-slate-400">정말 삭제할까요?</span>
+                            <div className="mt-3 pt-3 border-t border-green-100 flex items-center justify-between">
+                              <span className="text-xs text-green-500">정말 삭제할까요?</span>
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => setDeletingId(null)}
-                                  className="text-xs text-slate-400 hover:text-slate-600 px-3 py-1 rounded-lg"
+                                  className="text-xs text-green-500 hover:text-green-700 px-3 py-1 rounded-lg"
                                 >
                                   취소
                                 </button>

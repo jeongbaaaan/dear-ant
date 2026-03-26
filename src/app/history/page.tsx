@@ -56,10 +56,10 @@ function TrendChart({ reports }: { reports: ApiReport[] }) {
   const emotionPath = emotionPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5">
+    <div className="bg-white border border-green-200 rounded-2xl p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-slate-500 text-sm font-medium">투자 성향 트렌드</p>
-        <p className="text-slate-400 text-xs">최근 {data.length}회</p>
+        <p className="text-green-700 text-sm font-medium">투자 성향 트렌드</p>
+        <p className="text-green-500 text-xs">최근 {data.length}회</p>
       </div>
       <svg width="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
         {/* 그리드 라인 */}
@@ -86,7 +86,7 @@ function TrendChart({ reports }: { reports: ApiReport[] }) {
           <circle key={i} cx={p.x} cy={p.y} r="4" fill="white" stroke="#7e22ce" strokeWidth="2" />
         ))}
       </svg>
-      <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
+      <div className="flex items-center gap-4 mt-3 text-xs text-green-500">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-0.5 bg-purple-600 rounded" />
           <span>투자 무드</span>
@@ -121,27 +121,27 @@ function StatsSummary({ reports }: { reports: ApiReport[] }) {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div className="bg-white border border-slate-200 rounded-2xl p-4">
-        <p className="text-slate-400 text-xs mb-1">평균 감정 흔들림</p>
-        <p className="text-2xl font-black text-slate-800"><CountUp end={avgMoodScore} /><span className="text-sm font-normal text-slate-400">%</span></p>
-        <p className="text-xs text-slate-400 mt-0.5">
+      <div className="bg-white border border-green-200 rounded-2xl p-4">
+        <p className="text-green-500 text-xs mb-1">평균 감정 흔들림</p>
+        <p className="text-2xl font-black text-green-900"><CountUp end={avgMoodScore} /><span className="text-sm font-normal text-green-500">%</span></p>
+        <p className="text-xs text-green-500 mt-0.5">
           {avgMoodScore <= 35 ? '안정적 👍' : avgMoodScore <= 60 ? '보통' : '변동 높음'}
         </p>
       </div>
-      <div className="bg-white border border-slate-200 rounded-2xl p-4">
-        <p className="text-slate-400 text-xs mb-1">주요 판단 모드</p>
-        <p className="text-2xl font-black text-slate-800">{topMode?.[0] || '-'}</p>
-        <p className="text-xs text-slate-400 mt-0.5">{topMode ? `${topMode[1]}회 (${Math.round(topMode[1] / reports.length * 100)}%)` : ''}</p>
+      <div className="bg-white border border-green-200 rounded-2xl p-4">
+        <p className="text-green-500 text-xs mb-1">주요 판단 모드</p>
+        <p className="text-2xl font-black text-green-900">{topMode?.[0] || '-'}</p>
+        <p className="text-xs text-green-500 mt-0.5">{topMode ? `${topMode[1]}회 (${Math.round(topMode[1] / reports.length * 100)}%)` : ''}</p>
       </div>
-      <div className="bg-white border border-slate-200 rounded-2xl p-4">
-        <p className="text-slate-400 text-xs mb-1">최다 등급</p>
+      <div className="bg-white border border-green-200 rounded-2xl p-4">
+        <p className="text-green-500 text-xs mb-1">최다 등급</p>
         <p className={`text-2xl font-black ${moodGradeColor[topGrade?.[0] || 'C']}`}>{topGrade?.[0] || '-'}</p>
-        <p className="text-xs text-slate-400 mt-0.5">{topGrade ? `${topGrade[1]}회 기록` : ''}</p>
+        <p className="text-xs text-green-500 mt-0.5">{topGrade ? `${topGrade[1]}회 기록` : ''}</p>
       </div>
-      <div className="bg-white border border-slate-200 rounded-2xl p-4">
-        <p className="text-slate-400 text-xs mb-1">총 리포트</p>
-        <p className="text-2xl font-black text-slate-800"><CountUp end={streak} /><span className="text-sm font-normal text-slate-400">회</span></p>
-        <p className="text-xs text-slate-400 mt-0.5">기록이 쌓이는 중</p>
+      <div className="bg-white border border-green-200 rounded-2xl p-4">
+        <p className="text-green-500 text-xs mb-1">총 리포트</p>
+        <p className="text-2xl font-black text-green-900"><CountUp end={streak} /><span className="text-sm font-normal text-green-500">회</span></p>
+        <p className="text-xs text-green-500 mt-0.5">기록이 쌓이는 중</p>
       </div>
     </div>
   );
@@ -201,10 +201,10 @@ export default function HistoryPage() {
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-black text-slate-900">
+            <h1 className="text-2xl font-black text-green-900">
               리포트 히스토리
             </h1>
-            <p className="text-slate-400 text-sm mt-1">나의 투자 판단 기록</p>
+            <p className="text-green-500 text-sm mt-1">나의 투자 판단 기록</p>
           </div>
         </div>
 
@@ -217,10 +217,10 @@ export default function HistoryPage() {
           </div>
         ) : reports.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-slate-400 mb-4">아직 리포트가 없습니다</p>
+            <p className="text-green-500 mb-4">아직 리포트가 없습니다</p>
             <Link
               href="/survey"
-              className="inline-block bg-slate-900 text-white font-medium py-3 px-6 rounded-2xl transition-all"
+              className="inline-block bg-green-900 text-white font-medium py-3 px-6 rounded-2xl transition-all"
             >
               첫 리포트 받기
             </Link>
@@ -228,11 +228,11 @@ export default function HistoryPage() {
         ) : (
           <>
             {/* 탭 전환 */}
-            <div className="flex bg-slate-100 rounded-xl p-1 mb-5">
+            <div className="flex bg-green-100 rounded-xl p-1 mb-5">
               <button
                 onClick={() => setView('dashboard')}
                 className={`flex-1 text-sm font-medium py-2 rounded-lg transition-all ${
-                  view === 'dashboard' ? 'bg-slate-900 text-white' : 'text-slate-400'
+                  view === 'dashboard' ? 'bg-green-900 text-white' : 'text-green-500'
                 }`}
               >
                 대시보드
@@ -240,7 +240,7 @@ export default function HistoryPage() {
               <button
                 onClick={() => setView('list')}
                 className={`flex-1 text-sm font-medium py-2 rounded-lg transition-all ${
-                  view === 'list' ? 'bg-slate-900 text-white' : 'text-slate-400'
+                  view === 'list' ? 'bg-green-900 text-white' : 'text-green-500'
                 }`}
               >
                 전체 기록
@@ -259,7 +259,7 @@ export default function HistoryPage() {
                 {reports[0] && (
                   <Link
                     href={`/result/${reports[0].id}`}
-                    className="block bg-slate-900 rounded-2xl p-5 text-white transition-all"
+                    className="block bg-green-900 rounded-2xl p-5 text-white transition-all"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-white/60 text-xs font-medium">최근 리포트</span>
@@ -287,11 +287,11 @@ export default function HistoryPage() {
                     <Link
                       key={report.id}
                       href={`/result/${report.id}`}
-                      className="block bg-white rounded-2xl border border-slate-200 p-4 hover:shadow-md hover:border-slate-300 transition-all duration-200"
+                      className="block bg-white rounded-2xl border border-green-200 p-4 hover:shadow-md hover:border-green-400 transition-all duration-200"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-slate-400 text-xs">{date}</span>
+                          <span className="text-green-500 text-xs">{date}</span>
                           {report.invest_mood && (
                             <span className={`text-xs font-black ${moodGradeColor[report.invest_mood] || 'text-purple-500'}`}>
                               {report.invest_mood}등급
@@ -302,11 +302,11 @@ export default function HistoryPage() {
                           {report.decision_mode}
                         </span>
                       </div>
-                      <p className="text-slate-600 text-sm line-clamp-2">
+                      <p className="text-green-700 text-sm line-clamp-2">
                         {report.today_message}
                       </p>
                       <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-4 text-xs text-slate-400">
+                        <div className="flex items-center gap-4 text-xs text-green-500">
                           <span>감정 흔들림 {report.mood_score}%</span>
                           <span>리스크 {report.risk_tendency}</span>
                         </div>
