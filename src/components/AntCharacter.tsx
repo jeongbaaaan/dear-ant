@@ -13,9 +13,9 @@ export default function AntCharacter({ size = 120, className = '', expression = 
     <div className={`relative inline-block ${className}`}>
       {/* Speech bubble */}
       {speech && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white rounded-xl px-3 py-1.5 shadow-md border border-purple-100 whitespace-nowrap z-10">
-          <p className="text-xs font-medium text-purple-600">{speech}</p>
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-r border-b border-purple-100 rotate-45" />
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white rounded-xl px-3 py-1.5 shadow-md whitespace-nowrap z-10">
+          <p className="text-xs font-medium text-green-800">{speech}</p>
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45" />
         </div>
       )}
 

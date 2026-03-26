@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className="antialiased min-h-screen"
+        className="antialiased min-h-screen bg-v3"
       >
         <ClientProviders>
           {children}

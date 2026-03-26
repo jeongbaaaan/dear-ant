@@ -6,7 +6,7 @@ export function Skeleton({ className = '' }: { className?: string }) {
 
 export function SkeletonCard() {
   return (
-    <div className="bg-white border border-green-200 rounded-2xl p-5 space-y-3">
+    <div className="card-v3 p-5 space-y-3">
       <div className="flex items-center justify-between">
         <Skeleton className="h-4 w-20" />
         <Skeleton className="h-6 w-16 rounded-full" />
@@ -25,7 +25,7 @@ export function SkeletonStats() {
   return (
     <div className="grid grid-cols-2 gap-3">
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="bg-white border border-green-200 rounded-2xl p-4 space-y-2">
+        <div key={i} className="card-v3 p-4 space-y-2">
           <Skeleton className="h-3 w-20" />
           <Skeleton className="h-7 w-16" />
           <Skeleton className="h-3 w-12" />

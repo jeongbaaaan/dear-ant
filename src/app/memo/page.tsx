@@ -75,33 +75,33 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
           <p className="text-xl font-black mt-1">{totalSell > 0 ? `${(totalSell / 10000).toFixed(0)}만원` : '-'}</p>
           <p className="text-white/50 text-xs mt-1">{sellMemos.length}건</p>
         </div>
-        <div className="bg-white border border-green-200 rounded-2xl p-4">
-          <p className="text-green-500 text-xs font-medium">보유 종목</p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">{holdMemos.length}<span className="text-sm font-normal text-green-500">건</span></p>
+        <div className="card-v3 p-4">
+          <p className="text-green-800 text-xs font-medium">보유 종목</p>
+          <p className="text-2xl font-black text-emerald-600 mt-1">{holdMemos.length}<span className="text-sm font-normal text-green-800">건</span></p>
         </div>
-        <div className="bg-white border border-green-200 rounded-2xl p-4">
-          <p className="text-green-500 text-xs font-medium">관심 종목</p>
-          <p className="text-2xl font-black text-amber-500 mt-1">{watchMemos.length}<span className="text-sm font-normal text-green-500">건</span></p>
+        <div className="card-v3 p-4">
+          <p className="text-green-800 text-xs font-medium">관심 종목</p>
+          <p className="text-2xl font-black text-amber-500 mt-1">{watchMemos.length}<span className="text-sm font-normal text-green-800">건</span></p>
         </div>
       </div>
 
       {/* 트레이딩 성과 - TraderSync 벤치마킹 */}
       {buyMemos.length > 0 && sellMemos.length > 0 && (
-        <div className="bg-white border border-green-200 rounded-2xl p-5">
+        <div className="card-v3 p-5">
           <h3 className="text-green-700 text-sm font-medium mb-4">트레이딩 성과</h3>
           <div className="grid grid-cols-3 gap-3 mb-3">
             <div className="text-center">
-              <p className="text-xs text-green-500 mb-1">총 거래</p>
+              <p className="text-xs text-green-800 mb-1">총 거래</p>
               <p className="text-xl font-black text-green-900">{buyMemos.length + sellMemos.length}</p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-green-500 mb-1">매수/매도 비율</p>
+              <p className="text-xs text-green-800 mb-1">매수/매도 비율</p>
               <p className="text-xl font-black text-green-900">
                 {Math.round((buyMemos.length / (buyMemos.length + sellMemos.length)) * 100)}%
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-green-500 mb-1">실현 손익</p>
+              <p className="text-xs text-green-800 mb-1">실현 손익</p>
               <p className={`text-xl font-black ${totalSell - totalBuy >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                 {totalSell - totalBuy >= 0 ? '+' : ''}{((totalSell - totalBuy) / 10000).toFixed(0)}만
               </p>
@@ -112,7 +112,7 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
             <div className="bg-rose-400 h-full" style={{ width: `${Math.round((totalBuy / Math.max(totalBuy + totalSell, 1)) * 100)}%` }} />
             <div className="bg-blue-400 h-full" style={{ width: `${Math.round((totalSell / Math.max(totalBuy + totalSell, 1)) * 100)}%` }} />
           </div>
-          <div className="flex justify-between mt-1 text-[10px] text-green-500">
+          <div className="flex justify-between mt-1 text-xs text-green-800">
             <span>매수 {(totalBuy / 10000).toFixed(0)}만</span>
             <span>매도 {(totalSell / 10000).toFixed(0)}만</span>
           </div>
@@ -120,7 +120,7 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
       )}
 
       {/* 종목별 현황 */}
-      <div className="bg-white border border-green-200 rounded-2xl p-5">
+      <div className="card-v3 p-5">
         <h3 className="text-green-700 text-sm font-medium mb-4">종목별 현황</h3>
         {Object.keys(stockGroups).length === 0 ? (
           <p className="text-green-400 text-sm text-center py-4">기록된 종목이 없습니다</p>
@@ -143,7 +143,7 @@ function PortfolioSummary({ memos }: { memos: Memo[] }) {
                       {group.watches.length > 0 && <span className="w-2 h-2 rounded-full bg-amber-400" />}
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-green-500">
+                  <div className="flex items-center gap-4 text-xs text-green-800">
                     <span>총 {totalActions}건 기록</span>
                     {avgPrice > 0 && <span>평균 매수가 {avgPrice.toLocaleString()}원</span>}
                     {totalBuyQty > 0 && <span>{totalBuyQty}주</span>}
@@ -194,7 +194,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
   if (memosWithMood.length === 0) {
     return (
       <div className="text-center py-12 animate-fade-in">
-        <p className="text-green-500 text-sm mb-1">투자 리포트를 먼저 받아보세요</p>
+        <p className="text-green-800 text-sm mb-1">투자 리포트를 먼저 받아보세요</p>
         <p className="text-green-400 text-xs">리포트 후 메모를 작성하면 감정 분석이 시작됩니다</p>
         <Link
           href="/survey"
@@ -245,7 +245,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
       </div>
 
       {/* 등급별 행동 분포 */}
-      <div className="bg-white border border-green-200 rounded-2xl p-5">
+      <div className="card-v3 p-5">
         <h3 className="text-green-700 text-sm font-medium mb-4">투자 무드별 행동 분포</h3>
         <div className="space-y-3">
           {['A', 'B', 'C', 'D', 'F'].map(grade => {
@@ -261,7 +261,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${moodGradeColor[grade]}`}>
                       {grade}등급
                     </span>
-                    <span className="text-xs text-green-500">{total}건</span>
+                    <span className="text-xs text-green-800">{total}건</span>
                   </div>
                 </div>
                 <div className="flex h-3 rounded-full overflow-hidden bg-green-50">
@@ -282,7 +282,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
             );
           })}
         </div>
-        <div className="flex items-center gap-3 mt-4 text-xs text-green-500">
+        <div className="flex items-center gap-3 mt-4 text-xs text-green-800">
           <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-rose-400" />매수</div>
           <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" />매도</div>
           <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-400" />보유</div>
@@ -291,7 +291,7 @@ function MoodInsights({ memos }: { memos: Memo[] }) {
       </div>
 
       {/* 주의 메시지 */}
-      <div className="bg-green-50 rounded-2xl border border-green-200 p-4">
+      <div className="bg-green-50 rounded-2xl p-4">
         <p className="text-green-800 text-xs font-medium mb-1">💡 Dear,ANT의 팁</p>
         <p className="text-green-700 text-xs leading-relaxed">
           {avgMoodOnBuy !== null && avgMoodOnBuy > 50
@@ -428,7 +428,7 @@ export default function MemoPage() {
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-black text-green-900">트레이딩 저널</h1>
         </div>
-        <p className="text-green-500 text-sm mb-5">매매 기록 · 포트폴리오 · 감정 분석</p>
+        <p className="text-green-800 text-sm mb-5">매매 기록 · 포트폴리오 · 감정 분석</p>
 
         {/* 탭 네비게이션 */}
         <div className="flex bg-green-100 rounded-xl p-1 mb-5">
@@ -441,7 +441,7 @@ export default function MemoPage() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`flex-1 text-sm font-medium py-2.5 rounded-lg transition-all ${
-                activeTab === tab.key ? 'bg-green-900 text-white shadow-sm' : 'text-green-500'
+                activeTab === tab.key ? 'bg-green-900 text-white shadow-sm' : 'text-green-800'
               }`}
             >
               {tab.label}
@@ -489,7 +489,7 @@ export default function MemoPage() {
                       value={stockName}
                       onChange={(e) => setStockName(e.target.value)}
                       placeholder="예: 삼성전자, AAPL"
-                      className="w-full px-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
+                      className="w-full px-4 py-2.5 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
                     />
                   </div>
 
@@ -503,7 +503,7 @@ export default function MemoPage() {
                           className={`text-xs font-bold py-2 rounded-xl border-2 transition-all ${
                             action === key
                               ? 'border-green-900 bg-green-900 text-white'
-                              : 'border-green-200 text-green-500'
+                              : 'border-green-200 text-green-800'
                           }`}
                         >
                           {config.icon} {config.label}
@@ -520,7 +520,7 @@ export default function MemoPage() {
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                         placeholder="0"
-                        className="w-full px-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
+                        className="w-full px-4 py-2.5 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
                       />
                     </div>
                     <div>
@@ -530,7 +530,7 @@ export default function MemoPage() {
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
                         placeholder="0"
-                        className="w-full px-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
+                        className="w-full px-4 py-2.5 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
                       />
                     </div>
                   </div>
@@ -551,10 +551,10 @@ export default function MemoPage() {
                               setMemoText(current ? `${current} #${tag}` : `#${tag}`);
                             }
                           }}
-                          className={`text-[11px] px-2.5 py-1 rounded-full border transition-all ${
+                          className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
                             memoText.includes(`#${tag}`)
                               ? 'bg-green-100 text-green-900 border-green-300'
-                              : 'bg-white text-green-500 border-green-200'
+                              : 'bg-white text-green-800 border-green-200'
                           }`}
                         >
                           #{tag}
@@ -570,7 +570,7 @@ export default function MemoPage() {
                       onChange={(e) => setMemoText(e.target.value)}
                       placeholder="투자 판단 근거, 느낌, 메모 등을 자유롭게 적어주세요"
                       rows={3}
-                      className="w-full px-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm resize-none"
+                      className="w-full px-4 py-2.5 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm resize-none"
                     />
                   </div>
 
@@ -599,7 +599,7 @@ export default function MemoPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="종목명 또는 메모 검색"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm"
                       />
                     </div>
 
@@ -615,7 +615,7 @@ export default function MemoPage() {
                             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                               filter === f
                                 ? 'bg-green-900 text-white border-green-900'
-                                : 'bg-white text-green-500 border-green-200'
+                                : 'bg-white text-green-800 border-green-200'
                             }`}
                           >
                             {label} {count > 0 && <span className="ml-0.5 opacity-70">{count}</span>}
@@ -629,7 +629,7 @@ export default function MemoPage() {
                 {/* 메모 목록 */}
                 {memos.length === 0 && !showForm ? (
                   <div className="text-center py-16">
-                    <p className="text-green-500 mb-2">아직 메모가 없습니다</p>
+                    <p className="text-green-800 mb-2">아직 메모가 없습니다</p>
                     <p className="text-green-400 text-xs">투자 기록을 남겨보세요</p>
                   </div>
                 ) : filteredMemos.length === 0 ? (
@@ -650,7 +650,7 @@ export default function MemoPage() {
                       return (
                         <div
                           key={memo.id}
-                          className="bg-white rounded-2xl border border-green-200 p-4 transition-all hover:shadow-sm"
+                          className="bg-white rounded-2xl p-4 transition-all hover:shadow-sm"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
@@ -682,7 +682,7 @@ export default function MemoPage() {
                           </div>
 
                           {(memo.price || memo.quantity) && (
-                            <div className="flex items-center gap-3 mb-2 text-xs text-green-500">
+                            <div className="flex items-center gap-3 mb-2 text-xs text-green-800">
                               {memo.price && <span>{memo.price.toLocaleString()}원</span>}
                               {memo.quantity && <span>{memo.quantity}주</span>}
                               {memo.price && memo.quantity && (
@@ -704,18 +704,18 @@ export default function MemoPage() {
                                 </span>
                               )}
                               {memo.decision_mode && (
-                                <span className="text-xs text-green-500">{memo.decision_mode}</span>
+                                <span className="text-xs text-green-800">{memo.decision_mode}</span>
                               )}
                             </div>
                           </div>
 
                           {deletingId === memo.id && (
                             <div className="mt-3 pt-3 border-t border-green-100 flex items-center justify-between">
-                              <span className="text-xs text-green-500">정말 삭제할까요?</span>
+                              <span className="text-xs text-green-800">정말 삭제할까요?</span>
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => setDeletingId(null)}
-                                  className="text-xs text-green-500 hover:text-green-700 px-3 py-1 rounded-lg"
+                                  className="text-xs text-green-800 hover:text-green-700 px-3 py-1 rounded-lg"
                                 >
                                   취소
                                 </button>

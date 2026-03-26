@@ -5,6 +5,8 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
 import { ApiReport } from '@/lib/types';
+import { GradeBadge } from '@/components/GradeBadge';
+import { CircularGauge } from '@/components/CircularGauge';
 
 const modeConfig: Record<string, { bg: string; text: string; desc: string }> = {
   '방어': { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-600', desc: '시장으로부터 자산을 보호하는 모드' },
@@ -118,7 +120,7 @@ export default function ResultPage() {
   if (!report) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-6">
-        <p className="text-green-500 mb-4">리포트를 찾을 수 없습니다.</p>
+        <p className="text-green-800 mb-4">리포트를 찾을 수 없습니다.</p>
         <Link href="/" className="text-green-700 hover:text-green-900 underline">
           홈으로 돌아가기
         </Link>
@@ -140,55 +142,53 @@ export default function ResultPage() {
       <div className="max-w-md w-full animate-fade-in space-y-5">
         {/* 헤더 */}
         <div className="text-center">
-          <p className="text-green-500 text-sm">{date}</p>
+          <p className="text-green-800 text-sm">{date}</p>
           <h1 className="text-2xl font-black text-green-900 mt-1">
-            Dear<span className="text-green-500">,</span>ANT Report
+            Dear<span className="text-green-800">,</span>ANT Report
           </h1>
         </div>
 
-        {/* 투자 분위기 등급 - 메인 카드 */}
-        <div className={`${investMood.color} rounded-3xl p-6 text-white`}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-white/80 text-sm font-medium">오늘의 투자 분위기</span>
-            <span className="text-4xl font-black">{report.invest_mood}</span>
+        {/* 통합 히어로 카드 */}
+        <div className="bg-green-900 rounded-3xl p-6 text-white relative overflow-hidden">
+          <div
+            className="absolute -top-16 -right-16 w-48 h-48 rounded-full"
+            style={{ background: 'radial-gradient(circle, rgba(74,222,128,0.15) 0%, transparent 70%)' }}
+          />
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-white/70 text-sm font-medium">오늘의 투자 분위기</span>
           </div>
-          <p className="text-xl font-bold">{investMood.label}</p>
-          <p className="text-white/80 text-sm mt-1">{investMood.desc}</p>
-        </div>
-
-        {/* 판단 모드 */}
-        <div className={`rounded-2xl border p-5 ${mode.bg}`}>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-green-700 text-sm">판단 모드</span>
-            <span className={`text-xl font-black ${mode.text}`}>{report.decision_mode}</span>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-2xl font-black">{investMood.label}</p>
+            <GradeBadge grade={(['S','A','B','C','D','F'].includes(report.invest_mood || '') ? report.invest_mood : 'C') as 'S'|'A'|'B'|'C'|'D'|'F'} size="lg" />
           </div>
-          <p className="text-green-500 text-xs">{mode.desc}</p>
+          <div className="h-px bg-white/20 mb-4" />
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-white/70 text-xs">판단 모드</p>
+              <p className="text-xl font-bold mt-0.5">{report.decision_mode}</p>
+              <p className="text-white/60 text-xs mt-0.5">{mode.desc}</p>
+            </div>
+            <div className="text-right flex items-center gap-3">
+              <div>
+                <p className="text-white/70 text-xs">감정 흔들림</p>
+                <p className="text-xl font-bold mt-0.5 text-amber-400">{report.mood_score ?? 0}%</p>
+                <p className="text-white/60 text-xs mt-0.5">리스크 {report.risk_tendency}</p>
+              </div>
+              <CircularGauge
+                value={report.mood_score ?? 0}
+                size={48}
+                strokeWidth={5}
+                color="#FBBF24"
+              />
+            </div>
+          </div>
         </div>
 
         {/* 핵심 지표 카드 */}
-        <div className="bg-white border border-green-200 rounded-2xl p-5 space-y-5">
-          {/* 감정 흔들림 지수 */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-green-700 text-sm">감정 흔들림 지수</span>
-              <span className="text-green-900 font-black text-lg">{report.mood_score}%</span>
-            </div>
-            <div className="w-full h-3 bg-green-100 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-emerald-300 via-green-400 to-green-600"
-                style={{ width: `${report.mood_score}%` }}
-              />
-            </div>
-            <p className="text-green-500 text-xs mt-1.5">
-              {report.mood_score <= 30 ? '안정적인 감정 상태입니다' :
-               report.mood_score <= 60 ? '약간의 감정 변동이 감지됩니다' :
-               '감정 변동이 높습니다. 신중한 판단이 필요합니다'}
-            </p>
-          </div>
-
+        <div className="card-v3 p-5 space-y-5">
           {/* 리스크 성향 */}
-          <div className="flex items-center justify-between py-3 border-t border-green-100">
-            <span className="text-green-700 text-sm">리스크 성향</span>
+          <div className="flex items-center justify-between">
+            <span className="text-green-800 text-sm">리스크 성향</span>
             <span className={`font-bold ${
               report.risk_tendency === '높음' ? 'text-rose-500' :
               report.risk_tendency === '중간' ? 'text-amber-500' :
@@ -200,7 +200,7 @@ export default function ResultPage() {
         </div>
 
         {/* 바이오리듬 */}
-        <div className="bg-white border border-green-200 rounded-2xl p-5">
+        <div className="card-v3 p-5">
           <p className="text-green-700 text-sm font-medium mb-4">오늘의 바이오리듬</p>
           <div className="space-y-3">
             <BiorhythmBar label="신체" value={report.biorhythm_physical ?? 0} color="bg-green-500" />
@@ -211,7 +211,7 @@ export default function ResultPage() {
 
         {/* 이전 리포트 비교 */}
         {prevComparison && (
-          <div className="bg-white border border-green-200 rounded-2xl p-5">
+          <div className="card-v3 p-5">
             <p className="text-green-700 text-sm font-medium mb-3">이전 리포트와 비교</p>
 
             {/* 등급 변화 */}
@@ -219,8 +219,8 @@ export default function ResultPage() {
               <div className="flex items-center justify-between py-2 border-b border-green-100">
                 <span className="text-green-700 text-sm">투자 무드</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-green-500 font-bold">{prevComparison.gradeBefore}</span>
-                  <span className="text-green-500">→</span>
+                  <span className="text-green-800 font-bold">{prevComparison.gradeBefore}</span>
+                  <span className="text-green-800">→</span>
                   <span className="text-green-900 font-black">{prevComparison.gradeAfter}</span>
                 </div>
               </div>
@@ -231,8 +231,8 @@ export default function ResultPage() {
               <div className="flex items-center justify-between py-2 border-b border-green-100">
                 <span className="text-green-700 text-sm">판단 모드</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-green-500">{prevComparison.modeBefore}</span>
-                  <span className="text-green-500">→</span>
+                  <span className="text-green-800">{prevComparison.modeBefore}</span>
+                  <span className="text-green-800">→</span>
                   <span className="text-green-900 font-bold">{prevComparison.modeAfter}</span>
                 </div>
               </div>
@@ -246,13 +246,13 @@ export default function ResultPage() {
         )}
 
         {/* 오늘의 투자 키워드 */}
-        <div className="bg-white border border-green-200 rounded-2xl p-5">
+        <div className="card-v3 p-5">
           <p className="text-green-700 text-sm font-medium mb-3">오늘의 투자 키워드</p>
           <div className="flex flex-wrap gap-2">
             {(report.today_keywords || []).map((keyword, i) => (
               <span
                 key={i}
-                className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium border border-green-200"
+                className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium"
               >
                 #{keyword}
               </span>
@@ -269,8 +269,8 @@ export default function ResultPage() {
         </div>
 
         {/* 편지 본문 */}
-        <div className="bg-white border border-green-200 rounded-2xl p-6">
-          <p className="text-green-500 text-xs font-medium mb-3">오늘의 편지</p>
+        <div className="card-v3 p-6">
+          <p className="text-green-800 text-xs font-medium mb-3">오늘의 편지</p>
           <div className="text-green-700 text-sm leading-relaxed whitespace-pre-line">
             {report.today_letter}
           </div>

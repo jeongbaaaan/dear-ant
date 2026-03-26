@@ -5,28 +5,35 @@ import { useRouter } from 'next/navigation';
 import { questions } from '@/lib/questions';
 import { Mood, Answer } from '@/lib/types';
 import { useToast } from '@/components/Toast';
+import { EmotionChip } from '@/components/EmotionChip';
+import { CircularGauge } from '@/components/CircularGauge';
+import { ProgressBar } from '@/components/ProgressBar';
 
 interface CheckItem {
   id: string;
   label: string;
   category: string;
   weight: number;
+  emoji: string;
 }
 
 const checklistItems: CheckItem[] = [
-  // 컨디션
-  { id: 'sleep', label: '어젯밤 5시간 이하로 잤다', category: '컨디션', weight: 3 },
-  { id: 'tired', label: '몸이 피곤하거나 컨디션이 안 좋다', category: '컨디션', weight: 2 },
-  { id: 'caffeine', label: '카페인을 3잔 이상 마셨다', category: '컨디션', weight: 1 },
-  // 심리
-  { id: 'revenge', label: '최근 손실을 빨리 만회하고 싶다', category: '심리', weight: 4 },
-  { id: 'gut', label: '근거 없이 오를 것 같은 느낌이 든다', category: '심리', weight: 3 },
-  { id: 'fomo', label: '매매를 안 하면 기회를 놓칠 것 같다', category: '심리', weight: 3 },
-  // 외부 영향
-  { id: 'sns', label: 'SNS에서 수익 인증글을 봤다', category: '외부 영향', weight: 2 },
-  { id: 'recommend', label: '주변에서 특정 종목을 추천받았다', category: '외부 영향', weight: 2 },
-  { id: 'news', label: '뉴스·유튜브를 30분 이상 봤다', category: '외부 영향', weight: 1 },
+  { id: 'sleep', label: '수면 5시간 이하', category: '컨디션', weight: 3, emoji: '😴' },
+  { id: 'tired', label: '컨디션 안 좋음', category: '컨디션', weight: 2, emoji: '🤒' },
+  { id: 'caffeine', label: '카페인 3잔 이상', category: '컨디션', weight: 1, emoji: '☕' },
+  { id: 'revenge', label: '손실 만회 욕구', category: '심리', weight: 4, emoji: '🔥' },
+  { id: 'gut', label: '근거 없는 확신', category: '심리', weight: 3, emoji: '🎯' },
+  { id: 'fomo', label: '기회를 놓칠까 불안', category: '심리', weight: 3, emoji: '😰' },
+  { id: 'sns', label: 'SNS 수익 인증 목격', category: '외부 영향', weight: 2, emoji: '📱' },
+  { id: 'recommend', label: '종목 추천 수령', category: '외부 영향', weight: 2, emoji: '💬' },
+  { id: 'news', label: '뉴스 30분 이상 시청', category: '외부 영향', weight: 1, emoji: '📰' },
 ];
+
+const categoryColors: Record<string, string> = {
+  '컨디션': 'bg-emerald-400',
+  '심리': 'bg-amber-500',
+  '외부 영향': 'bg-indigo-500',
+};
 
 function deriveChecklistMood(checked: Set<string>): { mood: Mood; score: number } {
   const totalWeight = checklistItems
@@ -122,67 +129,75 @@ export default function SurveyPage() {
     }[riskLevel];
 
     return (
-      <main className="min-h-screen bg-green-50 px-5 pt-14 pb-nav">
-        <div className="max-w-md mx-auto">
+      <main className="min-h-screen px-5 pt-4 pb-nav">
+        <ProgressBar current={1} total={3} />
+        <div className="max-w-md mx-auto pt-8">
           <button
             onClick={() => router.push('/')}
-            className="text-green-500 hover:text-green-700 mb-6 text-sm transition-colors"
+            className="text-green-800 hover:text-green-900 mb-6 text-sm transition-colors"
           >
             &larr; 돌아가기
           </button>
 
           {/* 생년월일 */}
           <div className="mb-8">
-            <label htmlFor="birthDate" className="block text-green-700 text-sm font-medium mb-1">
+            <label htmlFor="birthDate" className="block text-green-900 text-sm font-medium mb-1">
               생년월일
             </label>
-            <p className="text-green-500 text-xs mb-2">바이오리듬 계산에 사용돼요</p>
+            <p className="text-green-800 text-xs mb-2">바이오리듬 계산에 사용돼요</p>
             <input
               id="birthDate"
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-green-200 bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900"
+              className="w-full px-4 py-3 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900"
             />
+          </div>
+
+          {/* 위험도 카드 */}
+          <div className="card-v3 px-5 py-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-green-800 text-xs font-medium">현재 매매 위험도</p>
+                <p className={`text-lg font-extrabold mt-0.5 ${riskColor}`}>
+                  {riskLevel}
+                </p>
+              </div>
+              <CircularGauge
+                value={Math.round((checkedItems.size / checklistItems.length) * 100)}
+                size={64}
+                color={riskLevel === '안정' ? '#16A34A' : riskLevel === '양호' ? '#2563EB' : riskLevel === '주의' ? '#D97706' : '#DC2626'}
+                label={`${checkedItems.size}/${checklistItems.length}`}
+              />
+            </div>
           </div>
 
           {/* 체크리스트 */}
           <div className="mb-6">
-            <h2 className="text-[22px] font-extrabold text-green-900 leading-tight mb-1">
+            <h2 className="text-xl font-extrabold text-green-900 leading-tight mb-1">
               매매 전 셀프 체크
             </h2>
-            <p className="text-green-500 text-[13px] mb-6">
+            <p className="text-green-800 text-sm mb-6">
               지금 해당되는 항목을 모두 체크해주세요
             </p>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               {categories.map(cat => (
                 <div key={cat}>
-                  <p className="text-green-500 text-[11px] font-semibold uppercase tracking-wider mb-2 px-1">{cat}</p>
-                  <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 mb-3 px-1">
+                    <span className={`inline-block w-2 h-2 rounded-full ${categoryColors[cat]}`} />
+                    <p className="text-green-800 text-xs font-semibold">{cat}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
                     {checklistItems.filter(item => item.category === cat).map(item => (
-                      <button
+                      <EmotionChip
                         key={item.id}
-                        onClick={() => toggleCheck(item.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all text-left ${
-                          checkedItems.has(item.id)
-                            ? 'border-green-900 bg-green-900 text-white'
-                            : 'border-green-200 bg-white text-green-800 hover:border-green-400'
-                        }`}
-                      >
-                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
-                          checkedItems.has(item.id)
-                            ? 'border-white bg-white'
-                            : 'border-green-300'
-                        }`}>
-                          {checkedItems.has(item.id) && (
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#1B4332" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          )}
-                        </div>
-                        <span className="text-[14px] font-medium">{item.label}</span>
-                      </button>
+                        emoji={item.emoji}
+                        label={item.label}
+                        selected={checkedItems.has(item.id)}
+                        onToggle={() => toggleCheck(item.id)}
+                        categoryColor={categoryColors[cat]}
+                      />
                     ))}
                   </div>
                 </div>
@@ -190,25 +205,10 @@ export default function SurveyPage() {
             </div>
           </div>
 
-          {/* 현재 상태 표시 */}
-          <div className="bg-white border border-green-200 rounded-2xl px-5 py-4 mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-500 text-[11px] font-medium">현재 매매 위험도</p>
-                <p className={`text-[18px] font-extrabold mt-0.5 ${riskColor}`}>
-                  {riskLevel}
-                </p>
-              </div>
-              <p className="text-green-400 text-[28px] font-extrabold">
-                {checkedItems.size}<span className="text-[14px] font-normal text-green-500">/{checklistItems.length}</span>
-              </p>
-            </div>
-          </div>
-
           <button
             onClick={handleInfoSubmit}
             disabled={!birthDate}
-            className="w-full bg-green-900 hover:bg-green-800 disabled:bg-green-200 disabled:text-green-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
+            className="w-full bg-green-900 hover:bg-green-800 hover:scale-[1.02] disabled:bg-green-200 disabled:text-green-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
           >
             다음
           </button>
@@ -226,7 +226,7 @@ export default function SurveyPage() {
           <p className="text-green-800 text-lg font-bold">
             리포트를 생성하고 있습니다
           </p>
-          <p className="text-green-500 text-sm mt-2">
+          <p className="text-green-800 text-sm mt-2">
             잠시만 기다려주세요
           </p>
         </div>
@@ -242,12 +242,12 @@ export default function SurveyPage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6">
       <div className="max-w-md w-full">
         <div className="mb-8">
-          <div className="flex items-center justify-between text-sm text-green-500 mb-2">
+          <div className="flex items-center justify-between text-sm text-green-800 mb-2">
             <div className="flex items-center gap-2">
               {currentQuestion > 0 && (
                 <button
                   onClick={handlePrevQuestion}
-                  className="text-green-500 hover:text-green-700 transition-colors"
+                  className="text-green-800 hover:text-green-700 transition-colors"
                   aria-label="이전 질문"
                 >
                   &larr;
@@ -257,12 +257,7 @@ export default function SurveyPage() {
             </div>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full h-2 bg-green-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="설문 진행률">
-            <div
-              className="h-full bg-green-900 rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+          <ProgressBar current={currentQuestion + 1} total={questions.length} />
         </div>
 
         <div key={question.key} className="animate-slide-up">
@@ -275,7 +270,7 @@ export default function SurveyPage() {
               <button
                 key={option.value}
                 onClick={() => handleAnswer(question.key, option.value, option.score)}
-                className="w-full text-left px-5 py-4 rounded-xl border-2 border-green-200 bg-white hover:border-green-900 hover:bg-green-50 transition-all duration-200 text-green-800 font-medium active:scale-[0.98]"
+                className="w-full text-left px-5 py-4 rounded-xl card-v3 hover:bg-green-50 transition-all duration-200 text-green-800 font-medium active:scale-[0.98]"
               >
                 {option.label}
               </button>

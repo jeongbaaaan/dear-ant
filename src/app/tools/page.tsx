@@ -73,12 +73,12 @@ export default function ToolsPage() {
           <h1 className="text-2xl font-black text-green-900">도구 모음</h1>
           <Link
             href="/"
-            className="text-green-600 hover:text-green-800 text-sm font-medium transition-colors"
+            className="text-green-800 hover:text-green-900 text-sm font-medium transition-colors"
           >
             홈으로
           </Link>
         </div>
-        <p className="text-green-500 text-sm mb-8">
+        <p className="text-green-800 text-sm mb-8">
           Dear,ANT가 준비한 투자 도구들
         </p>
 
@@ -87,7 +87,7 @@ export default function ToolsPage() {
           {tools.map((tool, index) => {
             const isComingSoon = tool.badge === 'coming soon';
             const cardClass = `
-              flex items-center gap-4 bg-white border border-green-200 rounded-2xl px-5 py-4 transition-colors
+              flex items-center gap-4 card-v3 px-5 py-4 transition-colors
               ${isComingSoon
                 ? 'opacity-60 cursor-not-allowed'
                 : 'hover:border-green-400 active:scale-[0.98]'
@@ -96,7 +96,7 @@ export default function ToolsPage() {
 
             const inner = (
               <>
-                <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-green-200 text-green-700">
+                <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-white text-green-700">
                   <ToolIcon index={index} />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -105,12 +105,12 @@ export default function ToolsPage() {
                       {tool.title}
                     </h3>
                     {isComingSoon && (
-                      <span className="px-2 py-0.5 bg-green-200 text-green-500 text-[10px] font-bold rounded-full">
+                      <span className="px-2 py-0.5 bg-green-200 text-green-800 text-xs font-bold rounded-full">
                         SOON
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-green-500 leading-relaxed mt-0.5">
+                  <p className="text-xs text-green-800 leading-relaxed mt-0.5">
                     {tool.description}
                   </p>
                 </div>

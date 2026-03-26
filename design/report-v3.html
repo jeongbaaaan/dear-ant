@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Dear,ANT — Report v3</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  /* ══════════════════════════════════════
+     DESIGN TOKENS
+     ══════════════════════════════════════ */
+  :root {
+    /* Green Palette */
+    --g900: #1B4332; --g800: #2D6A4F; --g700: #40916C; --g600: #52B788;
+    --g500: #74C69D; --g400: #95D5B2; --g300: #B7E4C7; --g200: #D8F3DC;
+    --g100: #E8F5E9; --g50: #F0FFF4;
+
+    /* Grade Colors */
+    --grade-s: #B45309; --grade-s-bg: #FEF3C7; --grade-s-text: #92400E;
+    --grade-a: #059669; --grade-a-bg: #D1FAE5; --grade-a-text: #065F46;
+    --grade-b: #2563EB; --grade-b-bg: #DBEAFE; --grade-b-text: #1E40AF;
+    --grade-c: #D97706; --grade-c-bg: #FEF3C7; --grade-c-text: #92400E;
+    --grade-d: #EA580C; --grade-d-bg: #FFEDD5; --grade-d-text: #9A3412;
+    --grade-f: #DC2626; --grade-f-bg: #FEE2E2; --grade-f-text: #991B1B;
+
+    /* Emotion Spectrum */
+    --calm: #2DD4BF;
+    --confident: #60A5FA;
+    --excited: #FBBF24;
+    --anxious: #F97316;
+    --fearful: #EF4444;
+
+    /* Biorhythm */
+    --bio-physical: #16A34A;
+    --bio-physical-neg: #7C3AED;
+    --bio-emotional: #F59E0B;
+    --bio-emotional-neg: #6366F1;
+    --bio-intellectual: #2563EB;
+    --bio-intellectual-neg: #EC4899;
+
+    /* Neutrals */
+    --white: #FFFFFF;
+    --bg: #F0FFF4;
+    --surface: #FFFFFF;
+    --border: #E2E8F0;
+    --text-primary: #1B4332;
+    --text-secondary: #2D6A4F;
+    --text-muted: #64748B;
+
+    /* Spacing */
+    --sp-4: 4px; --sp-8: 8px; --sp-12: 12px; --sp-16: 16px;
+    --sp-20: 20px; --sp-24: 24px; --sp-32: 32px;
+
+    /* Radius */
+    --r-8: 8px; --r-12: 12px; --r-16: 16px; --r-20: 20px; --r-24: 24px; --r-full: 9999px;
+
+    /* Shadow */
+    --shadow-sm: 0 1px 2px rgba(27,67,50,0.04);
+    --shadow-md: 0 2px 8px rgba(27,67,50,0.06), 0 1px 2px rgba(27,67,50,0.04);
+    --shadow-lg: 0 4px 16px rgba(27,67,50,0.08), 0 1px 3px rgba(27,67,50,0.04);
+    --shadow-xl: 0 8px 32px rgba(27,67,50,0.10), 0 2px 6px rgba(27,67,50,0.04);
+  }
+
+  /* ══════════════════════════════════════
+     RESET & BASE
+     ══════════════════════════════════════ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: linear-gradient(180deg, var(--g50) 0%, var(--white) 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    justify-content: center;
+  }
+
+  .device {
+    width: 390px;
+    min-height: 844px;
+    background: linear-gradient(180deg, var(--g50) 0%, var(--white) 40%);
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 40px;
+  }
+
+  /* ══════════════════════════════════════
+     ANIMATIONS
+     ══════════════════════════════════════ */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes drawGauge {
+    from { stroke-dashoffset: 226; }
+    to { stroke-dashoffset: var(--gauge-offset); }
+  }
+  @keyframes barGrow {
+    from { width: 0; }
+  }
+
+  .animate-in { animation: fadeInUp 0.5s ease-out both; }
+  .animate-scale { animation: scaleIn 0.4s ease-out both; }
+  .delay-1 { animation-delay: 0.15s; }
+  .delay-2 { animation-delay: 0.3s; }
+  .delay-3 { animation-delay: 0.45s; }
+  .delay-4 { animation-delay: 0.6s; }
+  .delay-5 { animation-delay: 0.75s; }
+  .delay-6 { animation-delay: 0.9s; }
+  .delay-7 { animation-delay: 1.05s; }
+
+  /* ══════════════════════════════════════
+     STATUS BAR
+     ══════════════════════════════════════ */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px 4px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  /* ══════════════════════════════════════
+     REPORT HEADER
+     ══════════════════════════════════════ */
+  .report-header {
+    padding: 16px 20px 12px;
+  }
+  .report-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .report-title {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--g900);
+  }
+  .report-title span {
+    color: var(--g800);
+  }
+
+  /* ══════════════════════════════════════
+     HERO CARD (Integrated Summary)
+     ══════════════════════════════════════ */
+  .hero-card {
+    margin: 8px 20px 0;
+    background: var(--g900);
+    border-radius: var(--r-24);
+    padding: 24px 22px 20px;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(149,213,178,0.15) 0%, transparent 70%);
+  }
+  .hero-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(82,183,136,0.10) 0%, transparent 70%);
+  }
+
+  .hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-top-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .hero-mood {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+  }
+
+  /* Grade Badge - Big */
+  .hero-grade {
+    width: 60px; height: 60px;
+    border-radius: var(--r-16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+    animation: scaleIn 0.5s ease-out 0.3s both;
+  }
+  .hero-grade-c {
+    background: var(--grade-c-bg);
+    color: var(--grade-c-text);
+  }
+
+  .hero-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+    margin: 18px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-bottom {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Left: Decision mode */
+  .hero-mode-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .hero-mode-value {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 2px;
+  }
+  .hero-mode-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Right: Emotion gauge */
+  .hero-emotion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .hero-emotion-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 500;
+  }
+  .gauge-wrap {
+    position: relative;
+    width: 72px; height: 72px;
+  }
+  .gauge-svg {
+    transform: rotate(-90deg);
+    width: 72px; height: 72px;
+  }
+  .gauge-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.12);
+    stroke-width: 6;
+  }
+  .gauge-fill {
+    fill: none;
+    stroke: var(--excited);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 226;
+    stroke-dashoffset: 124;
+    --gauge-offset: 124; /* 226 - (226 * 0.45) */
+    animation: drawGauge 1s ease-out 0.5s both;
+  }
+  .gauge-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .gauge-percent {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--excited);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  .gauge-sub {
+    font-size: 9px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 2px;
+  }
+
+  /* Keyword chips */
+  .hero-keywords {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
+  .keyword-chip {
+    padding: 5px 12px;
+    border-radius: var(--r-full);
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    letter-spacing: -0.2px;
+  }
+
+  /* ══════════════════════════════════════
+     CONTENT CARDS
+     ══════════════════════════════════════ */
+  .card-section {
+    padding: 0 20px;
+    margin-top: 16px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--r-20);
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(27,67,50,0.04);
+  }
+
+  .card-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ══════════════════════════════════════
+     BIORHYTHM CARD
+     ══════════════════════════════════════ */
+  .bio-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .bio-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .bio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bio-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .bio-value {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .bio-positive { color: var(--bio-physical); }
+  .bio-negative { color: var(--bio-physical-neg); }
+  .bio-blue { color: var(--bio-intellectual); }
+
+  /* Biorhythm bar */
+  .bio-bar-wrap {
+    height: 8px;
+    border-radius: var(--r-full);
+    background: var(--border);
+    position: relative;
+    overflow: visible;
+  }
+  .bio-bar-center {
+    position: absolute;
+    left: 50%; top: -1px;
+    width: 1px; height: 10px;
+    background: var(--text-muted);
+    opacity: 0.3;
+  }
+  /* Positive bar: extends right from center */
+  .bio-bar-fill-pos {
+    position: absolute;
+    left: 50%;
+    top: 0; height: 100%;
+    border-radius: 0 var(--r-full) var(--r-full) 0;
+    animation: barGrow 0.6s ease-out both;
+  }
+  /* Negative bar: extends left from center */
+  .bio-bar-fill-neg {
+    position: absolute;
+    right: 50%;
+    top: 0; height: 100%;
+    border-radius: var(--r-full) 0 0 var(--r-full);
+    animation: barGrow 0.6s ease-out both;
+  }
+  .bio-bar-physical-pos { background: var(--bio-physical); }
+  .bio-bar-emotional-neg { background: var(--bio-emotional-neg); }
+  .bio-bar-intellectual-pos { background: var(--bio-intellectual); }
+
+  /* ══════════════════════════════════════
+     QUOTE CARD (today's word)
+     ══════════════════════════════════════ */
+  .quote-card {
+    background: linear-gradient(135deg, var(--g100) 0%, var(--g50) 100%);
+    border-radius: var(--r-20);
+    padding: 22px 20px;
+    border: 1px solid var(--g200);
+    position: relative;
+    overflow: hidden;
+  }
+  .quote-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(82,183,136,0.12) 0%, transparent 70%);
+  }
+  .quote-card .card-label { color: var(--g800); }
+  .quote-text {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--g900);
+    letter-spacing: -0.3px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ══════════════════════════════════════
+     LETTER CARD
+     ══════════════════════════════════════ */
+  .letter-salutation {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--g800);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .letter-body {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    font-weight: 400;
+    letter-spacing: -0.2px;
+  }
+
+  /* ══════════════════════════════════════
+     AI COMMENT CARD
+     ══════════════════════════════════════ */
+  .ai-card {
+    background: linear-gradient(135deg, var(--g50) 0%, var(--g100) 100%);
+    border: 1px solid var(--g200);
+    border-radius: var(--r-20);
+    padding: 20px;
+  }
+  .ai-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: var(--g200);
+    border-radius: var(--r-full);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--g800);
+  }
+  .ai-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    font-weight: 400;
+    letter-spacing: -0.2px;
+  }
+
+  /* ══════════════════════════════════════
+     CTA BUTTONS
+     ══════════════════════════════════════ */
+  .cta-section {
+    padding: 0 20px;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--r-16);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    min-height: 52px;
+  }
+  .cta-btn:active { transform: scale(0.98); }
+
+  .cta-primary {
+    background: var(--g900);
+    color: var(--white);
+  }
+  .cta-primary:hover { background: var(--g800); }
+
+  .cta-row {
+    display: flex;
+    gap: 10px;
+  }
+  .cta-secondary {
+    flex: 1;
+    background: var(--white);
+    color: var(--g900);
+    border: 1.5px solid var(--g200);
+  }
+  .cta-secondary:hover { border-color: var(--g400); background: var(--g50); }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE
+     ══════════════════════════════════════ */
+  @media (min-width: 768px) {
+    .device { border: 1px solid var(--border); border-radius: 40px; margin: 20px auto; box-shadow: var(--shadow-xl); }
+  }
+  @media (max-width: 389px) {
+    .device { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="device">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:44</span>
+    <div class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--g900)"><path d="M1 7h2v4H1V7zm4-3h2v7H5V4zm4-2h2v9H9V2zm4-2h2v11h-2V0z"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--g900)"><path d="M8 2.4C5.6 2.4 3.4 3.4 1.8 5l1.4 1.4C4.4 5.2 6.1 4.4 8 4.4s3.6.8 4.8 2l1.4-1.4C12.6 3.4 10.4 2.4 8 2.4zM8 6.4c-1.4 0-2.6.6-3.4 1.4L6 9.2c.5-.5 1.2-.8 2-.8s1.5.3 2 .8l1.4-1.4C10.6 7 9.4 6.4 8 6.4z"/></svg>
+      <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x="0" y="1" width="20" height="10" rx="2" stroke="var(--g900)" stroke-width="1.2"/><rect x="2" y="3" width="14" height="6" rx="1" fill="var(--g900)"/><path d="M21 4.5v3a1.5 1.5 0 000-3z" fill="var(--g900)"/></svg>
+    </div>
+  </div>
+
+  <!-- Report Header -->
+  <div class="report-header animate-in">
+    <div class="report-date">2026년 3월 25일</div>
+    <h1 class="report-title">Dear,<span>ANT</span> Report</h1>
+  </div>
+
+  <!-- Hero Card (Integrated Summary) -->
+  <div class="card-section animate-in delay-1">
+    <div class="hero-card">
+      <div class="hero-top">
+        <div>
+          <div class="hero-top-label">오늘의 투자 분위기</div>
+          <div class="hero-mood">보통</div>
+        </div>
+        <div class="hero-grade hero-grade-c" aria-label="등급 C">C</div>
+      </div>
+
+      <div class="hero-divider"></div>
+
+      <div class="hero-bottom">
+        <div>
+          <div class="hero-mode-label">판단 모드</div>
+          <div class="hero-mode-value">신중</div>
+          <div class="hero-mode-sub">균형 잡힌 판단</div>
+        </div>
+        <div class="hero-emotion">
+          <div class="hero-emotion-label">감정 흔들림</div>
+          <div class="gauge-wrap">
+            <svg class="gauge-svg" viewBox="0 0 80 80">
+              <circle class="gauge-bg" cx="40" cy="40" r="36"/>
+              <circle class="gauge-fill" cx="40" cy="40" r="36"/>
+            </svg>
+            <div class="gauge-text">
+              <div class="gauge-percent">45%</div>
+              <div class="gauge-sub">리스크 중간</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-keywords">
+        <span class="keyword-chip">#균형</span>
+        <span class="keyword-chip">#분석</span>
+        <span class="keyword-chip">#원칙</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Biorhythm Card -->
+  <div class="card-section animate-in delay-2">
+    <div class="card">
+      <div class="card-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        바이오리듬
+      </div>
+      <div class="bio-grid">
+        <!-- Physical -->
+        <div class="bio-item">
+          <div class="bio-header">
+            <span class="bio-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bio-physical)" stroke-width="2.2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              신체
+            </span>
+            <span class="bio-value bio-positive">+42</span>
+          </div>
+          <div class="bio-bar-wrap">
+            <div class="bio-bar-center"></div>
+            <div class="bio-bar-fill-pos bio-bar-physical-pos" style="width: 21%;"></div>
+          </div>
+        </div>
+
+        <!-- Emotional -->
+        <div class="bio-item">
+          <div class="bio-header">
+            <span class="bio-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bio-emotional)" stroke-width="2.2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              감정
+            </span>
+            <span class="bio-value bio-negative">-15</span>
+          </div>
+          <div class="bio-bar-wrap">
+            <div class="bio-bar-center"></div>
+            <div class="bio-bar-fill-neg bio-bar-emotional-neg" style="width: 7.5%;"></div>
+          </div>
+        </div>
+
+        <!-- Intellectual -->
+        <div class="bio-item">
+          <div class="bio-header">
+            <span class="bio-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bio-intellectual)" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              지성
+            </span>
+            <span class="bio-value bio-blue">+67</span>
+          </div>
+          <div class="bio-bar-wrap">
+            <div class="bio-bar-center"></div>
+            <div class="bio-bar-fill-pos bio-bar-intellectual-pos" style="width: 33.5%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote Card (Today's Word) -->
+  <div class="card-section animate-in delay-3">
+    <div class="quote-card">
+      <div class="card-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--g800)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        오늘의 한마디
+      </div>
+      <p class="quote-text">"오늘은 균형 잡힌 시선으로 시장을 바라볼 수 있는 날입니다. 원칙에 따라 차분하게 판단해 보세요."</p>
+    </div>
+  </div>
+
+  <!-- Letter Card -->
+  <div class="card-section animate-in delay-4">
+    <div class="card">
+      <div class="card-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        오늘의 편지
+      </div>
+      <div class="letter-salutation">Dear, ANT</div>
+      <p class="letter-body">
+        평온한 상태에서의 신중한 판단은 당신의 큰 강점입니다. 오늘은 감정의 파도가 크지 않은 만큼, 기존 전략을 점검하고 원칙을 재확인하기 좋은 날이에요.<br><br>
+        시장의 소음에 흔들리지 않고, 자신만의 기준으로 한 걸음씩 나아가고 계신 당신을 응원합니다.
+      </p>
+    </div>
+  </div>
+
+  <!-- AI Comment Card -->
+  <div class="card-section animate-in delay-5">
+    <div class="ai-card">
+      <div class="ai-icon">
+        <div class="ai-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--g800)" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          AI 코멘트
+        </div>
+      </div>
+      <p class="ai-text">
+        감정 흔들림이 평소보다 약간 높아요. '손실 만회 욕구'가 감지되었는데, 이럴 때는 매매 결정을 30분 미루는 것이 도움이 됩니다. 지성 바이오리듬이 높은 점은 긍정적이니, 분석에 집중하는 하루를 보내보세요.
+      </p>
+    </div>
+  </div>
+
+  <!-- CTA Buttons -->
+  <div class="cta-section animate-in delay-6">
+    <button class="cta-btn cta-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      다시 하기
+    </button>
+    <div class="cta-row">
+      <button class="cta-btn cta-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g900)" stroke-width="2.2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        히스토리
+      </button>
+      <button class="cta-btn cta-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g900)" stroke-width="2.2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        공유하기
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
