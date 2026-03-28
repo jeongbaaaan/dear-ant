@@ -70,11 +70,21 @@ function getAll<T>(key: string): T[] {
 
 function setAll<T>(key: string, items: T[]): void {
   if (!isClient()) return;
-  localStorage.setItem(key, JSON.stringify(items));
+  try {
+    localStorage.setItem(key, JSON.stringify(items));
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+      throw new Error('저장 공간이 부족합니다. 오래된 데이터를 삭제해 주세요.');
+    }
+    throw e;
+  }
 }
 
 function generateId(): string {
-  return crypto.randomUUID();
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
 // ─── Reports ─────────────────────────────────────────────
@@ -140,8 +150,16 @@ export const clientStore = {
       answer_value: a.answerValue,
       score: a.score,
     }));
-    all.push(...newAnswers);
-    setAll(KEYS.answers, all);
+    // 최근 100세션만 유지 (localStorage 용량 관리)
+    const MAX_SESSIONS = 100;
+    const combined = [...all, ...newAnswers];
+    const uniqueSessions = [...new Set(combined.map(a => a.session_id))];
+    if (uniqueSessions.length > MAX_SESSIONS) {
+      const keepSessions = new Set(uniqueSessions.slice(-MAX_SESSIONS));
+      setAll(KEYS.answers, combined.filter(a => keepSessions.has(a.session_id)));
+    } else {
+      setAll(KEYS.answers, combined);
+    }
   },
 
   getAnswersBySession(sessionId: string): StoredAnswer[] {

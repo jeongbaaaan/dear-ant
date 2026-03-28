@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import PullToRefresh from '@/components/PullToRefresh';
 import { SkeletonCard } from '@/components/Skeleton';
-import { ApiReport } from '@/lib/types';
+import { clientStore, StoredReport } from '@/lib/client-store';
 import { GradeBadge } from '@/components/GradeBadge';
 
 type FilterType = 'all' | '방어' | '관망' | '신중' | '적극';
@@ -24,8 +24,8 @@ const modeIcon: Record<string, { icon: string; bgClass: string; textClass: strin
   '적극': { icon: 'trending_up', bgClass: 'bg-error-container/10', textClass: 'text-error' },
 };
 
-function groupByDate(reports: ApiReport[]): Record<string, ApiReport[]> {
-  const groups: Record<string, ApiReport[]> = {};
+function groupByDate(reports: StoredReport[]): Record<string, StoredReport[]> {
+  const groups: Record<string, StoredReport[]> = {};
   for (const report of reports) {
     const d = new Date(report.created_at);
     const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -37,24 +37,16 @@ function groupByDate(reports: ApiReport[]): Record<string, ApiReport[]> {
 }
 
 export default function HistoryPage() {
-  const [reports, setReports] = useState<ApiReport[]>([]);
+  const [reports, setReports] = useState<StoredReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('all');
 
-  const fetchHistory = useCallback(async () => {
-    try {
-      const res = await fetch('/api/history');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setReports(data.reports || []);
-    } catch (err) {
-      console.error('Failed to fetch history', err);
-    } finally {
-      setLoading(false);
-    }
+  const loadHistory = useCallback(() => {
+    setReports(clientStore.listReports());
+    setLoading(false);
   }, []);
 
-  useEffect(() => { fetchHistory(); }, [fetchHistory]);
+  useEffect(() => { loadHistory(); }, [loadHistory]);
 
   const filtered = filter === 'all' ? reports : reports.filter(r => r.decision_mode === filter);
   const grouped = groupByDate(filtered);
@@ -81,7 +73,7 @@ export default function HistoryPage() {
         </button>
       </header>
 
-      <PullToRefresh onRefresh={async () => { setLoading(true); await fetchHistory(); }}>
+      <PullToRefresh onRefresh={async () => { setLoading(true); loadHistory(); }}>
         <div className="pt-24 pb-8 px-6 max-w-2xl mx-auto space-y-10">
           {/* Summary */}
           <section className="space-y-2">

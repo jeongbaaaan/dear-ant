@@ -43,6 +43,11 @@ function getStreak(reports: StoredReport[]): number {
   return streak;
 }
 
+function toLocalDateStr(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 function getLast7DaysVolume(memos: StoredMemo[]): { label: string; value: number }[] {
   const days: { label: string; value: number }[] = [];
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -51,8 +56,8 @@ function getLast7DaysVolume(memos: StoredMemo[]): { label: string; value: number
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    const dayMemos = memos.filter(m => m.created_at.startsWith(dateStr));
+    const dateStr = toLocalDateStr(d);
+    const dayMemos = memos.filter(m => toLocalDateStr(m.created_at) === dateStr);
     const volume = dayMemos.reduce((sum, m) => sum + ((m.price || 0) * (m.quantity || 0)), 0);
     days.push({ label: dayLabels[d.getDay()], value: volume });
   }

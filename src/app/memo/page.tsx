@@ -12,6 +12,11 @@ import { clientStore, StoredMemo } from '@/lib/client-store';
 
 type Memo = StoredMemo;
 
+function todayStr(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
 const actionConfig: Record<string, { label: string; chipBg: string; chipText: string }> = {
   buy: { label: 'Buy Long', chipBg: 'bg-secondary-container', chipText: 'text-on-secondary-container' },
   sell: { label: 'Sell Short', chipBg: 'bg-error-container/20', chipText: 'text-error' },
@@ -45,7 +50,7 @@ export default function MemoPage() {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
   const [memoText, setMemoText] = useState('');
-  const [tradeDate, setTradeDate] = useState(new Date().toISOString().split('T')[0]);
+  const [tradeDate, setTradeDate] = useState(todayStr());
   const [tradeMood, setTradeMood] = useState<string>('');
 
   const loadMemos = useCallback(() => {
@@ -61,7 +66,7 @@ export default function MemoPage() {
     setPrice('');
     setQuantity('');
     setMemoText('');
-    setTradeDate(new Date().toISOString().split('T')[0]);
+    setTradeDate(todayStr());
     setTradeMood('');
     setEditingId(null);
   };
@@ -116,10 +121,11 @@ export default function MemoPage() {
     const totalBuy = buyMemos.reduce((s, m) => s + (m.price! * m.quantity!), 0);
     const totalSell = sellMemos.reduce((s, m) => s + (m.price! * m.quantity!), 0);
     const profit = totalSell - totalBuy;
-    const winRate = memos.length > 0
-      ? Math.round((sellMemos.filter(m => (m.price! * m.quantity!) > 0).length / Math.max(memos.length, 1)) * 100)
+    const tradeCount = buyMemos.length + sellMemos.length;
+    const sellRatio = tradeCount > 0
+      ? Math.round((sellMemos.length / tradeCount) * 100)
       : 0;
-    return { profit, winRate, totalTrades: memos.length };
+    return { profit, sellRatio, totalTrades: memos.length };
   }, [memos]);
 
   const dates = getRecentDates();
@@ -153,7 +159,7 @@ export default function MemoPage() {
           <section className="grid grid-cols-2 gap-4">
             <div className="col-span-2 bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
               <div>
-                <p className="font-bold text-xs text-on-surface-variant tracking-widest uppercase">Monthly Profit</p>
+                <p className="font-bold text-xs text-on-surface-variant tracking-widest uppercase">누적 손익</p>
                 <h2 className="font-headline font-bold text-4xl text-on-surface mt-2">
                   {stats.profit >= 0 ? '+' : ''}₩{Math.abs(stats.profit).toLocaleString() || '0'}
                 </h2>
@@ -166,8 +172,8 @@ export default function MemoPage() {
               </div>
             </div>
             <div className="bg-surface-container p-6 rounded-xl">
-              <p className="font-bold text-[10px] text-on-surface-variant tracking-widest uppercase">Win Rate</p>
-              <h3 className="font-headline font-bold text-2xl text-on-surface mt-1">{stats.winRate}%</h3>
+              <p className="font-bold text-[10px] text-on-surface-variant tracking-widest uppercase">매도 비율</p>
+              <h3 className="font-headline font-bold text-2xl text-on-surface mt-1">{stats.sellRatio}%</h3>
             </div>
             <div className="bg-surface-container-high p-6 rounded-xl">
               <p className="font-bold text-[10px] text-on-surface-variant tracking-widest uppercase">Total Trades</p>
@@ -376,7 +382,7 @@ export default function MemoPage() {
                 type="date"
                 value={tradeDate}
                 onChange={(e) => setTradeDate(e.target.value)}
-                max={new Date().toISOString().split('T')[0]}
+                max={todayStr()}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary text-on-surface text-sm"
               />
             </div>
