@@ -210,17 +210,15 @@ describe('POST /api/memos', () => {
     const data = await res.json();
 
     expect(res.status).toBe(400);
-    expect(data.error).toBe('종목명과 메모는 필수입니다.');
+    expect(data.error).toBe('종목명은 필수입니다.');
   });
 
-  it('test_post_memos_with_missing_memo_field_returns_400', async () => {
-    const payload = { stock_name: '삼성전자', action: 'buy' }; // memo omitted
+  it('test_post_memos_without_memo_field_succeeds', async () => {
+    const payload = { stock_name: '삼성전자', action: 'buy' }; // memo is optional
     const req = makeRequest('http://localhost/api/memos', 'POST', payload);
     const res = await postMemo(req);
-    const data = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(data.error).toBe('종목명과 메모는 필수입니다.');
+    expect(res.status).toBe(200);
   });
 });
 

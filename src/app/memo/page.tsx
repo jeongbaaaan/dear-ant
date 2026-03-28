@@ -82,7 +82,7 @@ export default function MemoPage() {
   };
 
   const handleSubmit = async () => {
-    if (!stockName.trim() || !memoText.trim()) return;
+    if (!stockName.trim()) return;
     const body = {
       stock_name: stockName.trim(),
       action,
@@ -240,8 +240,6 @@ export default function MemoPage() {
                 {memos.slice(0, 5).map(memo => {
                   const ac = actionConfig[memo.action] || actionConfig.buy;
                   const amount = memo.price && memo.quantity ? memo.price * memo.quantity : null;
-                  const profitPercent = memo.action === 'sell' && amount ? '+' + ((Math.random() * 5).toFixed(1)) : memo.action === 'buy' ? '+' + ((Math.random() * 5).toFixed(1)) : null;
-                  const isSell = memo.action === 'sell';
 
                   return (
                     <div key={memo.id} className="bg-surface-container-lowest p-6 rounded-xl space-y-4">
@@ -256,18 +254,13 @@ export default function MemoPage() {
                             {memo.quantity ? ` | 수량 ${memo.quantity}주` : ''}
                           </p>
                         </div>
-                        <div className="text-right">
-                          {profitPercent && (
-                            <p className={`font-headline font-extrabold ${isSell ? 'text-error' : 'text-primary'}`}>
-                              {isSell ? '-' : '+'}{profitPercent}%
-                            </p>
-                          )}
-                          {amount && (
-                            <p className="text-[10px] text-on-surface-variant font-bold">
+                        {amount && (
+                          <div className="text-right">
+                            <p className="font-headline font-bold text-on-surface">
                               ₩{amount.toLocaleString()}
                             </p>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </div>
                       {memo.memo && (
                         <div className="bg-surface p-4 rounded-lg italic text-sm text-on-surface-variant leading-relaxed">
@@ -400,7 +393,7 @@ export default function MemoPage() {
         <div className="pb-[env(safe-area-inset-bottom)]">
           <button
             onClick={handleSubmit}
-            disabled={!stockName.trim() || !memoText.trim()}
+            disabled={!stockName.trim()}
             className="w-full bg-primary hover:bg-primary-dim disabled:bg-surface-container disabled:text-on-surface-variant disabled:cursor-not-allowed text-on-primary font-bold py-3 rounded-xl transition-all active:scale-[0.98]"
           >
             {editingId ? '수정 완료' : '저장'}

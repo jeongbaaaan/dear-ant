@@ -17,8 +17,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { stock_name, action, price, quantity, memo } = body;
 
-    if (!stock_name || !memo) {
-      return NextResponse.json({ error: '종목명과 메모는 필수입니다.' }, { status: 400 });
+    if (!stock_name) {
+      return NextResponse.json({ error: '종목명은 필수입니다.' }, { status: 400 });
     }
 
     const validActions = ['buy', 'sell', 'hold', 'watch'];
