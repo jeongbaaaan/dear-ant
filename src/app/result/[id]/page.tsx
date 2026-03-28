@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
-import { ApiReport } from '@/lib/types';
+import { clientStore, StoredReport } from '@/lib/client-store';
 
 const conditionMap: Record<string, { label: string; desc: string }> = {
   'S': { label: '최상', desc: '오늘은 심리적 안정이 돋보이는 날입니다. 계획된 원칙을 지키기에 가장 적합한 타이밍입니다.' },
@@ -24,23 +24,14 @@ const riskLabelMap: Record<string, string> = {
 export default function ResultPage() {
   const params = useParams();
   const { toast } = useToast();
-  const [report, setReport] = useState<ApiReport | null>(null);
+  const [report, setReport] = useState<StoredReport | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchReport() {
-      try {
-        const res = await fetch(`/api/reports/${params.id}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setReport(data.report);
-      } catch {
-        console.error('Failed to fetch report');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchReport();
+    const id = typeof params.id === 'string' ? params.id : '';
+    const found = clientStore.getReport(id);
+    setReport(found || null);
+    setLoading(false);
   }, [params.id]);
 
   if (loading) {

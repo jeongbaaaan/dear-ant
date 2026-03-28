@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { ApiReport } from '@/lib/types';
+import { clientStore, StoredReport } from '@/lib/client-store';
 import { GradeBadge } from '@/components/GradeBadge';
 
 function getRelativeDate(dateStr: string): string {
@@ -16,7 +16,7 @@ function getRelativeDate(dateStr: string): string {
   return `${diffDays}일 전`;
 }
 
-function getStreak(reports: ApiReport[]): number {
+function getStreak(reports: StoredReport[]): number {
   if (reports.length === 0) return 0;
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -44,13 +44,10 @@ function getStreak(reports: ApiReport[]): number {
 }
 
 export default function Home() {
-  const [reports, setReports] = useState<ApiReport[]>([]);
+  const [reports, setReports] = useState<StoredReport[]>([]);
 
   useEffect(() => {
-    fetch('/api/history')
-      .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
-      .then((data) => { if (data.reports) setReports(data.reports); })
-      .catch((err) => console.error('Failed to fetch history', err));
+    setReports(clientStore.listReports());
   }, []);
 
   const lastReport = reports.length > 0 ? reports[0] : null;

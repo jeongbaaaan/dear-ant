@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions } from '@/lib/questions';
 import { Mood, Answer } from '@/lib/types';
+import { generateReport } from '@/lib/report-engine';
+import { clientStore } from '@/lib/client-store';
 import { useToast } from '@/components/Toast';
 import { EmotionChip } from '@/components/EmotionChip';
 import { CircularGauge } from '@/components/CircularGauge';
@@ -84,19 +86,23 @@ export default function SurveyPage() {
       setStep('loading');
       const { mood } = deriveChecklistMood(checkedItems);
       try {
-        const res = await fetch('/api/reports', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userInfo: { birthDate, mood },
-            answers: newAnswers,
-          }),
+        const reportData = generateReport({ userInfo: { birthDate, mood }, answers: newAnswers });
+        const report = clientStore.createReport({
+          decision_mode: reportData.decisionMode,
+          mood_score: reportData.moodScore,
+          risk_tendency: reportData.riskTendency,
+          invest_mood: reportData.investMood,
+          biorhythm_physical: reportData.biorhythmPhysical,
+          biorhythm_emotional: reportData.biorhythmEmotional,
+          biorhythm_intellectual: reportData.biorhythmIntellectual,
+          today_keywords: reportData.todayKeywords,
+          today_message: reportData.todayMessage,
+          today_letter: reportData.todayLetter,
+          mood,
+          birth_date: birthDate,
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (data.report) {
-          router.push(`/result/${data.report.id}`);
-        }
+        clientStore.saveAnswers(report.session_id, newAnswers);
+        router.push(`/result/${report.id}`);
       } catch {
         toast('리포트 생성에 실패했습니다. 다시 시도해주세요.');
         setStep('questions');

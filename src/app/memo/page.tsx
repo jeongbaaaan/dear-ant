@@ -8,20 +8,9 @@ import { SkeletonCard } from '@/components/Skeleton';
 import PullToRefresh from '@/components/PullToRefresh';
 import StockSearch from '@/components/StockSearch';
 import NumberInput from '@/components/NumberInput';
+import { clientStore, StoredMemo } from '@/lib/client-store';
 
-interface Memo {
-  id: string;
-  stock_name: string;
-  action: 'buy' | 'sell' | 'hold' | 'watch';
-  price?: number;
-  quantity?: number;
-  memo: string;
-  invest_mood?: string;
-  decision_mode?: string;
-  mood_score?: number;
-  created_at: string;
-  updated_at: string;
-}
+type Memo = StoredMemo;
 
 const actionConfig: Record<string, { label: string; chipBg: string; chipText: string }> = {
   buy: { label: 'Buy Long', chipBg: 'bg-secondary-container', chipText: 'text-on-secondary-container' },
@@ -57,20 +46,12 @@ export default function MemoPage() {
   const [quantity, setQuantity] = useState('');
   const [memoText, setMemoText] = useState('');
 
-  const fetchMemos = useCallback(async () => {
-    try {
-      const res = await fetch('/api/memos');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setMemos(data.memos || []);
-    } catch (err) {
-      console.error('Failed to fetch memos', err);
-    } finally {
-      setLoading(false);
-    }
+  const loadMemos = useCallback(() => {
+    setMemos(clientStore.listMemos());
+    setLoading(false);
   }, []);
 
-  useEffect(() => { fetchMemos(); }, [fetchMemos]);
+  useEffect(() => { loadMemos(); }, [loadMemos]);
 
   const resetForm = () => {
     setStockName('');
@@ -81,28 +62,24 @@ export default function MemoPage() {
     setEditingId(null);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!stockName.trim()) return;
-    const body = {
+    const data = {
       stock_name: stockName.trim(),
       action,
       price: price ? Number(price) : undefined,
       quantity: quantity ? Number(quantity) : undefined,
-      memo: memoText.trim(),
+      memo: memoText.trim() || undefined,
     };
-    try {
-      if (editingId) {
-        await fetch(`/api/memos/${editingId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      } else {
-        await fetch('/api/memos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      }
-      resetForm();
-      setShowForm(false);
-      fetchMemos();
-      toast('메모가 저장되었어요');
-    } catch {
-      toast('저장에 실패했습니다.');
+    if (editingId) {
+      clientStore.updateMemo(editingId, data);
+    } else {
+      clientStore.createMemo(data);
     }
+    resetForm();
+    setShowForm(false);
+    loadMemos();
+    toast('메모가 저장되었어요');
   };
 
   const handleEdit = (memo: Memo) => {
@@ -110,16 +87,16 @@ export default function MemoPage() {
     setAction(memo.action);
     setPrice(memo.price ? String(memo.price) : '');
     setQuantity(memo.quantity ? String(memo.quantity) : '');
-    setMemoText(memo.memo);
+    setMemoText(memo.memo || '');
     setEditingId(memo.id);
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     try {
-      await fetch(`/api/memos/${id}`, { method: 'DELETE' });
+      clientStore.deleteMemo(id);
       setDeletingId(null);
-      fetchMemos();
+      loadMemos();
       toast('메모가 삭제되었어요');
     } catch {
       toast('삭제에 실패했습니다.');
@@ -164,7 +141,7 @@ export default function MemoPage() {
         </button>
       </header>
 
-      <PullToRefresh onRefresh={async () => { setLoading(true); await fetchMemos(); }}>
+      <PullToRefresh onRefresh={async () => { setLoading(true); loadMemos(); }}>
         <div className="pt-24 px-6 max-w-2xl mx-auto space-y-10">
           {/* Summary Stats Bento */}
           <section className="grid grid-cols-2 gap-4">
