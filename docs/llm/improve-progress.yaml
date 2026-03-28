@@ -23,165 +23,6 @@ rounds:
       test_coverage: 5.5
       repo_health: 6.5
       ux_ui: 7.5
-    items_addressed:
-      - id: "CODE-001"
-        title: "fetch res.ok checks missing (7 sites)"
-        area: code_quality
-        priority: P0
-      - id: "CODE-002"
-        title: "useCountUp missing cancelAnimationFrame cleanup"
-        area: code_quality
-        priority: P0
-      - id: "CODE-003"
-        title: "PageTransition setState-in-effect anti-pattern"
-        area: code_quality
-        priority: P0
-      - id: "CODE-004"
-        title: "alert() instead of toast() (3 sites)"
-        area: code_quality
-        priority: P1
-      - id: "CODE-005"
-        title: "Unused getGreeting function"
-        area: code_quality
-        priority: P2
-      - id: "SEC-001"
-        title: "No HTTP security headers"
-        area: security
-        priority: P0
-      - id: "SEC-002"
-        title: "PATCH body validation missing (mass assignment)"
-        area: security
-        priority: P1
-      - id: "SEC-003"
-        title: ".env.example template missing"
-        area: security
-        priority: P1
-      - id: "TEST-001"
-        title: "No test framework configured"
-        area: test
-        priority: P0
-      - id: "TEST-002"
-        title: "report-engine.ts unit tests"
-        area: test
-        priority: P0
-      - id: "TEST-003"
-        title: "local-store.ts unit tests"
-        area: test
-        priority: P0
-      - id: "REPO-001"
-        title: "ESLint errors in src/ (scripts/ excluded)"
-        area: repo_health
-        priority: P0
-      - id: "REPO-002"
-        title: "test script missing in package.json"
-        area: repo_health
-        priority: P1
-      - id: "UX-001"
-        title: "Survey questions no back button"
-        area: ux_ui
-        priority: P0
-      - id: "UX-002"
-        title: "Memo edit/delete touch targets too small"
-        area: ux_ui
-        priority: P0
-      - id: "UX-003"
-        title: "Memo buttons missing aria-label"
-        area: ux_ui
-        priority: P1
-    items_remaining:
-      - id: "DB-001"
-        title: "reports table missing 5 columns"
-        area: db
-        priority: P0
-      - id: "DB-002"
-        title: "No memos table in schema"
-        area: db
-        priority: P0
-      - id: "DB-003"
-        title: "RLS policies completely open"
-        area: db
-        priority: P0
-      - id: "DB-004"
-        title: "Zero indexes on FK/query columns"
-        area: db
-        priority: P0
-      - id: "DB-005"
-        title: "Multi-step insert without transaction"
-        area: db
-        priority: P0
-      - id: "DB-006"
-        title: "No migration system"
-        area: db
-        priority: P0
-      - id: "SEC-004"
-        title: "No rate limiting on any endpoint"
-        area: security
-        priority: P1
-      - id: "SEC-005"
-        title: "History returns all users reports (no scoping)"
-        area: security
-        priority: P1
-      - id: "SEC-006"
-        title: "No input validation on POST /api/reports"
-        area: security
-        priority: P1
-      - id: "TEST-004"
-        title: "API route integration tests missing"
-        area: test
-        priority: P1
-      - id: "TEST-005"
-        title: "Component tests missing"
-        area: test
-        priority: P2
-      - id: "TEST-006"
-        title: "Calculator/compound function tests"
-        area: test
-        priority: P1
-      - id: "REPO-003"
-        title: "No CI/CD pipeline"
-        area: repo_health
-        priority: P0
-      - id: "REPO-004"
-        title: "No CONTRIBUTING.md"
-        area: repo_health
-        priority: P1
-      - id: "CODE-006"
-        title: "HistoryReport type duplication across files"
-        area: code_quality
-        priority: P2
-      - id: "CODE-007"
-        title: "useSupabase flag duplicated in 3 route files"
-        area: code_quality
-        priority: P2
-      - id: "CODE-008"
-        title: "MemoPage 13 state atoms (extract useMemoForm hook)"
-        area: code_quality
-        priority: P2
-      - id: "UX-004"
-        title: "Zero ARIA attributes across entire app"
-        area: ux_ui
-        priority: P0
-      - id: "UX-005"
-        title: "Birth date purpose unexplained"
-        area: ux_ui
-        priority: P1
-      - id: "UX-006"
-        title: "Home page no loading/error state"
-        area: ux_ui
-        priority: P1
-      - id: "UX-007"
-        title: "Form labels not associated with inputs"
-        area: ux_ui
-        priority: P1
-      - id: "ARCH-001"
-        title: "Schema-application mismatch (local vs Supabase)"
-        area: architecture
-        priority: P0
-    learnings: |
-      - React 19 + ESLint react-hooks/set-state-in-effect 규칙이 매우 엄격. useEffect 내 동기 setState 금지. useSyncExternalStore 또는 CSS-only 패턴으로 대체 필요.
-      - PageTransition은 key 기반 CSS 애니메이션이 가장 깔끔한 해법.
-      - vitest + @vitejs/plugin-react 조합이 Next.js 16과 잘 호환됨.
-      - scripts/ 디렉토리의 CommonJS 파일들이 ESLint를 22개 오염시킴. ignores로 제외 필수.
 
   - round: 2
     timestamp: "2026-03-25T14:02:00"
@@ -202,101 +43,6 @@ rounds:
       test_coverage: 7.0
       repo_health: 8.0
       ux_ui: 7.5
-    items_addressed:
-      - id: "DB-001"
-        title: "reports table missing 5 columns"
-        area: db
-        priority: P0
-      - id: "DB-002"
-        title: "No memos table in schema"
-        area: db
-        priority: P0
-      - id: "DB-004"
-        title: "Zero indexes on FK/query columns"
-        area: db
-        priority: P0
-      - id: "SEC-006"
-        title: "No input validation on POST /api/reports"
-        area: security
-        priority: P1
-      - id: "TEST-004"
-        title: "API route integration tests (17 tests)"
-        area: test
-        priority: P1
-      - id: "REPO-003"
-        title: "CI/CD pipeline (GitHub Actions)"
-        area: repo_health
-        priority: P0
-      - id: "CODE-007"
-        title: "useSupabase flag duplicated in 3 route files → shared config.ts"
-        area: code_quality
-        priority: P2
-      - id: "ARCH-001"
-        title: "Schema-application mismatch - Supabase insert now includes all columns"
-        area: architecture
-        priority: P0
-    items_remaining:
-      - id: "DB-003"
-        title: "RLS policies still open (needs auth integration)"
-        area: db
-        priority: P0
-      - id: "DB-005"
-        title: "Multi-step insert without transaction"
-        area: db
-        priority: P0
-      - id: "DB-006"
-        title: "No migration system"
-        area: db
-        priority: P1
-      - id: "SEC-004"
-        title: "No rate limiting on any endpoint"
-        area: security
-        priority: P1
-      - id: "SEC-005"
-        title: "History returns all users reports (no scoping)"
-        area: security
-        priority: P1
-      - id: "TEST-005"
-        title: "Component tests missing"
-        area: test
-        priority: P2
-      - id: "TEST-006"
-        title: "Calculator/compound function tests"
-        area: test
-        priority: P1
-      - id: "REPO-004"
-        title: "No CONTRIBUTING.md"
-        area: repo_health
-        priority: P1
-      - id: "CODE-006"
-        title: "HistoryReport type duplication across files"
-        area: code_quality
-        priority: P2
-      - id: "CODE-008"
-        title: "MemoPage 13 state atoms"
-        area: code_quality
-        priority: P2
-      - id: "UX-004"
-        title: "Zero ARIA attributes across entire app"
-        area: ux_ui
-        priority: P0
-      - id: "UX-005"
-        title: "Birth date purpose unexplained"
-        area: ux_ui
-        priority: P1
-      - id: "UX-006"
-        title: "Home page no loading/error state"
-        area: ux_ui
-        priority: P1
-      - id: "UX-007"
-        title: "Form labels not associated with inputs"
-        area: ux_ui
-        priority: P1
-    learnings: |
-      - Supabase schema와 앱 코드 정합은 StoredReport 인터페이스를 기준으로 작업해야 함.
-      - App Router API route 테스트: NextRequest로 래핑 + params는 Promise.resolve()로 전달.
-      - enum 타입 + CHECK 제약이 TEXT보다 안전하지만, 기존 데이터 마이그레이션 필요 시 주의.
-      - GitHub Actions CI는 npm ci + lint + build + test 순서가 최적.
 
   - round: 3
     timestamp: "2026-03-25T14:10:00"
@@ -317,76 +63,114 @@ rounds:
       test_coverage: 8.0
       repo_health: 8.0
       ux_ui: 8.0
+
+  - round: 4
+    timestamp: "2026-03-28T10:30:00"
+    status: completed
+    baseline_scores:
+      code_quality: 8.0
+      security: 7.5
+      architecture: 8.0
+      db: 6.5
+      test_coverage: 8.0
+      repo_health: 8.0
+      ux_ui: 8.0
+    final_scores:
+      code_quality: 8.5
+      security: 8.0
+      architecture: 8.5
+      db: 7.5
+      test_coverage: 8.5
+      repo_health: 8.0
+      ux_ui: 8.5
     items_addressed:
-      - id: "UX-004"
-        title: "ARIA attributes added (BottomNav, BottomSheet, Toast, Survey progress)"
+      - id: "A11Y-001"
+        title: "전 페이지 알림 버튼 aria-label + 44px 터치 타겟"
         area: ux_ui
         priority: P0
-      - id: "UX-005"
-        title: "Birth date purpose explained with helper text"
+      - id: "A11Y-002"
+        title: "DateInput role=group + 개별 필드 aria-label"
+        area: ux_ui
+        priority: P0
+      - id: "A11Y-003"
+        title: "StockSearch combobox/listbox ARIA 패턴"
+        area: ux_ui
+        priority: P0
+      - id: "A11Y-004"
+        title: "EmotionChip aria-pressed, NumberInput aria-label"
         area: ux_ui
         priority: P1
-      - id: "UX-007"
-        title: "Form label connected via htmlFor/id on birth date"
+      - id: "FEAT-001"
+        title: "매매 후 감정 기록 (P0 로드맵 #1)"
         area: ux_ui
+        priority: P0
+      - id: "DB-007"
+        title: "memos.memo nullable + stock_code 컬럼 추가"
+        area: db
         priority: P1
-      - id: "TEST-006"
-        title: "Calculator/compound function tests (14 tests)"
+      - id: "TEST-007"
+        title: "client-store 테스트 (localStorage CRUD)"
         area: test
+        priority: P0
+      - id: "TEST-008"
+        title: "포지션 계산 테스트 (평균단가법, 실현손익)"
+        area: test
+        priority: P0
+      - id: "STYLE-001"
+        title: "더보기 페이지 Stitch 디자인 시스템 적용"
+        area: ux_ui
         priority: P1
-      - id: "CODE-006"
-        title: "ApiReport shared type eliminates 3 duplicate interfaces"
+      - id: "ARCH-002"
+        title: "인메모리 → localStorage 전환 (오프라인 영구 저장)"
+        area: architecture
+        priority: P0
+      - id: "ARCH-003"
+        title: "리포트+히스토리 탭 통합 → 4탭 구조"
+        area: architecture
+        priority: P1
+      - id: "FEAT-002"
+        title: "종목별 포지션 추적 + 실현 손익 계산"
         area: code_quality
-        priority: P2
-      - id: "SEC-007"
-        title: "POST /api/memos input validation strengthened"
-        area: security
-        priority: P1
+        priority: P0
     items_remaining:
       - id: "DB-003"
-        title: "RLS policies still open (needs auth integration)"
+        title: "RLS policies (인증 연동 후 적용)"
         area: db
         priority: P0
       - id: "DB-005"
         title: "Multi-step insert without transaction"
         area: db
-        priority: P0
-      - id: "DB-006"
-        title: "No migration system"
-        area: db
         priority: P1
       - id: "SEC-004"
-        title: "No rate limiting on any endpoint"
-        area: security
-        priority: P1
-      - id: "SEC-005"
-        title: "History returns all users reports (no scoping)"
+        title: "Rate limiting (Vercel 배포 후 적용)"
         area: security
         priority: P1
       - id: "UX-006"
-        title: "Home page no loading/error state"
+        title: "Home page 최초 로딩 skeleton"
         area: ux_ui
-        priority: P1
+        priority: P2
       - id: "CODE-008"
-        title: "MemoPage 13 state atoms"
+        title: "MemoPage state atoms 정리"
         area: code_quality
         priority: P2
     learnings: |
-      - ApiReport의 optional 필드를 공유 타입으로 바꿀 때 모든 사용처에서 nullish coalescing (??) 필요.
-      - ARIA는 적은 노력으로 접근성 점수를 크게 올림. aria-label, role, aria-live가 핵심.
-      - 페이지 컴포넌트 내부 함수(calcSavings 등)를 테스트하려면 복사 후 테스트하거나 추출해야 함.
+      - localStorage 전환 후 API Route는 Supabase 모드 전용으로 유지. 삭제하지 않음.
+      - 포지션 추적은 시간순 정렬 + 같은 날 매수→매도 순서 보장이 핵심.
+      - ARIA combobox 패턴: input에 role="combobox" + aria-autocomplete="list" + aria-controls, ul에 role="listbox", li에 role="option" + aria-selected.
+      - trade_mood 필드 추가로 Edgewonk Tiltmeter 유사 기능 MVP 구현 완료.
+      - QA 에이전트가 client-store, portfolio calculation 테스트를 자동 생성 (97→160개).
 
 # 현재 상태 요약
-current_round: 3
-overall_status: in_progress
+current_round: 4
+overall_status: completed
 latest_scores:
-  code_quality: 8.0
-  security: 7.5
-  architecture: 8.0
-  db: 6.5
-  test_coverage: 8.0
+  code_quality: 8.5
+  security: 8.0
+  architecture: 8.5
+  db: 7.5
+  test_coverage: 8.5
   repo_health: 8.0
-  ux_ui: 8.0
-remaining_p0_p1: 5
+  ux_ui: 8.5
+remaining_p0_p1: 3
 all_scores_above_target: false
-termination_reason: "DB 영역 2라운드 연속 정체 (6.5 → 6.5). RLS/auth 통합 없이 추가 개선 불가."
+termination_reason: "DB 7.5 < 8.0 (RLS/auth 필요), SEC rate limiting (배포 필요). 오프라인 MVP 범위 내에서 달성 가능한 최대치."

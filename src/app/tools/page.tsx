@@ -7,115 +7,90 @@ const tools = [
     href: '/calculator',
     title: '적금 vs 투자 비교',
     description: '같은 돈을 적금 vs 주식, 어디에?',
+    icon: 'compare_arrows',
     badge: null,
   },
   {
     href: '/compound',
     title: '복리 계산기',
     description: '복리의 마법, 직접 확인하기',
+    icon: 'calculate',
     badge: null,
   },
   {
     href: '/tools/returns',
     title: '수익률 계산기',
     description: '매수·매도가로 수익률 계산',
+    icon: 'percent',
     badge: 'coming soon',
   },
 ];
 
-function ToolIcon({ index }: { index: number }) {
-  const icons = [
-    // 저울 (적금 vs 투자)
-    <svg key={0} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3v18" />
-      <path d="M4 7h16" />
-      <path d="M4 7l3 8h0a3 3 0 0 0 5.5 0h0L16 7" />
-      <path d="M16 7l-3 8" />
-      <path d="M8 7l-3 8" />
-    </svg>,
-    // 차트 (복리)
-    <svg key={1} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 20h18" />
-      <path d="M5 20V10l4-2 4 3 4-5 4 2v12" />
-    </svg>,
-    // 계산기 (수익률)
-    <svg key={3} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="2" width="16" height="20" rx="2" />
-      <line x1="8" y1="6" x2="16" y2="6" />
-      <line x1="8" y1="10" x2="10" y2="10" />
-      <line x1="14" y1="10" x2="16" y2="10" />
-      <line x1="8" y1="14" x2="10" y2="14" />
-      <line x1="14" y1="14" x2="16" y2="14" />
-      <line x1="8" y1="18" x2="16" y2="18" />
-    </svg>,
-  ];
-  return icons[index] || null;
-}
-
 export default function ToolsPage() {
   return (
-    <main className="min-h-screen py-12 px-6 pb-nav">
-      <div className="max-w-md mx-auto animate-fade-in">
-        {/* 헤더 */}
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-black text-green-900">도구 모음</h1>
-          <Link
-            href="/"
-            className="text-green-800 hover:text-green-900 text-sm font-medium transition-colors"
-          >
-            홈으로
-          </Link>
+    <main className="min-h-screen pb-32">
+      {/* Header */}
+      <header className="fixed top-0 w-full z-50 glass-header flex justify-between items-center px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychiatry</span>
+          </div>
+          <h1 className="font-headline font-extrabold text-primary text-xl tracking-tight">더보기</h1>
         </div>
-        <p className="text-green-800 text-sm mb-8">
-          Dear,ANT가 준비한 투자 도구들
-        </p>
+        <button className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200" aria-label="알림">
+          <span className="material-symbols-outlined text-primary">notifications</span>
+        </button>
+      </header>
 
-        {/* 도구 리스트 */}
+      <div className="pt-24 px-6 max-w-2xl mx-auto space-y-6">
+        <div>
+          <p className="text-on-surface-variant text-sm">Dear,ANT가 준비한 투자 도구들</p>
+        </div>
+
         <div className="flex flex-col gap-3">
-          {tools.map((tool, index) => {
+          {tools.map((tool) => {
             const isComingSoon = tool.badge === 'coming soon';
-            const cardClass = `
-              flex items-center gap-4 card-v3 px-5 py-4 transition-colors
-              ${isComingSoon
-                ? 'opacity-60 cursor-not-allowed'
-                : 'hover:border-green-400 active:scale-[0.98]'
-              }
-            `;
 
             const inner = (
-              <>
-                <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-white text-green-700">
-                  <ToolIcon index={index} />
+              <div className={`flex items-center gap-4 bg-surface-container-lowest rounded-xl p-5 transition-all ${
+                isComingSoon ? 'opacity-50' : 'hover:bg-white/80 active:scale-[0.98]'
+              }`}>
+                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container text-primary">
+                  <span className="material-symbols-outlined">{tool.icon}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-green-900 leading-tight">
+                    <h3 className="font-headline font-bold text-on-surface">
                       {tool.title}
                     </h3>
                     {isComingSoon && (
-                      <span className="px-2 py-0.5 bg-green-200 text-green-800 text-xs font-bold rounded-full">
-                        SOON
+                      <span className="px-2 py-0.5 bg-surface-container text-on-surface-variant text-[10px] font-bold rounded-full uppercase">
+                        Soon
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-green-800 leading-relaxed mt-0.5">
+                  <p className="text-xs text-on-surface-variant mt-0.5">
                     {tool.description}
                   </p>
                 </div>
                 {!isComingSoon && (
-                  <svg className="flex-shrink-0 w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
+                  <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
                 )}
-              </>
+              </div>
             );
 
             return isComingSoon ? (
-              <div key={tool.href} className={cardClass}>{inner}</div>
+              <div key={tool.href}>{inner}</div>
             ) : (
-              <Link key={tool.href} href={tool.href} className={cardClass}>{inner}</Link>
+              <Link key={tool.href} href={tool.href}>{inner}</Link>
             );
           })}
+        </div>
+
+        {/* App Info */}
+        <div className="text-center pt-8">
+          <p className="text-xs text-on-surface-variant">Dear,ANT v1.0</p>
+          <p className="text-[10px] text-outline mt-1">투자 감정 분석 · 데이터는 기기에 저장됩니다</p>
         </div>
       </div>
     </main>
