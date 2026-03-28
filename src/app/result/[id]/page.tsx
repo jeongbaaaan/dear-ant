@@ -5,70 +5,26 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
 import { ApiReport } from '@/lib/types';
-import { GradeBadge } from '@/components/GradeBadge';
-import { CircularGauge } from '@/components/CircularGauge';
 
-const modeConfig: Record<string, { bg: string; text: string; desc: string }> = {
-  '방어': { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-600', desc: '시장으로부터 자산을 보호하는 모드' },
-  '관망': { bg: 'bg-amber-50 border-amber-200', text: 'text-amber-600', desc: '한 발 물러서서 시장을 관찰하는 모드' },
-  '신중': { bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-600', desc: '균형 잡힌 판단으로 접근하는 모드' },
-  '적극': { bg: 'bg-rose-50 border-rose-600', text: 'text-rose-600', desc: '기회를 포착해 적극 행동하는 모드' },
+const conditionMap: Record<string, { label: string; desc: string }> = {
+  'S': { label: '최상', desc: '오늘은 심리적 안정이 돋보이는 날입니다. 계획된 원칙을 지키기에 가장 적합한 타이밍입니다.' },
+  'A': { label: '최상', desc: '오늘은 심리적 안정이 돋보이는 날입니다. 계획된 원칙을 지키기에 가장 적합한 타이밍입니다.' },
+  'B': { label: '양호', desc: '전반적으로 안정적인 컨디션입니다. 원칙에 따라 신중하게 접근하세요.' },
+  'C': { label: '보통', desc: '평범한 컨디션입니다. 무리한 매매보다는 관망을 고려해보세요.' },
+  'D': { label: '주의', desc: '감정적 동요가 감지됩니다. 매매를 줄이고 관찰에 집중하세요.' },
+  'F': { label: '위험', desc: '오늘은 매매를 쉬어가는 것이 좋겠습니다. 충분한 휴식을 취하세요.' },
 };
 
-const investMoodConfig: Record<string, { color: string; label: string; desc: string }> = {
-  'A': { color: 'bg-emerald-500', label: '매우 좋음', desc: '오늘은 판단력이 최상입니다' },
-  'B': { color: 'bg-blue-500', label: '좋음', desc: '안정적인 판단이 가능합니다' },
-  'C': { color: 'bg-amber-500', label: '보통', desc: '신중한 접근이 필요합니다' },
-  'D': { color: 'bg-orange-500', label: '주의', desc: '감정적 판단을 경계하세요' },
-  'F': { color: 'bg-red-500', label: '위험', desc: '오늘은 매매를 쉬어가세요' },
+const riskLabelMap: Record<string, string> = {
+  '높음': '위험',
+  '중간': '주의 필요',
+  '낮음': '안전',
 };
-
-function BiorhythmBar({ label, value, color }: { label: string; value: number; color: string }) {
-  const normalized = (value + 100) / 2; // -100~100 → 0~100
-  return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs text-green-700 w-8 shrink-0">{label}</span>
-      <div className="flex-1 h-2 bg-green-100 rounded-full overflow-hidden relative">
-        <div className="absolute left-1/2 w-px h-full bg-green-300 z-10" />
-        <div
-          className={`h-full rounded-full transition-all duration-1000 ${color}`}
-          style={{ width: `${normalized}%` }}
-        />
-      </div>
-      <span className="text-xs font-bold text-green-800 w-10 text-right">{value > 0 ? '+' : ''}{value}</span>
-    </div>
-  );
-}
-
-interface PrevComparison {
-  moodDiff: number;
-  gradeBefore: string;
-  gradeAfter: string;
-  modeBefore: string;
-  modeAfter: string;
-  bioPhysicalDiff: number;
-  bioEmotionalDiff: number;
-  bioIntellectualDiff: number;
-}
-
-function DiffBadge({ value, label, unit = '' }: { value: number; label: string; unit?: string }) {
-  if (Math.abs(value) < 1) return null;
-  const isPositive = value > 0;
-  return (
-    <div className="flex items-center justify-between py-2">
-      <span className="text-green-700 text-sm">{label}</span>
-      <span className={`text-sm font-bold ${isPositive ? 'text-rose-500' : 'text-emerald-500'}`}>
-        {isPositive ? '↑' : '↓'} {Math.abs(Math.round(value))}{unit}
-      </span>
-    </div>
-  );
-}
 
 export default function ResultPage() {
   const params = useParams();
   const { toast } = useToast();
   const [report, setReport] = useState<ApiReport | null>(null);
-  const [prevComparison, setPrevComparison] = useState<PrevComparison | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -78,28 +34,6 @@ export default function ResultPage() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setReport(data.report);
-
-        // 이전 리포트와 비교
-        try {
-          const histRes = await fetch('/api/history');
-          if (!histRes.ok) throw new Error(`HTTP ${histRes.status}`);
-          const histData = await histRes.json();
-          const allReports = histData.reports || [];
-          const currentIdx = allReports.findIndex((r: { id: string }) => r.id === params.id);
-          const prev = allReports[currentIdx + 1]; // 바로 이전 리포트
-          if (prev && data.report) {
-            setPrevComparison({
-              moodDiff: data.report.mood_score - prev.mood_score,
-              gradeBefore: prev.invest_mood || 'C',
-              gradeAfter: data.report.invest_mood,
-              modeBefore: prev.decision_mode,
-              modeAfter: data.report.decision_mode,
-              bioPhysicalDiff: (data.report.biorhythm_physical || 0) - (prev.biorhythm_physical || 0),
-              bioEmotionalDiff: (data.report.biorhythm_emotional || 0) - (prev.biorhythm_emotional || 0),
-              bioIntellectualDiff: (data.report.biorhythm_intellectual || 0) - (prev.biorhythm_intellectual || 0),
-            });
-          }
-        } catch { /* 비교 데이터 없어도 괜찮음 */ }
       } catch {
         console.error('Failed to fetch report');
       } finally {
@@ -112,7 +46,7 @@ export default function ResultPage() {
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full border-4 border-green-300 border-t-green-900 animate-spin" />
+        <div className="w-12 h-12 rounded-full border-4 border-primary-container border-t-primary animate-spin" />
       </main>
     );
   }
@@ -120,195 +54,218 @@ export default function ResultPage() {
   if (!report) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-6">
-        <p className="text-green-800 mb-4">리포트를 찾을 수 없습니다.</p>
-        <Link href="/" className="text-green-700 hover:text-green-900 underline">
-          홈으로 돌아가기
-        </Link>
+        <p className="text-on-surface-variant mb-4">리포트를 찾을 수 없습니다.</p>
+        <Link href="/" className="text-primary font-bold">홈으로 돌아가기</Link>
       </main>
     );
   }
 
-  const date = new Date(report.created_at).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const grade = report.invest_mood || 'C';
+  const condition = conditionMap[grade] || conditionMap['C'];
+  const riskLabel = riskLabelMap[report.risk_tendency] || '주의 필요';
+  const moodScore = report.mood_score ?? 50;
 
-  const mode = modeConfig[report.decision_mode] || modeConfig['신중'];
-  const investMood = investMoodConfig[report.invest_mood || 'C'] || investMoodConfig['C'];
+  // Normalize biorhythm -100~100 → 0~100
+  const bioPhysical = Math.round(((report.biorhythm_physical ?? 0) + 100) / 2);
+  const bioEmotional = Math.round(((report.biorhythm_emotional ?? 0) + 100) / 2);
+  const bioIntellectual = Math.round(((report.biorhythm_intellectual ?? 0) + 100) / 2);
 
   return (
-    <main className="min-h-screen flex flex-col items-center py-10 px-6 pb-nav">
-      <div className="max-w-md w-full animate-fade-in space-y-5">
-        {/* 헤더 */}
-        <div className="text-center">
-          <p className="text-green-800 text-sm">{date}</p>
-          <h1 className="text-2xl font-black text-green-900 mt-1">
-            Dear<span className="text-green-800">,</span>ANT Report
-          </h1>
+    <main className="min-h-screen pb-32">
+      {/* Header */}
+      <header className="fixed top-0 w-full z-50 glass-header flex justify-between items-center px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychiatry</span>
+          </div>
+          <h1 className="font-headline font-extrabold text-primary text-xl tracking-tight">리포트</h1>
+        </div>
+        <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200">
+          <span className="material-symbols-outlined text-primary">notifications</span>
+        </button>
+      </header>
+
+      <div className="pt-24 px-6 max-w-2xl mx-auto space-y-10">
+        {/* Summary Display */}
+        <section className="space-y-2">
+          <span className="font-bold text-xs text-primary uppercase tracking-widest">Today&apos;s Insight</span>
+          <div className="flex items-baseline gap-2">
+            <h2 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">투자 컨디션</h2>
+            <span className="font-headline text-4xl font-extrabold text-primary">{condition.label}</span>
+          </div>
+          <p className="text-on-surface-variant leading-relaxed">{condition.desc}</p>
+        </section>
+
+        {/* Bento Grid: Biorhythm + Risk */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Biorhythm */}
+          <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col justify-between min-h-[240px]">
+            <div className="flex justify-between items-start">
+              <h3 className="font-headline text-lg font-bold text-on-surface">바이오리듬</h3>
+              <span className="material-symbols-outlined text-primary">insights</span>
+            </div>
+            <div className="relative h-32 mt-4 flex items-center justify-center">
+              <svg className="w-full h-full overflow-visible" viewBox="0 0 200 100">
+                <path d="M0,50 Q25,10 50,50 T100,50 T150,50 T200,50" fill="none" stroke="#bef5ca" strokeLinecap="round" strokeWidth="4" />
+                <path
+                  d={`M0,${100 - bioPhysical} Q50,${100 - bioEmotional} 100,50 T150,${100 - bioIntellectual} T200,${100 - bioPhysical}`}
+                  fill="none" stroke="#006b1b" strokeLinecap="round" strokeWidth="4"
+                />
+                <circle cx="150" cy={100 - bioIntellectual} r="6" fill="#006b1b" className="animate-pulse" />
+              </svg>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-outline uppercase">Physical</p>
+                <p className="text-sm font-bold text-on-surface">{bioPhysical}%</p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-outline uppercase">Emotional</p>
+                <p className="text-sm font-bold text-on-surface">{bioEmotional}%</p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-outline uppercase">Intellect</p>
+                <p className="text-sm font-bold text-on-surface">{bioIntellectual}%</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Trading Risk */}
+          <div className="bg-surface-container-high rounded-xl p-6 flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <h3 className="font-headline text-lg font-bold text-on-surface">매매 위험도</h3>
+              <div className="px-3 py-1 bg-surface-container-lowest rounded-full text-[10px] font-bold text-primary border border-primary/10">
+                {riskLabel}
+              </div>
+            </div>
+            <div className="flex-1 flex flex-col justify-center items-center">
+              <div className="relative w-32 h-32">
+                <svg className="w-full h-full" viewBox="0 0 36 36">
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none" stroke="#acecbb" strokeWidth="3"
+                  />
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none" stroke="#006b1b" strokeDasharray={`${moodScore}, 100`}
+                    strokeLinecap="round" strokeWidth="3"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold text-on-surface">{moodScore}</span>
+                  <span className="text-[10px] text-on-surface-variant font-bold">
+                    {moodScore <= 35 ? 'SAFE' : moodScore <= 65 ? 'NORMAL' : 'HIGH'}
+                  </span>
+                </div>
+              </div>
+            </div>
+            {report.today_message && (
+              <div className="bg-surface-container-lowest/50 p-3 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-error text-lg">warning</span>
+                  <p className="text-xs text-on-surface-variant leading-snug">{report.today_message}</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* 통합 히어로 카드 */}
-        <div className="bg-green-900 rounded-3xl p-6 text-white relative overflow-hidden">
-          <div
-            className="absolute -top-16 -right-16 w-48 h-48 rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(74,222,128,0.15) 0%, transparent 70%)' }}
-          />
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-white/70 text-sm font-medium">오늘의 투자 분위기</span>
-          </div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-2xl font-black">{investMood.label}</p>
-            <GradeBadge grade={(['S','A','B','C','D','F'].includes(report.invest_mood || '') ? report.invest_mood : 'C') as 'S'|'A'|'B'|'C'|'D'|'F'} size="lg" />
-          </div>
-          <div className="h-px bg-white/20 mb-4" />
-          <div className="flex items-start justify-between">
+        {/* Pre-trading Self-check */}
+        <section className="bg-surface-container-low rounded-xl p-8 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+              <span className="material-symbols-outlined text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>fact_check</span>
+            </div>
             <div>
-              <p className="text-white/70 text-xs">판단 모드</p>
-              <p className="text-xl font-bold mt-0.5">{report.decision_mode}</p>
-              <p className="text-white/60 text-xs mt-0.5">{mode.desc}</p>
-            </div>
-            <div className="text-right flex items-center gap-3">
-              <div>
-                <p className="text-white/70 text-xs">감정 흔들림</p>
-                <p className="text-xl font-bold mt-0.5 text-amber-400">{report.mood_score ?? 0}%</p>
-                <p className="text-white/60 text-xs mt-0.5">리스크 {report.risk_tendency}</p>
-              </div>
-              <CircularGauge
-                value={report.mood_score ?? 0}
-                size={48}
-                strokeWidth={5}
-                color="#FBBF24"
-              />
+              <h3 className="font-headline text-xl font-bold text-on-surface">매매전 셀프체크</h3>
+              <p className="text-xs text-on-surface-variant">원칙을 지키는 매매가 성공의 지름길입니다.</p>
             </div>
           </div>
-        </div>
-
-        {/* 핵심 지표 카드 */}
-        <div className="card-v3 p-5 space-y-5">
-          {/* 리스크 성향 */}
-          <div className="flex items-center justify-between">
-            <span className="text-green-800 text-sm">리스크 성향</span>
-            <span className={`font-bold ${
-              report.risk_tendency === '높음' ? 'text-rose-500' :
-              report.risk_tendency === '중간' ? 'text-amber-500' :
-              'text-emerald-500'
-            }`}>
-              {report.risk_tendency}
-            </span>
-          </div>
-        </div>
-
-        {/* 바이오리듬 */}
-        <div className="card-v3 p-5">
-          <p className="text-green-700 text-sm font-medium mb-4">오늘의 바이오리듬</p>
           <div className="space-y-3">
-            <BiorhythmBar label="신체" value={report.biorhythm_physical ?? 0} color="bg-green-500" />
-            <BiorhythmBar label="감정" value={report.biorhythm_emotional ?? 0} color="bg-mint-400" />
-            <BiorhythmBar label="지성" value={report.biorhythm_intellectual ?? 0} color="bg-blue-400" />
-          </div>
-        </div>
-
-        {/* 이전 리포트 비교 */}
-        {prevComparison && (
-          <div className="card-v3 p-5">
-            <p className="text-green-700 text-sm font-medium mb-3">이전 리포트와 비교</p>
-
-            {/* 등급 변화 */}
-            {prevComparison.gradeBefore !== prevComparison.gradeAfter && (
-              <div className="flex items-center justify-between py-2 border-b border-green-100">
-                <span className="text-green-700 text-sm">투자 무드</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-green-800 font-bold">{prevComparison.gradeBefore}</span>
-                  <span className="text-green-800">→</span>
-                  <span className="text-green-900 font-black">{prevComparison.gradeAfter}</span>
+            {[
+              { q: '지금 감정적으로 평온한 상태인가요?', desc: '조급함이나 공포에 의한 매매가 아닌지 확인하세요.' },
+              { q: '손절가와 목표가를 설정했나요?', desc: '진입 전 탈출 전략이 명확해야 합니다.' },
+              { q: '매수 근거가 최소 3가지 이상인가요?', desc: '차트, 재무, 뉴스의 조합을 확인하세요.' },
+            ].map((item, i) => (
+              <label key={i} className="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl cursor-pointer hover:bg-white transition-all group">
+                <input type="checkbox" className="w-5 h-5 rounded border-outline text-primary focus:ring-primary" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">{item.q}</p>
+                  <p className="text-[11px] text-on-surface-variant">{item.desc}</p>
                 </div>
-              </div>
-            )}
-
-            {/* 모드 변화 */}
-            {prevComparison.modeBefore !== prevComparison.modeAfter && (
-              <div className="flex items-center justify-between py-2 border-b border-green-100">
-                <span className="text-green-700 text-sm">판단 모드</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-green-800">{prevComparison.modeBefore}</span>
-                  <span className="text-green-800">→</span>
-                  <span className="text-green-900 font-bold">{prevComparison.modeAfter}</span>
-                </div>
-              </div>
-            )}
-
-            <DiffBadge value={prevComparison.moodDiff} label="감정 흔들림" unit="%" />
-            <DiffBadge value={prevComparison.bioPhysicalDiff} label="신체 바이오리듬" />
-            <DiffBadge value={prevComparison.bioEmotionalDiff} label="감정 바이오리듬" />
-            <DiffBadge value={prevComparison.bioIntellectualDiff} label="지성 바이오리듬" />
-          </div>
-        )}
-
-        {/* 오늘의 투자 키워드 */}
-        <div className="card-v3 p-5">
-          <p className="text-green-700 text-sm font-medium mb-3">오늘의 투자 키워드</p>
-          <div className="flex flex-wrap gap-2">
-            {(report.today_keywords || []).map((keyword, i) => (
-              <span
-                key={i}
-                className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium"
-              >
-                #{keyword}
-              </span>
+              </label>
             ))}
           </div>
-        </div>
-
-        {/* 오늘의 한마디 */}
-        <div className="bg-green-900 rounded-2xl p-5 text-white">
-          <p className="text-white/70 text-xs font-medium mb-2">오늘의 한마디</p>
-          <p className="font-bold leading-relaxed">
-            {report.today_message}
-          </p>
-        </div>
-
-        {/* 편지 본문 */}
-        <div className="card-v3 p-6">
-          <p className="text-green-800 text-xs font-medium mb-3">오늘의 편지</p>
-          <div className="text-green-700 text-sm leading-relaxed whitespace-pre-line">
-            {report.today_letter}
-          </div>
-        </div>
-
-        {/* 액션 버튼 */}
-        <div className="space-y-3 pt-2">
           <Link
             href="/survey"
-            className="block w-full text-center bg-green-900 hover:bg-green-800 text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
+            className="block w-full py-4 rounded-full bg-gradient-to-r from-primary to-primary-dim text-on-primary font-bold shadow-lg active:scale-95 duration-200 transition-transform text-center"
           >
-            다시 하기
+            다시 분석하기
           </Link>
-          <div className="flex gap-3">
-            <Link
-              href="/history"
-              className="flex-1 text-center border-2 border-green-200 text-green-700 hover:bg-green-50 font-medium py-3 rounded-2xl transition-all"
-            >
-              히스토리
-            </Link>
-            <button
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({
-                    title: 'Dear,ANT - 오늘의 투자 분위기 리포트',
-                    text: `투자 분위기 ${report.invest_mood}등급 | 판단 모드: ${report.decision_mode}`,
-                    url: window.location.href,
-                  });
-                } else {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast('링크가 복사되었어요');
-                }
-              }}
-              className="flex-1 text-center border-2 border-green-200 text-green-700 hover:bg-green-50 font-medium py-3 rounded-2xl transition-all"
-            >
-              공유하기
-            </button>
+        </section>
+
+        {/* Today's Keywords */}
+        {report.today_keywords && report.today_keywords.length > 0 && (
+          <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+            <h3 className="font-headline text-lg font-bold text-on-surface mb-4">오늘의 투자 키워드</h3>
+            <div className="flex flex-wrap gap-2">
+              {report.today_keywords.map((keyword, i) => (
+                <span key={i} className="px-4 py-2 bg-surface-container text-on-surface rounded-full text-sm font-medium">
+                  #{keyword}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Today's Letter */}
+        {report.today_letter && (
+          <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+            <p className="text-xs font-bold text-on-surface-variant mb-3">오늘의 편지</p>
+            <div className="text-on-surface text-sm leading-relaxed whitespace-pre-line">
+              {report.today_letter}
+            </div>
+          </section>
+        )}
+
+        {/* Market Mood */}
+        <section
+          className="relative overflow-hidden rounded-xl h-48 flex items-end p-6 group cursor-pointer"
+          style={{ background: 'linear-gradient(135deg, #006b1b 0%, #005d16 50%, #00656f 100%)' }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="relative z-10 text-white space-y-1">
+            <span className="text-[10px] font-bold bg-primary px-2 py-0.5 rounded uppercase">Exclusive</span>
+            <h4 className="text-lg font-bold">이번 주 시장 심리 리포트 읽기</h4>
+            <p className="text-xs opacity-80">거래량 분석을 통한 큰손들의 움직임 포착</p>
           </div>
+        </section>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <Link
+            href="/history"
+            className="flex-1 text-center bg-surface-container-lowest text-on-surface font-bold py-3 rounded-full shadow-sm hover:shadow-md transition-all"
+          >
+            히스토리
+          </Link>
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'Dear,ANT - 투자 컨디션 리포트',
+                  text: `투자 컨디션: ${condition.label}`,
+                  url: window.location.href,
+                });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                toast('링크가 복사되었어요');
+              }
+            }}
+            className="flex-1 text-center bg-surface-container-lowest text-on-surface font-bold py-3 rounded-full shadow-sm hover:shadow-md transition-all"
+          >
+            공유하기
+          </button>
         </div>
       </div>
     </main>

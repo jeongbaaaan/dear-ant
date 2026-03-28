@@ -23,7 +23,7 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Bottom
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={title || '바텀시트'}>
+    <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label={title || '바텀시트'}>
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 animate-fade-backdrop"

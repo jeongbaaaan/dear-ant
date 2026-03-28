@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import ClientProviders from "@/components/ClientProviders";
@@ -14,7 +13,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#1B4332",
+  themeColor: "#006b1b",
 };
 
 export default function RootLayout({
@@ -24,9 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body
-        className="antialiased min-h-screen bg-v3"
-      >
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+      </head>
+      <body className="antialiased min-h-screen bg-surface text-on-surface">
         <ClientProviders>
           {children}
           <BottomNav />

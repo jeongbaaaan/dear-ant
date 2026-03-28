@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import NumberInput from '@/components/NumberInput';
 
 // 적금 이자 계산 (월 적립식)
 function calcSavings(monthly: number, months: number, annualRate: number) {
@@ -161,15 +162,12 @@ export default function CalculatorPage() {
           {/* 월 투자금 */}
           <div className="mb-4">
             <label className="block text-green-700 text-xs font-medium mb-1.5">월 투자금</label>
-            <div className="relative">
-              <input
-                type="number"
-                value={monthly}
-                onChange={(e) => setMonthly(e.target.value)}
-                className="w-full px-4 py-3 pr-12 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-lg font-bold"
-              />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-green-800 text-sm">원</span>
-            </div>
+            <NumberInput
+              value={monthly}
+              onChange={setMonthly}
+              suffix="원"
+              className="!py-3 !text-lg !bg-white !text-green-900"
+            />
             {/* 빠른 선택 */}
             <div className="flex gap-2 mt-2">
               {[100000, 300000, 500000, 1000000].map(v => (
@@ -214,10 +212,10 @@ export default function CalculatorPage() {
               <label className="block text-green-700 text-xs font-medium mb-1.5">적금 이자율 (연)</label>
               <div className="relative">
                 <input
-                  type="number"
-                  step="0.1"
+                  type="text"
+                  inputMode="decimal"
                   value={savingsRate}
-                  onChange={(e) => setSavingsRate(e.target.value)}
+                  onChange={(e) => setSavingsRate(e.target.value.replace(/[^0-9.]/g, ''))}
                   className="w-full px-4 py-2.5 pr-8 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm font-bold"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-800 text-xs">%</span>
@@ -227,10 +225,10 @@ export default function CalculatorPage() {
               <label className="block text-green-700 text-xs font-medium mb-1.5">주식 기대수익률 (연)</label>
               <div className="relative">
                 <input
-                  type="number"
-                  step="1"
+                  type="text"
+                  inputMode="decimal"
                   value={stockReturn}
-                  onChange={(e) => setStockReturn(e.target.value)}
+                  onChange={(e) => setStockReturn(e.target.value.replace(/[^0-9.]/g, ''))}
                   className="w-full px-4 py-2.5 pr-8 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-sm font-bold"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-800 text-xs">%</span>

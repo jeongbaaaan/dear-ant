@@ -10,7 +10,7 @@ import { GradeBadge } from '@/components/GradeBadge';
 type FilterType = 'all' | '방어' | '관망' | '신중' | '적극';
 
 const filterLabels: Record<FilterType, string> = {
-  all: '전체 내역',
+  all: '전체',
   '방어': '방어',
   '관망': '관망',
   '신중': '신중',
@@ -36,7 +36,7 @@ function groupByDate(reports: ApiReport[]): Record<string, ApiReport[]> {
   return groups;
 }
 
-export default function HistoryPage() {
+export default function ReportPage() {
   const [reports, setReports] = useState<ApiReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('all');
@@ -59,7 +59,6 @@ export default function HistoryPage() {
   const filtered = filter === 'all' ? reports : reports.filter(r => r.decision_mode === filter);
   const grouped = groupByDate(filtered);
 
-  // Stats
   const totalReports = reports.length;
   const avgMood = totalReports > 0
     ? Math.round(reports.reduce((s, r) => s + r.mood_score, 0) / totalReports)
@@ -68,59 +67,74 @@ export default function HistoryPage() {
 
   return (
     <main className="min-h-screen pb-32">
-      {/* Header */}
       <header className="fixed top-0 w-full z-50 glass-header flex justify-between items-center px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
             <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychiatry</span>
           </div>
+          <h1 className="font-headline font-extrabold text-primary text-xl tracking-tight">리포트</h1>
         </div>
-        <h1 className="font-headline font-extrabold text-primary text-xl tracking-tight">히스토리</h1>
         <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200">
           <span className="material-symbols-outlined text-primary">notifications</span>
         </button>
       </header>
 
       <PullToRefresh onRefresh={async () => { setLoading(true); await fetchHistory(); }}>
-        <div className="pt-24 pb-8 px-6 max-w-2xl mx-auto space-y-10">
-          {/* Summary */}
-          <section className="space-y-2">
-            <span className="font-bold text-xs text-on-surface-variant tracking-[0.15em]">REPORT HISTORY</span>
-            <div className="flex flex-col gap-1">
+        <div className="pt-24 pb-8 px-6 max-w-2xl mx-auto space-y-8">
+          {/* New Report CTA */}
+          <Link href="/survey" className="block">
+            <div className="bg-gradient-to-br from-primary to-primary-dim rounded-2xl p-6 text-on-primary shadow-lg overflow-hidden relative">
+              <div className="absolute -right-12 -top-12 w-48 h-48 bg-primary-container/20 rounded-full blur-3xl" />
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-headline font-bold">새 리포트 받기</h2>
+                  <p className="text-on-primary/70 text-sm mt-1">오늘의 투자 컨디션을 분석해보세요</p>
+                </div>
+                <div className="w-12 h-12 bg-surface-container-lowest/20 rounded-full flex items-center justify-center">
+                  <span className="material-symbols-outlined text-on-primary">arrow_forward</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Summary Stats */}
+          {totalReports > 0 && (
+            <section className="space-y-2">
+              <span className="font-bold text-xs text-on-surface-variant tracking-[0.15em]">REPORT HISTORY</span>
               <div className="flex items-baseline gap-2">
                 <span className="font-headline text-5xl font-bold tracking-tight text-on-surface">
                   {totalReports}
                 </span>
                 <span className="font-bold text-xl text-on-surface-variant">리포트</span>
               </div>
-              {totalReports > 0 && (
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center px-2 py-1 bg-primary-container rounded-full text-on-primary-container text-xs font-bold">
-                    <span className="material-symbols-outlined text-sm leading-none mr-1">psychology</span>
-                    평균 감정 흔들림 {avgMood}%
-                  </div>
-                  <span className="text-on-surface-variant">{streakLabel}</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center px-2 py-1 bg-primary-container rounded-full text-on-primary-container text-xs font-bold">
+                  <span className="material-symbols-outlined text-sm leading-none mr-1">psychology</span>
+                  평균 감정 흔들림 {avgMood}%
                 </div>
-              )}
-            </div>
-          </section>
+                <span className="text-on-surface-variant">{streakLabel}</span>
+              </div>
+            </section>
+          )}
 
           {/* Filters */}
-          <section className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-            {(Object.keys(filterLabels) as FilterType[]).map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`flex-none px-6 py-3 rounded-full font-bold text-sm transition-all active:scale-95 ${
-                  filter === f
-                    ? 'bg-primary text-on-primary'
-                    : 'bg-surface-container-highest text-on-surface hover:bg-surface-container'
-                }`}
-              >
-                {filterLabels[f]}
-              </button>
-            ))}
-          </section>
+          {totalReports > 0 && (
+            <section className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+              {(Object.keys(filterLabels) as FilterType[]).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`flex-none px-6 py-3 rounded-full font-bold text-sm transition-all active:scale-95 ${
+                    filter === f
+                      ? 'bg-primary text-on-primary'
+                      : 'bg-surface-container-highest text-on-surface hover:bg-surface-container'
+                  }`}
+                >
+                  {filterLabels[f]}
+                </button>
+              ))}
+            </section>
+          )}
 
           {/* Report List */}
           {loading ? (
@@ -129,21 +143,19 @@ export default function HistoryPage() {
               <SkeletonCard />
               <SkeletonCard />
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+          ) : filtered.length === 0 && totalReports === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
               <div className="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center text-outline">
-                <span className="material-symbols-outlined text-4xl">history</span>
+                <span className="material-symbols-outlined text-4xl">analytics</span>
               </div>
               <div>
-                <p className="font-headline font-bold text-lg">리포트 기록이 없습니다</p>
-                <p className="text-on-surface-variant">첫 리포트를 받아보세요.</p>
+                <p className="font-headline font-bold text-lg">아직 리포트가 없습니다</p>
+                <p className="text-on-surface-variant">위 버튼을 눌러 첫 리포트를 받아보세요.</p>
               </div>
-              <Link
-                href="/survey"
-                className="mt-2 bg-primary text-on-primary font-bold py-3 px-6 rounded-full"
-              >
-                리포트 받기
-              </Link>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-on-surface-variant">해당 모드의 리포트가 없습니다.</p>
             </div>
           ) : (
             <section className="space-y-8">
@@ -171,9 +183,7 @@ export default function HistoryPage() {
                             </div>
                           </div>
                           <div className="text-right flex items-center gap-3">
-                            <div>
-                              <p className="text-xs text-on-surface-variant">{time}</p>
-                            </div>
+                            <p className="text-xs text-on-surface-variant">{time}</p>
                             <GradeBadge
                               grade={(['S','A','B','C','D','F'].includes(report.invest_mood || '') ? report.invest_mood : 'C') as 'S'|'A'|'B'|'C'|'D'|'F'}
                               size="sm"

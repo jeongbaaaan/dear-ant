@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import CountUp from '@/components/CountUp';
+import NumberInput from '@/components/NumberInput';
 
 // ─── 포맷 헬퍼 ───────────────────────────────────────────
 function formatKRW(value: number): string {
@@ -249,14 +250,8 @@ export default function CompoundPage() {
           {/* 초기 투자금 */}
           <div>
             <label className="block text-green-700 text-xs font-medium mb-1.5">초기 투자금</label>
-            <div className="relative mb-2">
-              <input
-                type="number"
-                value={initialAmount}
-                onChange={(e) => setInitialAmount(Number(e.target.value) || 0)}
-                className="w-full px-4 py-3 pr-12 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-lg font-bold"
-              />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-green-800 text-sm">원</span>
+            <div className="mb-2">
+              <NumberInput value={String(initialAmount)} onChange={(v) => setInitialAmount(Number(v) || 0)} suffix="원" className="!py-3 !text-lg !bg-white !text-green-900" />
             </div>
             <QuickSelect
               options={[1_000_000, 5_000_000, 10_000_000, 50_000_000]}
@@ -269,14 +264,8 @@ export default function CompoundPage() {
           {/* 월 추가 투자금 */}
           <div>
             <label className="block text-green-700 text-xs font-medium mb-1.5">월 추가 투자금</label>
-            <div className="relative mb-2">
-              <input
-                type="number"
-                value={monthlyAmount}
-                onChange={(e) => setMonthlyAmount(Number(e.target.value) || 0)}
-                className="w-full px-4 py-3 pr-12 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900 text-lg font-bold"
-              />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-green-800 text-sm">원</span>
+            <div className="mb-2">
+              <NumberInput value={String(monthlyAmount)} onChange={(v) => setMonthlyAmount(Number(v) || 0)} suffix="원" className="!py-3 !text-lg !bg-white !text-green-900" />
             </div>
             <QuickSelect
               options={[0, 100_000, 300_000, 500_000, 1_000_000]}

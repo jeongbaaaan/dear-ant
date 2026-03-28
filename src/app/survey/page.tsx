@@ -8,6 +8,7 @@ import { useToast } from '@/components/Toast';
 import { EmotionChip } from '@/components/EmotionChip';
 import { CircularGauge } from '@/components/CircularGauge';
 import { ProgressBar } from '@/components/ProgressBar';
+import DateInput from '@/components/DateInput';
 
 interface CheckItem {
   id: string;
@@ -141,17 +142,11 @@ export default function SurveyPage() {
 
           {/* 생년월일 */}
           <div className="mb-8">
-            <label htmlFor="birthDate" className="block text-green-900 text-sm font-medium mb-1">
+            <label className="block text-green-900 text-sm font-medium mb-1">
               생년월일
             </label>
             <p className="text-green-800 text-xs mb-2">바이오리듬 계산에 사용돼요</p>
-            <input
-              id="birthDate"
-              type="date"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-300 text-green-900"
-            />
+            <DateInput value={birthDate} onChange={setBirthDate} />
           </div>
 
           {/* 위험도 카드 */}

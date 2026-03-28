@@ -16,12 +16,6 @@ const tools = [
     badge: null,
   },
   {
-    href: '/survey',
-    title: '투자 성향 분석',
-    description: '오늘의 투자 분위기 체크',
-    badge: null,
-  },
-  {
     href: '/tools/returns',
     title: '수익률 계산기',
     description: '매수·매도가로 수익률 계산',
@@ -43,12 +37,6 @@ function ToolIcon({ index }: { index: number }) {
     <svg key={1} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 20h18" />
       <path d="M5 20V10l4-2 4 3 4-5 4 2v12" />
-    </svg>,
-    // 타겟 (투자 성향)
-    <svg key={2} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="5" />
-      <circle cx="12" cy="12" r="1" />
     </svg>,
     // 계산기 (수익률)
     <svg key={3} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
