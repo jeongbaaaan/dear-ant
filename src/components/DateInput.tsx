@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 interface DateInputProps {
   value: string; // YYYY-MM-DD
@@ -8,71 +8,94 @@ interface DateInputProps {
 }
 
 export default function DateInput({ value, onChange }: DateInputProps) {
-  const [y = '', m = '', d = ''] = value.split('-');
+  const [parts, setParts] = useState(() => {
+    const [y = '', m = '', d = ''] = value.split('-');
+    return { y, m, d };
+  });
   const yearRef = useRef<HTMLInputElement>(null);
   const monthRef = useRef<HTMLInputElement>(null);
   const dayRef = useRef<HTMLInputElement>(null);
 
-  const update = (year: string, month: string, day: string) => {
-    const yy = year.replace(/\D/g, '').slice(0, 4);
-    const mm = month.replace(/\D/g, '').slice(0, 2);
-    const dd = day.replace(/\D/g, '').slice(0, 2);
+  // 외부 value 변경 시 동기화
+  useEffect(() => {
+    const [y = '', m = '', d = ''] = value.split('-');
+    setParts({ y, m, d });
+  }, [value]);
 
-    if (yy && mm && dd) {
-      onChange(`${yy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`);
-    } else {
-      onChange([yy, mm, dd].filter(Boolean).join('-'));
+  // 완성된 날짜만 부모에 전달
+  const emitIfComplete = (y: string, m: string, d: string) => {
+    if (y.length === 4 && m.length >= 1 && d.length >= 1) {
+      const mm = m.padStart(2, '0');
+      const dd = d.padStart(2, '0');
+      onChange(`${y}-${mm}-${dd}`);
     }
   };
 
-  const handleYear = (val: string) => {
-    const digits = val.replace(/\D/g, '').slice(0, 4);
-    update(digits, m, d);
-    if (digits.length === 4) monthRef.current?.focus();
+  const handleYear = (raw: string) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 4);
+    setParts(p => ({ ...p, y: digits }));
+    if (digits.length === 4) {
+      emitIfComplete(digits, parts.m, parts.d);
+      monthRef.current?.focus();
+    }
   };
 
-  const handleMonth = (val: string) => {
-    const digits = val.replace(/\D/g, '').slice(0, 2);
+  const handleMonth = (raw: string) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 2);
     const num = Number(digits);
+
     if (digits.length === 1 && num > 1) {
-      update(y, `0${digits}`, d);
+      const padded = `0${digits}`;
+      setParts(p => ({ ...p, m: padded }));
+      emitIfComplete(parts.y, padded, parts.d);
       dayRef.current?.focus();
       return;
     }
     if (digits.length === 2) {
-      const clamped = Math.min(Math.max(num, 1), 12);
-      update(y, String(clamped).padStart(2, '0'), d);
+      const clamped = String(Math.min(Math.max(num, 1), 12)).padStart(2, '0');
+      setParts(p => ({ ...p, m: clamped }));
+      emitIfComplete(parts.y, clamped, parts.d);
       dayRef.current?.focus();
       return;
     }
-    update(y, digits, d);
+    setParts(p => ({ ...p, m: digits }));
   };
 
-  const handleDay = (val: string) => {
-    const digits = val.replace(/\D/g, '').slice(0, 2);
+  const handleDay = (raw: string) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 2);
     const num = Number(digits);
+
     if (digits.length === 1 && num > 3) {
-      update(y, m, `0${digits}`);
+      const padded = `0${digits}`;
+      setParts(p => ({ ...p, d: padded }));
+      emitIfComplete(parts.y, parts.m, padded);
       dayRef.current?.blur();
       return;
     }
     if (digits.length === 2) {
-      const clamped = Math.min(Math.max(num, 1), 31);
-      update(y, m, String(clamped).padStart(2, '0'));
+      const clamped = String(Math.min(Math.max(num, 1), 31)).padStart(2, '0');
+      setParts(p => ({ ...p, d: clamped }));
+      emitIfComplete(parts.y, parts.m, clamped);
       dayRef.current?.blur();
       return;
     }
-    update(y, m, digits);
+    setParts(p => ({ ...p, d: digits }));
+  };
+
+  const handleYearKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && parts.y === '') {
+      // 이미 비어있으면 아무것도 안 함
+    }
   };
 
   const handleMonthKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !m) {
+    if (e.key === 'Backspace' && parts.m === '') {
       yearRef.current?.focus();
     }
   };
 
   const handleDayKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !d) {
+    if (e.key === 'Backspace' && parts.d === '') {
       monthRef.current?.focus();
     }
   };
@@ -83,8 +106,9 @@ export default function DateInput({ value, onChange }: DateInputProps) {
         ref={yearRef}
         type="text"
         inputMode="numeric"
-        value={y}
+        value={parts.y}
         onChange={(e) => handleYear(e.target.value)}
+        onKeyDown={handleYearKey}
         placeholder="YYYY"
         maxLength={4}
         aria-label="년도"
@@ -95,7 +119,7 @@ export default function DateInput({ value, onChange }: DateInputProps) {
         ref={monthRef}
         type="text"
         inputMode="numeric"
-        value={m}
+        value={parts.m}
         onChange={(e) => handleMonth(e.target.value)}
         onKeyDown={handleMonthKey}
         placeholder="MM"
@@ -108,7 +132,7 @@ export default function DateInput({ value, onChange }: DateInputProps) {
         ref={dayRef}
         type="text"
         inputMode="numeric"
-        value={d}
+        value={parts.d}
         onChange={(e) => handleDay(e.target.value)}
         onKeyDown={handleDayKey}
         placeholder="DD"
