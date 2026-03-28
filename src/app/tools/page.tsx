@@ -18,11 +18,11 @@ const tools = [
     badge: null,
   },
   {
-    href: '/tools/returns',
-    title: '수익률 계산기',
-    description: '매수·매도가로 수익률 계산',
-    icon: 'percent',
-    badge: 'coming soon',
+    href: '/tools/simulator',
+    title: '매매 시뮬레이터',
+    description: '세금·수수료 포함 수익률 + 물타기 계산',
+    icon: 'calculate',
+    badge: null,
   },
 ];
 
