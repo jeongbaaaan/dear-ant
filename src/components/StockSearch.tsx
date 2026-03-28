@@ -89,6 +89,11 @@ export default function StockSearch({ value, onChange, placeholder = '종목명 
           onFocus={() => query.length >= 1 && setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          aria-label="종목 검색"
+          aria-autocomplete="list"
+          aria-expanded={isOpen && results.length > 0}
+          aria-controls="stock-search-list"
+          role="combobox"
           className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary text-on-surface text-sm"
           autoComplete="off"
         />
@@ -96,12 +101,17 @@ export default function StockSearch({ value, onChange, placeholder = '종목명 
 
       {isOpen && results.length > 0 && (
         <ul
+          id="stock-search-list"
           ref={listRef}
+          role="listbox"
+          aria-label="종목 검색 결과"
           className="absolute z-50 w-full mt-1 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/30 max-h-60 overflow-y-auto"
         >
           {results.map((stock, i) => (
             <li
               key={stock.code}
+              role="option"
+              aria-selected={i === highlightIdx}
               onClick={() => handleSelect(stock)}
               className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors ${
                 i === highlightIdx ? 'bg-primary-container' : 'hover:bg-surface-container'

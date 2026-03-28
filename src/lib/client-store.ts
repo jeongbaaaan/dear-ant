@@ -40,6 +40,7 @@ export interface StoredMemo {
   invest_mood?: string;
   decision_mode?: string;
   mood_score?: number;
+  trade_mood?: string;
   created_at: string;
   updated_at: string;
 }
@@ -156,11 +157,13 @@ export const clientStore = {
     price?: number;
     quantity?: number;
     memo?: string;
-  }): StoredMemo {
+    trade_mood?: string;
+  }, customDate?: string): StoredMemo {
     const id = generateId();
     const reports = this.listReports();
     const latest = reports[0];
     const now = new Date().toISOString();
+    const createdAt = customDate || now;
 
     const memo: StoredMemo = {
       id,
@@ -168,7 +171,7 @@ export const clientStore = {
       invest_mood: latest?.invest_mood,
       decision_mode: latest?.decision_mode,
       mood_score: latest?.mood_score,
-      created_at: now,
+      created_at: createdAt,
       updated_at: now,
     };
     const all = getAll<StoredMemo>(KEYS.memos);

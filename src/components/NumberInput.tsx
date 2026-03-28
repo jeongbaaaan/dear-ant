@@ -8,6 +8,7 @@ interface NumberInputProps {
   suffix?: string;
   placeholder?: string;
   className?: string;
+  ariaLabel?: string;
 }
 
 export default function NumberInput({
@@ -16,6 +17,7 @@ export default function NumberInput({
   suffix = '원',
   placeholder = '0',
   className = '',
+  ariaLabel,
 }: NumberInputProps) {
   const numVal = typeof value === 'string' ? Number(value) || 0 : value;
   const [display, setDisplay] = useState(numVal > 0 ? numVal.toLocaleString() : '');
@@ -40,6 +42,7 @@ export default function NumberInput({
         value={display}
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
+        aria-label={ariaLabel}
         className={`w-full px-4 py-2.5 pr-12 rounded-xl bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary text-on-surface text-sm font-bold ${className}`}
       />
       {suffix && (

@@ -45,6 +45,8 @@ export default function MemoPage() {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
   const [memoText, setMemoText] = useState('');
+  const [tradeDate, setTradeDate] = useState(new Date().toISOString().split('T')[0]);
+  const [tradeMood, setTradeMood] = useState<string>('');
 
   const loadMemos = useCallback(() => {
     setMemos(clientStore.listMemos());
@@ -59,6 +61,8 @@ export default function MemoPage() {
     setPrice('');
     setQuantity('');
     setMemoText('');
+    setTradeDate(new Date().toISOString().split('T')[0]);
+    setTradeMood('');
     setEditingId(null);
   };
 
@@ -70,11 +74,13 @@ export default function MemoPage() {
       price: price ? Number(price) : undefined,
       quantity: quantity ? Number(quantity) : undefined,
       memo: memoText.trim() || undefined,
+      trade_mood: tradeMood || undefined,
     };
     if (editingId) {
       clientStore.updateMemo(editingId, data);
     } else {
-      clientStore.createMemo(data);
+      const customDate = tradeDate ? new Date(tradeDate + 'T12:00:00').toISOString() : undefined;
+      clientStore.createMemo(data, customDate);
     }
     resetForm();
     setShowForm(false);
@@ -136,7 +142,7 @@ export default function MemoPage() {
           </div>
           <h1 className="font-headline font-extrabold text-primary text-xl">저널</h1>
         </div>
-        <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200">
+        <button className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200" aria-label="알림">
           <span className="material-symbols-outlined text-primary">notifications</span>
         </button>
       </header>
@@ -176,7 +182,7 @@ export default function MemoPage() {
               className="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-5 rounded-full font-headline font-bold text-lg flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform"
             >
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
-              오늘의 거래 기록하기
+              거래 기록하기
             </button>
           </section>
 
@@ -249,6 +255,11 @@ export default function MemoPage() {
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] text-on-surface-variant">
                           {new Date(memo.created_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          {memo.trade_mood && (
+                            <span className="ml-1">
+                              {({ calm: '😌', confident: '😊', anxious: '😰', frustrated: '😤', fomo: '🔥', revenge: '💢' } as Record<string, string>)[memo.trade_mood]}
+                            </span>
+                          )}
                         </span>
                         <div className="flex items-center gap-2">
                           <button onClick={() => handleEdit(memo)} className="text-on-surface-variant hover:text-primary transition-colors p-1" aria-label="수정">
@@ -353,6 +364,51 @@ export default function MemoPage() {
           <div>
             <label className="block text-on-surface-variant text-xs font-bold mb-1.5">수량 (선택)</label>
             <NumberInput value={quantity} onChange={setQuantity} suffix="주" placeholder="0" />
+          </div>
+        </div>
+
+        {!editingId && (
+          <div className="mb-3">
+            <label className="block text-on-surface-variant text-xs font-bold mb-1.5">거래일 (선택)</label>
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">calendar_today</span>
+              <input
+                type="date"
+                value={tradeDate}
+                onChange={(e) => setTradeDate(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary text-on-surface text-sm"
+              />
+            </div>
+            <p className="text-[11px] text-on-surface-variant mt-1">과거 거래도 날짜를 지정하여 기록할 수 있습니다</p>
+          </div>
+        )}
+
+        <div className="mb-3">
+          <label className="block text-on-surface-variant text-xs font-bold mb-1.5">지금 기분 (선택)</label>
+          <div className="flex gap-2 flex-wrap">
+            {[
+              { emoji: '😌', label: '평온', value: 'calm' },
+              { emoji: '😊', label: '자신감', value: 'confident' },
+              { emoji: '😰', label: '불안', value: 'anxious' },
+              { emoji: '😤', label: '답답', value: 'frustrated' },
+              { emoji: '🔥', label: 'FOMO', value: 'fomo' },
+              { emoji: '💢', label: '복수매매', value: 'revenge' },
+            ].map(m => (
+              <button
+                key={m.value}
+                type="button"
+                onClick={() => setTradeMood(tradeMood === m.value ? '' : m.value)}
+                aria-pressed={tradeMood === m.value}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold transition-all ${
+                  tradeMood === m.value
+                    ? 'bg-primary text-on-primary'
+                    : 'bg-surface-container text-on-surface'
+                }`}
+              >
+                <span>{m.emoji}</span>{m.label}
+              </button>
+            ))}
           </div>
         </div>
 

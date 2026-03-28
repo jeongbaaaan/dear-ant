@@ -76,7 +76,7 @@ export default function HistoryPage() {
           </div>
         </div>
         <h1 className="font-headline font-extrabold text-primary text-xl tracking-tight">히스토리</h1>
-        <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200">
+        <button className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200" aria-label="알림">
           <span className="material-symbols-outlined text-primary">notifications</span>
         </button>
       </header>

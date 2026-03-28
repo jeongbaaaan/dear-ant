@@ -80,10 +80,11 @@ CREATE TABLE IF NOT EXISTS reports (
 CREATE TABLE IF NOT EXISTS memos (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   stock_name text NOT NULL CHECK (char_length(stock_name) <= 100),
+  stock_code text CHECK (char_length(stock_code) <= 10),
   action memo_action_type NOT NULL,
   price numeric,
   quantity integer,
-  memo text NOT NULL CHECK (char_length(memo) <= 2000),
+  memo text CHECK (memo IS NULL OR char_length(memo) <= 2000),
   invest_mood invest_mood_type,
   decision_mode decision_mode_type,
   mood_score integer CHECK (mood_score IS NULL OR mood_score BETWEEN 0 AND 100),

@@ -78,7 +78,7 @@ export default function DateInput({ value, onChange }: DateInputProps) {
   };
 
   return (
-    <div className="flex items-center gap-2 bg-surface-container-lowest rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-primary">
+    <div className="flex items-center gap-2 bg-surface-container-lowest rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-primary" role="group" aria-label="생년월일 입력">
       <input
         ref={yearRef}
         type="text"
@@ -87,9 +87,10 @@ export default function DateInput({ value, onChange }: DateInputProps) {
         onChange={(e) => handleYear(e.target.value)}
         placeholder="YYYY"
         maxLength={4}
+        aria-label="년도"
         className="w-16 text-center bg-transparent outline-none text-on-surface font-bold"
       />
-      <span className="text-on-surface-variant">/</span>
+      <span className="text-on-surface-variant" aria-hidden="true">/</span>
       <input
         ref={monthRef}
         type="text"
@@ -99,9 +100,10 @@ export default function DateInput({ value, onChange }: DateInputProps) {
         onKeyDown={handleMonthKey}
         placeholder="MM"
         maxLength={2}
+        aria-label="월"
         className="w-10 text-center bg-transparent outline-none text-on-surface font-bold"
       />
-      <span className="text-on-surface-variant">/</span>
+      <span className="text-on-surface-variant" aria-hidden="true">/</span>
       <input
         ref={dayRef}
         type="text"
@@ -111,6 +113,7 @@ export default function DateInput({ value, onChange }: DateInputProps) {
         onKeyDown={handleDayKey}
         placeholder="DD"
         maxLength={2}
+        aria-label="일"
         className="w-10 text-center bg-transparent outline-none text-on-surface font-bold"
       />
     </div>

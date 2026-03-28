@@ -11,6 +11,7 @@ export function EmotionChip({ emoji, label, selected, onToggle, categoryColor }:
     <button
       type="button"
       onClick={onToggle}
+      aria-pressed={selected}
       className={`
         min-h-[44px] w-full rounded-2xl px-4 py-3
         flex items-center gap-3
