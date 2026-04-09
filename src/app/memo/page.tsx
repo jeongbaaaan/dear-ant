@@ -202,7 +202,7 @@ export default function MemoPage() {
             <section className="space-y-6">
               <div className="flex justify-between items-end">
                 <h3 className="font-headline font-bold text-xl text-on-surface">최근 활동</h3>
-                <Link href="/history" className="text-primary font-bold text-sm flex items-center gap-1">
+                <Link href="/report" className="text-primary font-bold text-sm flex items-center gap-1">
                   전체보기 <span className="material-symbols-outlined text-sm">chevron_right</span>
                 </Link>
               </div>

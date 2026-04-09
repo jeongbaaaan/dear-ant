@@ -438,7 +438,7 @@ export default function Home() {
         <div>
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold">최근 기록</h3>
-            <Link href="/history" className="text-sm text-on-surface-tertiary font-medium flex items-center gap-0.5 hover:text-primary transition-colors">
+            <Link href="/report" className="text-sm text-on-surface-tertiary font-medium flex items-center gap-0.5 hover:text-primary transition-colors">
               전체보기
               <span className="material-symbols-outlined text-base">chevron_right</span>
             </Link>

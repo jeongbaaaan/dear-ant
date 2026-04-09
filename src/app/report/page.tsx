@@ -1,45 +1,123 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import PullToRefresh from '@/components/PullToRefresh';
 import { SkeletonCard } from '@/components/Skeleton';
 import { clientStore, StoredReport } from '@/lib/client-store';
 import { GradeBadge } from '@/components/GradeBadge';
+import Sparkline from '@/components/Sparkline';
+import TrendChart from '@/components/TrendChart';
+import CountUp from '@/components/CountUp';
 
-type FilterType = 'all' | '방어' | '관망' | '신중' | '적극';
+type FilterType = 'all' | '적극' | '신중' | '관망' | '방어';
 
-const filterLabels: Record<FilterType, string> = {
-  all: '전체',
-  '방어': '방어',
-  '관망': '관망',
-  '신중': '신중',
-  '적극': '적극',
+const MODES: FilterType[] = ['all', '적극', '신중', '관망', '방어'];
+
+const modeBadge: Record<string, string> = {
+  '적극': 'badge-green',
+  '신중': 'badge-amber',
+  '관망': 'badge-blue',
+  '방어': 'badge-red',
 };
 
-const modeIcon: Record<string, { icon: string; bgClass: string; textClass: string }> = {
-  '방어': { icon: 'shield', bgClass: 'bg-surface-container', textClass: 'text-primary' },
-  '관망': { icon: 'visibility', bgClass: 'bg-tertiary-container/20', textClass: 'text-tertiary' },
-  '신중': { icon: 'balance', bgClass: 'bg-secondary-container/30', textClass: 'text-secondary' },
-  '적극': { icon: 'trending_up', bgClass: 'bg-error-container/10', textClass: 'text-error' },
+const gradeOrder = ['S', 'A', 'B', 'C', 'D', 'F'];
+
+type ViewMode = 'list' | 'grid';
+type TrendPeriod = '1w' | '1m' | '3m';
+
+const trendPeriodLabel: Record<TrendPeriod, string> = {
+  '1w': '1주',
+  '1m': '1개월',
+  '3m': '3개월',
 };
 
-function groupByDate(reports: StoredReport[]): Record<string, StoredReport[]> {
+/* ───── Helpers ───── */
+
+function groupByWeek(reports: StoredReport[]): Record<string, StoredReport[]> {
+  const now = new Date();
+  const startOfThisWeek = new Date(now);
+  startOfThisWeek.setDate(now.getDate() - now.getDay());
+  startOfThisWeek.setHours(0, 0, 0, 0);
+
+  const startOfLastWeek = new Date(startOfThisWeek);
+  startOfLastWeek.setDate(startOfLastWeek.getDate() - 7);
+
   const groups: Record<string, StoredReport[]> = {};
-  for (const report of reports) {
-    const d = new Date(report.created_at);
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-    const key = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} (${dayNames[d.getDay()]})`;
+
+  for (const r of reports) {
+    const d = new Date(r.created_at);
+    let key: string;
+    if (d >= startOfThisWeek) {
+      key = '이번 주';
+    } else if (d >= startOfLastWeek) {
+      key = '지난 주';
+    } else {
+      const month = d.getMonth() + 1;
+      const weekNum = Math.ceil(d.getDate() / 7);
+      key = `${month}월 ${weekNum}주차`;
+    }
     if (!groups[key]) groups[key] = [];
-    groups[key].push(report);
+    groups[key].push(r);
   }
   return groups;
 }
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr);
+  const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  return {
+    date: `${d.getMonth() + 1}월 ${d.getDate()}일`,
+    day: dayNames[d.getDay()],
+    time: d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+  };
+}
+
+function averageGrade(reports: StoredReport[]): string {
+  if (reports.length === 0) return '-';
+  const scores = reports.map(r => {
+    const g = r.invest_mood || 'C';
+    const idx = gradeOrder.indexOf(g);
+    return idx >= 0 ? idx : 3; // default C
+  });
+  const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+  return gradeOrder[Math.round(avg)] || 'C';
+}
+
+function mostFrequentMode(reports: StoredReport[]): { mode: string; count: number; pct: number } {
+  if (reports.length === 0) return { mode: '-', count: 0, pct: 0 };
+  const counts: Record<string, number> = {};
+  for (const r of reports) {
+    counts[r.decision_mode] = (counts[r.decision_mode] || 0) + 1;
+  }
+  const mode = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  return { mode: mode[0], count: mode[1], pct: Math.round((mode[1] / reports.length) * 100) };
+}
+
+function conditionScore(r: StoredReport): number {
+  // Condition = inverted mood_score (lower mood_score = better condition)
+  return 100 - r.mood_score;
+}
+
+function filterByPeriod(reports: StoredReport[], period: TrendPeriod): StoredReport[] {
+  const now = Date.now();
+  const ms: Record<TrendPeriod, number> = {
+    '1w': 7 * 86400000,
+    '1m': 30 * 86400000,
+    '3m': 90 * 86400000,
+  };
+  const cutoff = now - ms[period];
+  return reports.filter(r => new Date(r.created_at).getTime() >= cutoff);
+}
+
+/* ───── Component ───── */
 
 export default function ReportPage() {
   const [reports, setReports] = useState<StoredReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [trendPeriod, setTrendPeriod] = useState<TrendPeriod>('1m');
 
   const loadReports = useCallback(() => {
     setReports(clientStore.listReports());
@@ -48,87 +126,181 @@ export default function ReportPage() {
 
   useEffect(() => { loadReports(); }, [loadReports]);
 
-  const filtered = filter === 'all' ? reports : reports.filter(r => r.decision_mode === filter);
-  const grouped = groupByDate(filtered);
-
+  /* ── Derived data ── */
   const totalReports = reports.length;
-  const avgMood = totalReports > 0
-    ? Math.round(reports.reduce((s, r) => s + r.mood_score, 0) / totalReports)
-    : 0;
-  const streakLabel = avgMood <= 35 ? '안정적' : avgMood <= 60 ? '보통' : '변동 높음';
+
+  const avgCondition = useMemo(() => {
+    if (totalReports === 0) return 0;
+    return Math.round(reports.reduce((s, r) => s + conditionScore(r), 0) / totalReports);
+  }, [reports, totalReports]);
+
+  const topMode = useMemo(() => mostFrequentMode(reports), [reports]);
+  const avgGrade = useMemo(() => averageGrade(reports), [reports]);
+
+  // Sparkline data (last 10 reports, oldest→newest)
+  const sparkReportCounts = useMemo(() => {
+    // Group by day, count per day (last 10 days with data)
+    const dayCounts: Record<string, number> = {};
+    for (const r of reports) {
+      const key = new Date(r.created_at).toISOString().slice(0, 10);
+      dayCounts[key] = (dayCounts[key] || 0) + 1;
+    }
+    const sorted = Object.entries(dayCounts).sort((a, b) => a[0].localeCompare(b[0]));
+    return sorted.slice(-10).map(e => e[1]);
+  }, [reports]);
+
+  const sparkConditions = useMemo(() => {
+    return [...reports].reverse().slice(-10).map(r => conditionScore(r));
+  }, [reports]);
+
+  // Mode counts for filter chips
+  const modeCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: reports.length };
+    for (const r of reports) {
+      counts[r.decision_mode] = (counts[r.decision_mode] || 0) + 1;
+    }
+    return counts;
+  }, [reports]);
+
+  // Trend chart data
+  const trendData = useMemo(() => {
+    const periodReports = filterByPeriod(reports, trendPeriod);
+    return [...periodReports]
+      .reverse()
+      .map(r => ({
+        label: `${new Date(r.created_at).getMonth() + 1}/${new Date(r.created_at).getDate()}`,
+        value: conditionScore(r),
+      }));
+  }, [reports, trendPeriod]);
+
+  // Filtered + grouped
+  const filtered = filter === 'all' ? reports : reports.filter(r => r.decision_mode === filter);
+  const grouped = groupByWeek(filtered);
 
   return (
-    <main className="min-h-screen pb-32">
-      <header className="fixed top-0 w-full z-50 glass-header flex justify-between items-center px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychiatry</span>
-          </div>
-          <h1 className="font-headline font-extrabold text-primary text-xl tracking-tight">리포트</h1>
-        </div>
-        <button className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200" aria-label="알림">
-          <span className="material-symbols-outlined text-primary">notifications</span>
-        </button>
-      </header>
-
+    <main className="min-h-screen pb-16">
       <PullToRefresh onRefresh={async () => { setLoading(true); loadReports(); }}>
-        <div className="pt-24 pb-8 px-6 max-w-2xl mx-auto space-y-8">
-          {/* New Report CTA */}
-          <Link href="/survey" className="block">
-            <div className="bg-gradient-to-br from-primary to-primary-dim rounded-2xl p-6 text-on-primary shadow-lg overflow-hidden relative">
-              <div className="absolute -right-12 -top-12 w-48 h-48 bg-primary-container/20 rounded-full blur-3xl" />
-              <div className="relative z-10 flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-headline font-bold">새 리포트 받기</h2>
-                  <p className="text-on-primary/70 text-sm mt-1">오늘의 투자 컨디션을 분석해보세요</p>
-                </div>
-                <div className="w-12 h-12 bg-surface-container-lowest/20 rounded-full flex items-center justify-center">
-                  <span className="material-symbols-outlined text-on-primary">arrow_forward</span>
-                </div>
+        <div className="pt-10 pb-8 px-6 md:px-10 max-w-[1100px] mx-auto space-y-8">
+
+          {/* ── 1. Header ── */}
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight">리포트</h1>
+              <p className="text-sm text-on-surface-tertiary mt-1">나의 투자 판단 히스토리</p>
+            </div>
+            <Link href="/survey" className="btn btn-primary">
+              <span className="material-symbols-outlined text-lg">add</span>
+              새 리포트 받기
+            </Link>
+          </div>
+
+          {/* ── 2. Stats 4-col grid ── */}
+          {totalReports > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Total reports */}
+              <div className="card card-raised">
+                <p className="text-xs text-on-surface-tertiary mb-1.5">총 리포트</p>
+                <p className="text-2xl font-extrabold tracking-tight">
+                  <CountUp end={totalReports} />
+                </p>
+                {sparkReportCounts.length >= 2 && (
+                  <div className="mt-2">
+                    <Sparkline data={sparkReportCounts} />
+                  </div>
+                )}
+              </div>
+
+              {/* Avg condition */}
+              <div className="card card-raised">
+                <p className="text-xs text-on-surface-tertiary mb-1.5">평균 컨디션</p>
+                <p className="text-2xl font-extrabold tracking-tight">
+                  <CountUp end={avgCondition} suffix="%" />
+                </p>
+                {sparkConditions.length >= 2 && (
+                  <div className="mt-2">
+                    <Sparkline data={sparkConditions} />
+                  </div>
+                )}
+              </div>
+
+              {/* Most frequent mode */}
+              <div className="card card-raised">
+                <p className="text-xs text-on-surface-tertiary mb-1.5">가장 많은 모드</p>
+                <p className="text-xl font-extrabold tracking-tight text-primary">{topMode.mode}</p>
+                {topMode.count > 0 && (
+                  <span className="badge badge-green mt-1.5 inline-block">
+                    {topMode.count}회 ({topMode.pct}%)
+                  </span>
+                )}
+              </div>
+
+              {/* Avg grade */}
+              <div className="card card-raised">
+                <p className="text-xs text-on-surface-tertiary mb-1.5">평균 등급</p>
+                <p className="text-2xl font-extrabold tracking-tight">{avgGrade}</p>
               </div>
             </div>
-          </Link>
+          )}
 
-          {/* Summary Stats */}
-          {totalReports > 0 && (
-            <section className="space-y-2">
-              <span className="font-bold text-xs text-on-surface-variant tracking-[0.15em]">REPORT HISTORY</span>
-              <div className="flex items-baseline gap-2">
-                <span className="font-headline text-5xl font-bold tracking-tight text-on-surface">
-                  {totalReports}
-                </span>
-                <span className="font-bold text-xl text-on-surface-variant">리포트</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center px-2 py-1 bg-primary-container rounded-full text-on-primary-container text-xs font-bold">
-                  <span className="material-symbols-outlined text-sm leading-none mr-1">psychology</span>
-                  평균 감정 흔들림 {avgMood}%
+          {/* ── 3. Condition Trend Chart ── */}
+          {trendData.length >= 2 && (
+            <div className="card card-raised">
+              <div className="flex justify-between items-center mb-5">
+                <h2 className="text-base font-bold">컨디션 추이</h2>
+                <div className="flex gap-1 bg-background rounded-lg p-0.5">
+                  {(['1w', '1m', '3m'] as TrendPeriod[]).map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setTrendPeriod(p)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                        trendPeriod === p
+                          ? 'chip-active'
+                          : 'text-on-surface-tertiary hover:text-on-surface-secondary'
+                      }`}
+                    >
+                      {trendPeriodLabel[p]}
+                    </button>
+                  ))}
                 </div>
-                <span className="text-on-surface-variant">{streakLabel}</span>
               </div>
-            </section>
+              <TrendChart data={trendData} height={120} />
+            </div>
           )}
 
-          {/* Filters */}
+          {/* ── 4. Filter chips + View toggle ── */}
           {totalReports > 0 && (
-            <section className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-              {(Object.keys(filterLabels) as FilterType[]).map(f => (
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                {MODES.map(m => (
+                  <button
+                    key={m}
+                    onClick={() => setFilter(m)}
+                    className={`chip flex-none ${filter === m ? 'chip-active' : 'chip-default'}`}
+                  >
+                    {m === 'all' ? '전체' : m} {modeCounts[m] ?? 0}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-1 bg-background rounded-lg p-0.5 ml-4 flex-shrink-0">
                 <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`flex-none px-6 py-3 rounded-full font-bold text-sm transition-all active:scale-95 ${
-                    filter === f
-                      ? 'bg-primary text-on-primary'
-                      : 'bg-surface-container-highest text-on-surface hover:bg-surface-container'
-                  }`}
+                  onClick={() => setViewMode('list')}
+                  className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-surface shadow-sm text-on-surface' : 'text-on-surface-quaternary'}`}
+                  aria-label="리스트 보기"
                 >
-                  {filterLabels[f]}
+                  <span className="material-symbols-outlined text-lg">view_list</span>
                 </button>
-              ))}
-            </section>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-surface shadow-sm text-on-surface' : 'text-on-surface-quaternary'}`}
+                  aria-label="그리드 보기"
+                >
+                  <span className="material-symbols-outlined text-lg">grid_view</span>
+                </button>
+              </div>
+            </div>
           )}
 
-          {/* Report List */}
+          {/* ── 5. Data table / Grid ── */}
           {loading ? (
             <div className="space-y-4">
               <SkeletonCard />
@@ -136,58 +308,131 @@ export default function ReportPage() {
               <SkeletonCard />
             </div>
           ) : filtered.length === 0 && totalReports === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-              <div className="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center text-outline">
+            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+              <div className="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center text-on-surface-quaternary">
                 <span className="material-symbols-outlined text-4xl">analytics</span>
               </div>
               <div>
-                <p className="font-headline font-bold text-lg">아직 리포트가 없습니다</p>
-                <p className="text-on-surface-variant">위 버튼을 눌러 첫 리포트를 받아보세요.</p>
+                <p className="font-bold text-lg">아직 리포트가 없습니다</p>
+                <p className="text-on-surface-tertiary text-sm">새 리포트를 받아 투자 컨디션을 분석해보세요</p>
               </div>
+              <Link href="/survey" className="btn btn-primary mt-2">
+                리포트 받기
+              </Link>
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-on-surface-variant">해당 모드의 리포트가 없습니다.</p>
+              <p className="text-on-surface-tertiary">해당 모드의 리포트가 없습니다.</p>
             </div>
-          ) : (
-            <section className="space-y-8">
-              {Object.entries(grouped).map(([dateKey, items]) => (
-                <div key={dateKey} className="space-y-4">
-                  <h3 className="text-xs font-extrabold text-outline tracking-widest px-1">{dateKey}</h3>
-                  <div className="space-y-2">
-                    {items.map(report => {
-                      const mode = modeIcon[report.decision_mode] || modeIcon['신중'];
-                      const time = new Date(report.created_at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+          ) : viewMode === 'list' ? (
+            /* ── List View (data-table) ── */
+            <div className="card card-raised overflow-hidden !p-0">
+              {/* Table header — desktop only */}
+              <div className="hidden md:grid grid-cols-[160px_100px_100px_80px_1fr_48px] px-6 py-3 border-b border-surface-border">
+                <span className="section-label !mb-0 !p-0">날짜</span>
+                <span className="section-label !mb-0 !p-0">판단 모드</span>
+                <span className="section-label !mb-0 !p-0">컨디션</span>
+                <span className="section-label !mb-0 !p-0">등급</span>
+                <span className="section-label !mb-0 !p-0">키워드</span>
+                <span></span>
+              </div>
 
-                      return (
-                        <Link
-                          key={report.id}
-                          href={`/result/${report.id}`}
-                          className="bg-surface-container-lowest p-5 rounded-xl flex justify-between items-center transition-all hover:bg-white/80 block"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 rounded-full ${mode.bgClass} flex items-center justify-center ${mode.textClass}`}>
-                              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>{mode.icon}</span>
-                            </div>
-                            <div>
-                              <h4 className="font-headline font-bold text-on-surface">{report.decision_mode} 모드</h4>
-                              <p className="text-on-surface-variant text-sm">감정 흔들림 {report.mood_score}%</p>
-                            </div>
-                          </div>
-                          <div className="text-right flex items-center gap-3">
-                            <p className="text-xs text-on-surface-variant">{time}</p>
-                            <GradeBadge
-                              grade={(['S','A','B','C','D','F'].includes(report.invest_mood || '') ? report.invest_mood : 'C') as 'S'|'A'|'B'|'C'|'D'|'F'}
-                              size="sm"
-                            />
-                          </div>
-                        </Link>
-                      );
-                    })}
+              {Object.entries(grouped).map(([groupLabel, items]) => (
+                <div key={groupLabel}>
+                  {/* Group label */}
+                  <div className="px-6 pt-4 pb-2">
+                    <span className="text-xs font-bold text-on-surface-quaternary">{groupLabel}</span>
                   </div>
+
+                  {items.map(report => {
+                    const { date, day, time } = formatDate(report.created_at);
+                    const cond = conditionScore(report);
+                    const grade = (gradeOrder.includes(report.invest_mood || '') ? report.invest_mood : 'C') as 'S' | 'A' | 'B' | 'C' | 'D' | 'F';
+                    const badgeClass = modeBadge[report.decision_mode] || 'badge-green';
+                    const condColor = cond >= 70 ? 'text-primary' : cond >= 50 ? 'text-amber-600' : 'text-error';
+
+                    return (
+                      <Link
+                        key={report.id}
+                        href={`/result/${report.id}`}
+                        className="block hover:bg-surface-dim transition-colors"
+                      >
+                        {/* Desktop row */}
+                        <div className="hidden md:grid grid-cols-[160px_100px_100px_80px_1fr_48px] px-6 py-4 items-center border-b border-background last:border-b-0">
+                          <div>
+                            <p className="text-sm font-semibold">{date}</p>
+                            <p className="text-xs text-on-surface-quaternary mt-0.5">{day} {time}</p>
+                          </div>
+                          <div>
+                            <span className={`badge ${badgeClass}`}>{report.decision_mode}</span>
+                          </div>
+                          <div>
+                            <span className={`text-base font-bold ${condColor}`}>{cond}%</span>
+                          </div>
+                          <div>
+                            <GradeBadge grade={grade} size="sm" />
+                          </div>
+                          <div className="flex gap-1.5 flex-wrap">
+                            {(report.today_keywords || []).slice(0, 3).map((kw, i) => (
+                              <span key={i} className="px-2 py-0.5 rounded bg-background text-xs text-on-surface-tertiary">{kw}</span>
+                            ))}
+                          </div>
+                          <div className="flex justify-end text-on-surface-quaternary">
+                            <span className="material-symbols-outlined text-lg">chevron_right</span>
+                          </div>
+                        </div>
+
+                        {/* Mobile row */}
+                        <div className="md:hidden flex items-center justify-between px-5 py-4 border-b border-background last:border-b-0">
+                          <div className="flex items-center gap-3.5">
+                            <GradeBadge grade={grade} size="sm" />
+                            <div>
+                              <p className="text-sm font-bold">{report.decision_mode} 모드</p>
+                              <p className="text-xs text-on-surface-tertiary">{date} · 컨디션 {cond}%</p>
+                            </div>
+                          </div>
+                          <span className="material-symbols-outlined text-on-surface-quaternary text-lg">chevron_right</span>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               ))}
-            </section>
+            </div>
+          ) : (
+            /* ── Grid View ── */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map(report => {
+                const { date, day } = formatDate(report.created_at);
+                const cond = conditionScore(report);
+                const grade = (gradeOrder.includes(report.invest_mood || '') ? report.invest_mood : 'C') as 'S' | 'A' | 'B' | 'C' | 'D' | 'F';
+                const badgeClass = modeBadge[report.decision_mode] || 'badge-green';
+                const condColor = cond >= 70 ? 'text-primary' : cond >= 50 ? 'text-amber-600' : 'text-error';
+
+                return (
+                  <Link key={report.id} href={`/result/${report.id}`} className="card card-raised hover:shadow-elevated transition-shadow block">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <p className="text-sm font-semibold">{date}</p>
+                        <p className="text-xs text-on-surface-quaternary">{day}</p>
+                      </div>
+                      <GradeBadge grade={grade} size="sm" />
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`badge ${badgeClass}`}>{report.decision_mode}</span>
+                      <span className={`text-base font-bold ${condColor}`}>{cond}%</span>
+                    </div>
+                    {(report.today_keywords || []).length > 0 && (
+                      <div className="flex gap-1.5 flex-wrap mt-2">
+                        {report.today_keywords.slice(0, 3).map((kw, i) => (
+                          <span key={i} className="px-2 py-0.5 rounded bg-background text-xs text-on-surface-tertiary">{kw}</span>
+                        ))}
+                      </div>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
           )}
         </div>
       </PullToRefresh>
