@@ -14,7 +14,7 @@ export default function AntCharacter({ size = 120, className = '', expression = 
       {/* Speech bubble */}
       {speech && (
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white rounded-xl px-3 py-1.5 shadow-md whitespace-nowrap z-10">
-          <p className="text-xs font-medium text-green-800">{speech}</p>
+          <p className="text-xs font-medium text-primary">{speech}</p>
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45" />
         </div>
       )}

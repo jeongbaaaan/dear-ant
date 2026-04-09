@@ -44,7 +44,7 @@ export function CircularGauge({
         />
       </svg>
       {label && (
-        <span className="absolute inset-0 flex items-center justify-center font-extrabold text-green-900 text-xs">
+        <span className="absolute inset-0 flex items-center justify-center font-extrabold text-primary text-xs">
           {label}
         </span>
       )}

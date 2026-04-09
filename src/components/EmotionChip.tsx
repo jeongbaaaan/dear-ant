@@ -17,8 +17,8 @@ export function EmotionChip({ emoji, label, selected, onToggle, categoryColor }:
         flex items-center gap-3
         transition-all duration-200
         ${selected
-          ? 'bg-green-900 text-white scale-[1.02]'
-          : 'card card-raised text-green-900'
+          ? 'bg-primary text-on-primary scale-[1.02]'
+          : 'card card-raised text-on-surface'
         }
       `}
     >
