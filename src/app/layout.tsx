@@ -1,35 +1,41 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
-import BottomNav from "@/components/BottomNav";
-import ClientProviders from "@/components/ClientProviders";
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+import ClientProviders from '@/components/ClientProviders';
+import Sidebar from '@/components/Sidebar';
+import BottomNav from '@/components/BottomNav';
 
 export const metadata: Metadata = {
-  title: "Dear,ANT - 당신만을 위한 투자 리포트",
-  description: "감정 분석 · 바이오리듬 · 투자 성향을 분석하여 오늘의 투자 판단 리포트를 제공합니다",
-  keywords: ["투자", "개미투자자", "투자성향", "바이오리듬", "리포트", "트레이딩저널"],
+  title: 'Dear,ANT - 당신만을 위한 투자 리포트',
+  description: '감정과 컨디션을 분석해서 오늘의 투자 판단을 도와드립니다',
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
-  viewportFit: "cover",
-  themeColor: "#006b1b",
+  themeColor: '#006b1b',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          rel="stylesheet"
+        />
       </head>
-      <body className="antialiased min-h-screen bg-surface text-on-surface">
+      <body className="font-[var(--font-family-base)]">
         <ClientProviders>
-          {children}
+          <div className="app-shell">
+            <Sidebar />
+            <main className="main-content">
+              {children}
+            </main>
+          </div>
           <BottomNav />
         </ClientProviders>
       </body>
