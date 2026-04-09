@@ -61,7 +61,7 @@ export default function ResultPage() {
   if (!report) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-6">
-        <p className="text-on-surface-variant mb-4">리포트를 찾을 수 없습니다.</p>
+        <p className="text-on-surface-secondary mb-4">리포트를 찾을 수 없습니다.</p>
         <Link href="/" className="text-primary font-bold">홈으로 돌아가기</Link>
       </main>
     );

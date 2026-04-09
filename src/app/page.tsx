@@ -315,7 +315,7 @@ export default function Home() {
                             isToday
                               ? 'bg-gradient-to-t from-primary to-[#00a82d]'
                               : d.value > 0
-                              ? 'bg-surface-container-high'
+                              ? 'bg-surface-container'
                               : 'bg-surface-container'
                           }`}
                           style={{ height: `${d.value > 0 ? Math.max(h, 8) : 4}%` }}

@@ -101,7 +101,7 @@ export default function DateInput({ value, onChange }: DateInputProps) {
   };
 
   return (
-    <div className="flex items-center gap-2 bg-surface-container-lowest rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-primary" role="group" aria-label="생년월일 입력">
+    <div className="flex items-center gap-2 bg-surface-container rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-primary" role="group" aria-label="생년월일 입력">
       <input
         ref={yearRef}
         type="text"
@@ -114,7 +114,7 @@ export default function DateInput({ value, onChange }: DateInputProps) {
         aria-label="년도"
         className="w-16 text-center bg-transparent outline-none text-on-surface font-bold"
       />
-      <span className="text-on-surface-variant" aria-hidden="true">/</span>
+      <span className="text-on-surface-secondary" aria-hidden="true">/</span>
       <input
         ref={monthRef}
         type="text"
@@ -127,7 +127,7 @@ export default function DateInput({ value, onChange }: DateInputProps) {
         aria-label="월"
         className="w-10 text-center bg-transparent outline-none text-on-surface font-bold"
       />
-      <span className="text-on-surface-variant" aria-hidden="true">/</span>
+      <span className="text-on-surface-secondary" aria-hidden="true">/</span>
       <input
         ref={dayRef}
         type="text"

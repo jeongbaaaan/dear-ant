@@ -43,10 +43,10 @@ export default function NumberInput({
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
         aria-label={ariaLabel}
-        className={`w-full px-4 py-2.5 pr-12 rounded-xl bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary text-on-surface text-sm font-bold ${className}`}
+        className={`w-full px-4 py-2.5 pr-12 rounded-xl bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary text-on-surface text-sm font-bold ${className}`}
       />
       {suffix && (
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">{suffix}</span>
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-secondary text-sm">{suffix}</span>
       )}
     </div>
   );

@@ -144,21 +144,21 @@ export default function SimulatorPage() {
       {/* Breadcrumb nav */}
       <div className="px-6 pt-6 max-w-5xl mx-auto">
         <Link
-          href="/tools"
-          className="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors"
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm text-on-surface-secondary hover:text-primary transition-colors"
         >
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-          도구
+          홈
         </Link>
       </div>
 
       <div className="px-6 pt-4 max-w-5xl mx-auto">
         {/* Page header */}
         <div className="mb-6">
-          <h1 className="font-headline font-extrabold text-on-surface text-2xl tracking-tight mb-1">
+          <h1 className="font-extrabold text-on-surface text-2xl tracking-tight mb-1">
             매매 시뮬레이터
           </h1>
-          <p className="text-sm text-on-surface-variant">
+          <p className="text-sm text-on-surface-secondary">
             매수/매도 수익률 계산과 물타기(DCA) 시뮬레이션
           </p>
         </div>
@@ -170,7 +170,7 @@ export default function SimulatorPage() {
             className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${
               tab === 'profit'
                 ? 'bg-surface shadow-sm text-on-surface'
-                : 'text-on-surface-variant hover:text-on-surface'
+                : 'text-on-surface-secondary hover:text-on-surface'
             }`}
           >
             수익률 계산
@@ -180,7 +180,7 @@ export default function SimulatorPage() {
             className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${
               tab === 'dca'
                 ? 'bg-surface shadow-sm text-on-surface'
-                : 'text-on-surface-variant hover:text-on-surface'
+                : 'text-on-surface-secondary hover:text-on-surface'
             }`}
           >
             물타기 계산
@@ -193,21 +193,21 @@ export default function SimulatorPage() {
             <div className="card card-raised">
               <div className="flex items-center gap-2 mb-6">
                 <span className="material-symbols-outlined text-primary text-xl">tune</span>
-                <span className="font-headline font-bold text-on-surface">매매 조건</span>
+                <span className="font-bold text-on-surface">매매 조건</span>
               </div>
 
               {/* 2-col form grid: 매수가+수량, 매도가+수량 */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-on-surface-variant text-xs font-bold mb-2">매수가</label>
+                  <label className="block text-on-surface-secondary text-xs font-bold mb-2">매수가</label>
                   <NumberInput value={buyPrice} onChange={setBuyPrice} suffix="원" ariaLabel="매수가" />
                 </div>
                 <div>
-                  <label className="block text-on-surface-variant text-xs font-bold mb-2">매수 수량</label>
+                  <label className="block text-on-surface-secondary text-xs font-bold mb-2">매수 수량</label>
                   <NumberInput value={quantity} onChange={setQuantity} suffix="주" ariaLabel="매수 수량" />
                 </div>
                 <div>
-                  <label className="block text-on-surface-variant text-xs font-bold mb-2">매도가 (목표)</label>
+                  <label className="block text-on-surface-secondary text-xs font-bold mb-2">매도가 (목표)</label>
                   <NumberInput
                     value={sellPrice}
                     onChange={setSellPrice}
@@ -217,23 +217,23 @@ export default function SimulatorPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-on-surface-variant text-xs font-bold mb-2">매도 수량</label>
+                  <label className="block text-on-surface-secondary text-xs font-bold mb-2">매도 수량</label>
                   <div className="relative">
                     <input
                       type="text"
                       value={quantity ? Number(quantity).toLocaleString() : ''}
                       readOnly
                       aria-label="매도 수량"
-                      className="w-full px-4 py-2.5 pr-12 rounded-xl bg-surface-container-lowest text-on-surface text-sm font-bold opacity-60 cursor-not-allowed"
+                      className="w-full px-4 py-2.5 pr-12 rounded-xl bg-surface-container text-on-surface text-sm font-bold opacity-60 cursor-not-allowed"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">주</span>
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-secondary text-sm">주</span>
                   </div>
                 </div>
               </div>
 
               {/* 수수료 chip selector */}
               <div className="mb-5">
-                <label className="block text-on-surface-variant text-xs font-bold mb-2">증권사 수수료</label>
+                <label className="block text-on-surface-secondary text-xs font-bold mb-2">증권사 수수료</label>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(brokerFees).map(([key, b]) => (
                     <button
@@ -258,7 +258,7 @@ export default function SimulatorPage() {
                 />
                 <div>
                   <p className="text-sm font-bold text-on-surface">양도소득세 적용</p>
-                  <p className="text-[11px] text-on-surface-variant">해외주식 또는 대주주 (22%, 250만원 공제)</p>
+                  <p className="text-[11px] text-on-surface-secondary">해외주식 또는 대주주 (22%, 250만원 공제)</p>
                 </div>
               </label>
             </div>
@@ -275,7 +275,7 @@ export default function SimulatorPage() {
                   } text-on-primary`}>
                     <p className="text-on-primary/60 text-xs font-bold uppercase tracking-widest mb-2">예상 순수익</p>
                     <div className="flex items-baseline gap-3">
-                      <span className="text-3xl font-headline font-extrabold">
+                      <span className="text-3xl font-extrabold">
                         {simResult.netProfit >= 0 ? '+' : ''}{formatKRW(simResult.netProfit)}
                       </span>
                     </div>
@@ -289,34 +289,34 @@ export default function SimulatorPage() {
                     <table className="data-table">
                       <tbody>
                         <tr>
-                          <td className="text-on-surface-variant">매수 금액</td>
+                          <td className="text-on-surface-secondary">매수 금액</td>
                           <td className="text-right font-semibold">{buyTotal.toLocaleString()}원</td>
                         </tr>
                         <tr>
-                          <td className="text-on-surface-variant">매도 금액</td>
+                          <td className="text-on-surface-secondary">매도 금액</td>
                           <td className="text-right font-semibold">{sellTotal.toLocaleString()}원</td>
                         </tr>
                         <tr>
-                          <td className="text-on-surface-variant">매수 수수료</td>
+                          <td className="text-on-surface-secondary">매수 수수료</td>
                           <td className="text-right font-semibold text-error">-{simResult.buyFee.toLocaleString()}원</td>
                         </tr>
                         <tr>
-                          <td className="text-on-surface-variant">매도 수수료</td>
+                          <td className="text-on-surface-secondary">매도 수수료</td>
                           <td className="text-right font-semibold text-error">-{simResult.sellFee.toLocaleString()}원</td>
                         </tr>
                         <tr>
-                          <td className="text-on-surface-variant">거래세 (0.18%)</td>
+                          <td className="text-on-surface-secondary">거래세 (0.18%)</td>
                           <td className="text-right font-semibold text-error">-{simResult.tradeTax.toLocaleString()}원</td>
                         </tr>
                         {simResult.capitalGainsTax > 0 ? (
                           <tr>
-                            <td className="text-on-surface-variant">양도소득세 (22%)</td>
+                            <td className="text-on-surface-secondary">양도소득세 (22%)</td>
                             <td className="text-right font-semibold text-error">-{simResult.capitalGainsTax.toLocaleString()}원</td>
                           </tr>
                         ) : (
                           <tr>
-                            <td className="text-on-surface-variant">양도소득세</td>
-                            <td className="text-right font-semibold text-on-surface-variant">&mdash;</td>
+                            <td className="text-on-surface-secondary">양도소득세</td>
+                            <td className="text-right font-semibold text-on-surface-secondary">&mdash;</td>
                           </tr>
                         )}
                         <tr className="border-t-2 border-primary">
@@ -328,7 +328,7 @@ export default function SimulatorPage() {
                           </td>
                         </tr>
                         <tr>
-                          <td className="text-on-surface-variant">손익분기 매도가</td>
+                          <td className="text-on-surface-secondary">손익분기 매도가</td>
                           <td className="text-right font-semibold">{simResult.breakEvenPrice.toLocaleString()}원</td>
                         </tr>
                       </tbody>
@@ -337,8 +337,8 @@ export default function SimulatorPage() {
                 </>
               ) : (
                 <div className="card flex flex-col items-center justify-center py-16 text-center">
-                  <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-3">calculate</span>
-                  <p className="text-on-surface-variant text-sm">
+                  <span className="material-symbols-outlined text-4xl text-on-surface-secondary/40 mb-3">calculate</span>
+                  <p className="text-on-surface-secondary text-sm">
                     매수가와 수량을 입력하면<br />수익률이 바로 계산됩니다
                   </p>
                 </div>
@@ -352,31 +352,31 @@ export default function SimulatorPage() {
             <div className="card card-raised">
               <div className="flex items-center gap-2 mb-6">
                 <span className="material-symbols-outlined text-primary text-xl">tune</span>
-                <span className="font-headline font-bold text-on-surface">물타기 조건</span>
+                <span className="font-bold text-on-surface">물타기 조건</span>
               </div>
 
-              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3">현재 보유</p>
+              <p className="text-xs font-bold text-on-surface-secondary uppercase tracking-widest mb-3">현재 보유</p>
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-on-surface-variant text-xs font-bold mb-2">현재 평균단가</label>
+                  <label className="block text-on-surface-secondary text-xs font-bold mb-2">현재 평균단가</label>
                   <NumberInput value={currentAvg} onChange={setCurrentAvg} suffix="원" ariaLabel="현재 평균단가" />
                 </div>
                 <div>
-                  <label className="block text-on-surface-variant text-xs font-bold mb-2">보유 수량</label>
+                  <label className="block text-on-surface-secondary text-xs font-bold mb-2">보유 수량</label>
                   <NumberInput value={currentShares} onChange={setCurrentShares} suffix="주" ariaLabel="보유 수량" />
                 </div>
               </div>
 
               <div className="h-px bg-surface-container mb-6" />
 
-              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3">추가 매수</p>
+              <p className="text-xs font-bold text-on-surface-secondary uppercase tracking-widest mb-3">추가 매수</p>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-on-surface-variant text-xs font-bold mb-2">추가 매수가</label>
+                  <label className="block text-on-surface-secondary text-xs font-bold mb-2">추가 매수가</label>
                   <NumberInput value={addPrice} onChange={setAddPrice} suffix="원" ariaLabel="추가 매수가" />
                 </div>
                 <div>
-                  <label className="block text-on-surface-variant text-xs font-bold mb-2">추가 수량</label>
+                  <label className="block text-on-surface-secondary text-xs font-bold mb-2">추가 수량</label>
                   <NumberInput value={addShares} onChange={setAddShares} suffix="주" ariaLabel="추가 수량" />
                 </div>
               </div>
@@ -389,7 +389,7 @@ export default function SimulatorPage() {
                   {/* Hero */}
                   <div className="card card-accent rounded-2xl p-6 bg-gradient-to-br from-primary to-primary-dim text-on-primary">
                     <p className="text-on-primary/60 text-xs font-bold uppercase tracking-widest mb-2">물타기 후 평균단가</p>
-                    <span className="text-3xl font-headline font-extrabold">
+                    <span className="text-3xl font-extrabold">
                       {dcaResult.avgPrice.toLocaleString()}원
                     </span>
                   </div>
@@ -399,21 +399,21 @@ export default function SimulatorPage() {
                     <table className="data-table">
                       <tbody>
                         <tr>
-                          <td className="text-on-surface-variant">기존 평균단가</td>
+                          <td className="text-on-surface-secondary">기존 평균단가</td>
                           <td className="text-right font-semibold">{(Number(currentAvg) || 0).toLocaleString()}원</td>
                         </tr>
                         <tr>
-                          <td className="text-on-surface-variant">변동</td>
+                          <td className="text-on-surface-secondary">변동</td>
                           <td className={`text-right font-bold ${dcaResult.avgPrice < (Number(currentAvg) || 0) ? 'text-primary' : 'text-error'}`}>
                             {dcaResult.avgPrice < (Number(currentAvg) || 0) ? '▼' : '▲'} {Math.abs(dcaResult.avgPrice - (Number(currentAvg) || 0)).toLocaleString()}원
                           </td>
                         </tr>
                         <tr>
-                          <td className="text-on-surface-variant">총 보유 수량</td>
+                          <td className="text-on-surface-secondary">총 보유 수량</td>
                           <td className="text-right font-semibold">{dcaResult.totalShares.toLocaleString()}주</td>
                         </tr>
                         <tr>
-                          <td className="text-on-surface-variant">총 투자금</td>
+                          <td className="text-on-surface-secondary">총 투자금</td>
                           <td className="text-right font-semibold">{dcaResult.totalCost.toLocaleString()}원</td>
                         </tr>
                       </tbody>
@@ -422,11 +422,11 @@ export default function SimulatorPage() {
 
                   {/* Visual comparison bar */}
                   <div className="card">
-                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-4">평단가 비교</p>
+                    <p className="text-xs font-bold text-on-surface-secondary uppercase tracking-widest mb-4">평단가 비교</p>
                     <div className="space-y-3">
                       <div>
                         <div className="flex justify-between text-xs mb-1.5">
-                          <span className="text-on-surface-variant">기존</span>
+                          <span className="text-on-surface-secondary">기존</span>
                           <span className="font-bold">{(Number(currentAvg) || 0).toLocaleString()}원</span>
                         </div>
                         <div className="h-3 bg-surface-container rounded-full overflow-hidden">
@@ -435,7 +435,7 @@ export default function SimulatorPage() {
                       </div>
                       <div>
                         <div className="flex justify-between text-xs mb-1.5">
-                          <span className="text-on-surface-variant">물타기 후</span>
+                          <span className="text-on-surface-secondary">물타기 후</span>
                           <span className="font-bold text-primary">{dcaResult.avgPrice.toLocaleString()}원</span>
                         </div>
                         <div className="h-3 bg-surface-container rounded-full overflow-hidden">
@@ -450,8 +450,8 @@ export default function SimulatorPage() {
                 </>
               ) : (
                 <div className="card flex flex-col items-center justify-center py-16 text-center">
-                  <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-3">functions</span>
-                  <p className="text-on-surface-variant text-sm">
+                  <span className="material-symbols-outlined text-4xl text-on-surface-secondary/40 mb-3">functions</span>
+                  <p className="text-on-surface-secondary text-sm">
                     현재 보유 정보와 추가 매수 조건을<br />입력하면 결과가 표시됩니다
                   </p>
                 </div>

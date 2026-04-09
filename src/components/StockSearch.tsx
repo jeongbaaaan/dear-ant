@@ -81,7 +81,7 @@ export default function StockSearch({ value, onChange, placeholder = '종목명 
   return (
     <div ref={wrapperRef} className="relative">
       <div className="relative">
-        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-secondary text-lg">search</span>
         <input
           type="text"
           value={query}
@@ -94,7 +94,7 @@ export default function StockSearch({ value, onChange, placeholder = '종목명 
           aria-expanded={isOpen && results.length > 0}
           aria-controls="stock-search-list"
           role="combobox"
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary text-on-surface text-sm"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary text-on-surface text-sm"
           autoComplete="off"
         />
       </div>
@@ -105,7 +105,7 @@ export default function StockSearch({ value, onChange, placeholder = '종목명 
           ref={listRef}
           role="listbox"
           aria-label="종목 검색 결과"
-          className="absolute z-50 w-full mt-1 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/30 max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-surface-container rounded-xl shadow-lg border border-surface-border max-h-60 overflow-y-auto"
         >
           {results.map((stock, i) => (
             <li
@@ -118,7 +118,7 @@ export default function StockSearch({ value, onChange, placeholder = '종목명 
               }`}
             >
               <span className="font-bold text-sm text-on-surface">{stock.name}</span>
-              <span className="text-xs text-on-surface-variant">{stock.code}</span>
+              <span className="text-xs text-on-surface-secondary">{stock.code}</span>
             </li>
           ))}
         </ul>

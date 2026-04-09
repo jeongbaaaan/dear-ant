@@ -124,7 +124,7 @@ export default function CalculatorPage() {
   const fmtWon = (v: number) => v.toLocaleString();
 
   return (
-    <main className="min-h-screen py-8 px-6 pb-nav">
+    <main className="min-h-screen py-8 px-6 pb-32">
       <div className="max-w-5xl mx-auto animate-fade-in">
         {/* Header */}
         <h1 className="text-2xl font-extrabold tracking-tight text-on-surface mb-1">적금 vs 투자 비교</h1>
