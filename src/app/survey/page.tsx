@@ -7,8 +7,7 @@ import { Mood, Answer } from '@/lib/types';
 import { generateReport } from '@/lib/report-engine';
 import { clientStore } from '@/lib/client-store';
 import { useToast } from '@/components/Toast';
-import { CircularGauge } from '@/components/CircularGauge';
-import { ProgressBar } from '@/components/ProgressBar';
+import ConditionGauge from '@/components/ConditionGauge';
 import DateInput from '@/components/DateInput';
 
 // 단계별 컨디션 입력 항목
@@ -84,12 +83,6 @@ const conditionItems: ConditionItem[] = [
   },
 ];
 
-const categoryColors: Record<string, string> = {
-  '컨디션': 'bg-emerald-400',
-  '심리': 'bg-amber-500',
-  '외부 영향': 'bg-indigo-500',
-};
-
 const MAX_SCORE = conditionItems.reduce((s, item) => s + item.weight, 0); // 21
 
 function deriveConditionMood(selections: Record<string, number>): { mood: Mood; score: number; percent: number } {
@@ -108,7 +101,24 @@ function deriveConditionMood(selections: Record<string, number>): { mood: Mood; 
   return { mood: '불안', score: totalScore, percent };
 }
 
-const categories = ['컨디션', '심리', '외부 영향'];
+interface CategoryMeta {
+  name: string;
+  icon: string;
+  bgClass: string;
+  iconColor: string;
+}
+
+const categoryMeta: CategoryMeta[] = [
+  { name: '컨디션', icon: 'favorite', bgClass: 'bg-primary-container', iconColor: 'text-primary' },
+  { name: '심리', icon: 'psychology', bgClass: 'bg-amber-container', iconColor: 'text-amber' },
+  { name: '외부 영향', icon: 'language', bgClass: 'bg-blue-container', iconColor: 'text-blue' },
+];
+
+const stepLabels = [
+  { icon: 'edit_note', label: '셀프 체크' },
+  { icon: 'quiz', label: '투자 성향 Q&A' },
+  { icon: 'summarize', label: '리포트 생성' },
+];
 
 export default function SurveyPage() {
   const router = useRouter();
@@ -118,9 +128,18 @@ export default function SurveyPage() {
   const [selections, setSelections] = useState<Record<string, number>>({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
+  const [animatingChip, setAnimatingChip] = useState<string | null>(null);
 
-  const setSelection = (id: string, score: number) => {
+  // Track which option index is selected per item (for highlight when scores overlap)
+  const [selectedIndices, setSelectedIndices] = useState<Record<string, number>>({});
+
+  const setSelection = (id: string, score: number, optionIndex: number) => {
     setSelections(prev => ({ ...prev, [id]: score }));
+    setSelectedIndices(prev => ({ ...prev, [id]: optionIndex }));
+    // Trigger bounce animation
+    const chipKey = `${id}-${optionIndex}`;
+    setAnimatingChip(chipKey);
+    setTimeout(() => setAnimatingChip(null), 150);
   };
 
   const handleInfoSubmit = () => {
@@ -170,9 +189,9 @@ export default function SurveyPage() {
     }
   };
 
-  // 체크리스트 + 생년월일 입력
+  // Step 1: 체크리스트 + 생년월일 입력
   if (step === 'info') {
-    const { mood, percent } = deriveConditionMood(selections);
+    const { percent } = deriveConditionMood(selections);
     const hasInput = Object.keys(selections).length > 0;
     const conditionLevel = !hasInput
       ? '입력 대기'
@@ -180,176 +199,218 @@ export default function SurveyPage() {
       : percent >= 60 ? '양호'
       : percent >= 40 ? '보통'
       : '나쁨';
-    const conditionColor = {
-      '입력 대기': 'text-on-surface-variant',
-      '좋음': 'text-emerald-500',
-      '양호': 'text-blue-500',
-      '보통': 'text-amber-500',
-      '나쁨': 'text-red-500',
-    }[conditionLevel];
+
+    const currentStepIndex = 0; // Step 1
 
     return (
-      <main className="min-h-screen px-5 pt-4 pb-nav">
-        <ProgressBar current={1} total={3} />
-        <div className="max-w-md mx-auto pt-8">
-          <button
-            onClick={() => router.push('/')}
-            className="text-green-800 hover:text-green-900 mb-6 text-sm transition-colors"
-          >
-            &larr; 돌아가기
-          </button>
-
-          {/* 생년월일 */}
-          <div className="mb-8">
-            <label className="block text-green-900 text-sm font-medium mb-1">
-              생년월일
-            </label>
-            <p className="text-green-800 text-xs mb-2">바이오리듬 계산에 사용돼요</p>
-            <DateInput value={birthDate} onChange={setBirthDate} />
-          </div>
-
-          {/* 컨디션 카드 */}
-          <div className="card-v3 px-5 py-4 mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-800 text-xs font-medium">나의 컨디션</p>
-                <p className={`text-lg font-extrabold mt-0.5 ${conditionColor}`}>
-                  {conditionLevel}
-                </p>
-              </div>
-              <CircularGauge
-                value={hasInput ? percent : 0}
-                size={64}
-                color={conditionLevel === '좋음' ? '#16A34A' : conditionLevel === '양호' ? '#2563EB' : conditionLevel === '보통' ? '#D97706' : conditionLevel === '나쁨' ? '#DC2626' : '#94A3B8'}
-                label={hasInput ? `${percent}%` : '-'}
-              />
-            </div>
-          </div>
-
-          {/* 컨디션 입력 */}
-          <div className="mb-6">
-            <h2 className="text-xl font-extrabold text-green-900 leading-tight mb-1">
-              매매 전 셀프 체크
-            </h2>
-            <p className="text-green-800 text-sm mb-6">
-              현재 상태를 선택해주세요
-            </p>
-
-            <div className="space-y-6">
-              {categories.map(cat => (
-                <div key={cat}>
-                  <div className="flex items-center gap-1.5 mb-3 px-1">
-                    <span className={`inline-block w-2 h-2 rounded-full ${categoryColors[cat]}`} />
-                    <p className="text-green-800 text-xs font-semibold">{cat}</p>
-                  </div>
-                  <div className="space-y-4">
-                    {conditionItems.filter(item => item.category === cat).map(item => (
-                      <div key={item.id} className="card-v3 p-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-lg">{item.emoji}</span>
-                          <span className="text-sm font-bold text-green-900">{item.label}</span>
-                        </div>
-                        <div className="flex gap-2">
-                          {item.options.map((opt, oi) => {
-                            const isSelected = selections[item.id] === opt.score;
-                            return (
-                              <button
-                                key={oi}
-                                type="button"
-                                onClick={() => setSelection(item.id, opt.score)}
-                                aria-pressed={isSelected}
-                                className={`flex-1 min-h-[40px] text-xs font-bold rounded-xl transition-all ${
-                                  isSelected
-                                    ? 'bg-green-900 text-white scale-[1.02]'
-                                    : 'bg-green-50 text-green-800 hover:bg-green-100'
-                                }`}
-                              >
-                                {opt.label}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <button
-            onClick={handleInfoSubmit}
-            disabled={!birthDate}
-            className="w-full bg-green-900 hover:bg-green-800 hover:scale-[1.02] disabled:bg-green-200 disabled:text-green-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 active:scale-[0.98]"
-          >
-            다음
-          </button>
+      <div className="max-w-[720px] mx-auto">
+        {/* 1. Progress */}
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[13px] font-semibold text-primary">Step 1 / 3</span>
+          <span className="text-[13px] text-on-surface-tertiary">매매 전 셀프 체크</span>
         </div>
-      </main>
+        <div className="progress-bar mb-8">
+          <div className="progress-fill" style={{ width: '33%' }} />
+        </div>
+
+        {/* Step Pills */}
+        <div className="flex gap-3 mb-8 flex-wrap">
+          {stepLabels.map((s, i) => {
+            const pillClass = i < currentStepIndex ? 'bg-primary-container text-primary'
+              : i === currentStepIndex ? 'bg-primary text-on-primary'
+              : 'bg-surface-container text-on-surface-quaternary';
+            return (
+              <div key={i} className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold transition-all ${pillClass}`}>
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>{s.icon}</span>
+                {s.label}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 2. Title */}
+        <h1 className="text-3xl font-extrabold tracking-tight mb-2 leading-tight">
+          매매 전 셀프 체크
+        </h1>
+        <p className="text-[15px] text-on-surface-secondary mb-9 leading-relaxed">
+          현재 상태를 솔직하게 선택해주세요. 정확할수록 리포트가 정확해져요.
+        </p>
+
+        {/* 3. Birth date */}
+        <div className="card card-raised mb-8">
+          <div className="text-[15px] font-semibold mb-1">생년월일</div>
+          <p className="text-[13px] text-on-surface-tertiary mb-4">바이오리듬 계산에 사용돼요</p>
+          <DateInput value={birthDate} onChange={setBirthDate} />
+        </div>
+
+        {/* 4. Live Condition Gauge */}
+        <div className="card card-raised mb-3 flex items-center gap-5">
+          <ConditionGauge value={hasInput ? percent : 0} size={64} strokeWidth={5} animated />
+          <div className="flex-1">
+            <div className="text-[13px] text-on-surface-tertiary">나의 컨디션</div>
+            <div className="text-xl font-bold mt-0.5">{conditionLevel}</div>
+          </div>
+        </div>
+
+        {/* 5-7. Category groups */}
+        {categoryMeta.map(cat => {
+          const items = conditionItems.filter(item => item.category === cat.name);
+          const answeredCount = items.filter(item => selections[item.id] !== undefined).length;
+
+          return (
+            <div key={cat.name} className="mt-9">
+              {/* Category header */}
+              <div className="flex items-center gap-3 mb-5">
+                <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center ${cat.bgClass}`}>
+                  <span className={`material-symbols-outlined ${cat.iconColor}`} style={{ fontSize: 20 }}>
+                    {cat.icon}
+                  </span>
+                </div>
+                <span className="text-[17px] font-bold">{cat.name}</span>
+                <span className="text-[13px] text-on-surface-tertiary ml-auto">{answeredCount}/{items.length}</span>
+              </div>
+
+              {/* Check items */}
+              <div className="space-y-3">
+                {items.map(item => (
+                  <div key={item.id} className="card card-raised">
+                    <div className="flex items-center gap-2 mb-3.5">
+                      <span className="text-lg">{item.emoji}</span>
+                      <span className="text-[15px] font-semibold">{item.label}</span>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      {item.options.map((opt, oi) => {
+                        const isSelected = selectedIndices[item.id] === oi;
+                        const chipKey = `${item.id}-${oi}`;
+                        const isAnimating = animatingChip === chipKey;
+                        return (
+                          <button
+                            key={oi}
+                            type="button"
+                            onClick={() => setSelection(item.id, opt.score, oi)}
+                            aria-pressed={isSelected}
+                            className={`chip ${isSelected ? 'chip-selected' : 'chip-default'} ${isAnimating ? 'animate-chipBounce' : ''}`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Spacer for fixed bottom bar */}
+        <div className="h-24" />
+
+        {/* 8. Bottom action bar */}
+        <div className="fixed bottom-0 left-[var(--sidebar-width)] right-0 bg-surface border-t border-surface-border z-40 max-md:left-[var(--sidebar-collapsed)] max-sm:left-0">
+          <div className="max-w-[720px] mx-auto flex justify-between items-center px-10 py-4 max-sm:px-5">
+            <button
+              type="button"
+              onClick={() => router.push('/')}
+              className="btn btn-ghost"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_back</span>
+              돌아가기
+            </button>
+            <button
+              type="button"
+              onClick={handleInfoSubmit}
+              disabled={!birthDate}
+              className="btn btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              다음: 투자 성향 Q&A
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
   // 로딩
   if (step === 'loading') {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center px-6">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 rounded-full border-4 border-green-200 border-t-green-900 animate-spin mx-auto mb-6" />
-          <p className="text-green-800 text-lg font-bold">
-            리포트를 생성하고 있습니다
-          </p>
-          <p className="text-green-800 text-sm mt-2">
-            잠시만 기다려주세요
-          </p>
+          <div className="w-10 h-10 rounded-full border-4 border-primary-container border-t-primary animate-spin mx-auto mb-6" />
+          <p className="text-lg font-bold">리포트를 생성하고 있습니다</p>
+          <p className="text-sm text-on-surface-secondary mt-2">잠시만 기다려주세요</p>
         </div>
-      </main>
+      </div>
     );
   }
 
-  // 질문
+  // Step 2: 질문
   const question = questions[currentQuestion];
   const progress = ((currentQuestion + 1) / questions.length) * 100;
+  const currentStepIndex = 1;
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6">
-      <div className="max-w-md w-full">
-        <div className="mb-8">
-          <div className="flex items-center justify-between text-sm text-green-800 mb-2">
-            <div className="flex items-center gap-2">
-              {currentQuestion > 0 && (
-                <button
-                  onClick={handlePrevQuestion}
-                  className="text-green-800 hover:text-green-700 transition-colors"
-                  aria-label="이전 질문"
-                >
-                  &larr;
-                </button>
-              )}
-              <span>질문 {currentQuestion + 1} / {questions.length}</span>
+    <div className="max-w-[720px] mx-auto">
+      {/* Progress */}
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-[13px] font-semibold text-primary">Step 2 / 3</span>
+        <span className="text-[13px] text-on-surface-tertiary">투자 성향 Q&A</span>
+      </div>
+      <div className="progress-bar mb-8">
+        <div className="progress-fill" style={{ width: `${33 + (progress * 0.34)}%` }} />
+      </div>
+
+      {/* Step Pills */}
+      <div className="flex gap-3 mb-8 flex-wrap">
+        {stepLabels.map((s, i) => {
+          const pillClass = i < currentStepIndex ? 'bg-primary-container text-primary'
+            : i === currentStepIndex ? 'bg-primary text-on-primary'
+            : 'bg-surface-container text-on-surface-quaternary';
+          return (
+            <div key={i} className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold transition-all ${pillClass}`}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>{s.icon}</span>
+              {s.label}
             </div>
-            <span>{Math.round(progress)}%</span>
-          </div>
-          <ProgressBar current={currentQuestion + 1} total={questions.length} />
-        </div>
+          );
+        })}
+      </div>
 
-        <div key={question.key} className="animate-slide-up">
-          <h3 className="text-xl font-bold text-green-900 mb-8 leading-relaxed">
-            {question.text}
-          </h3>
+      {/* Question counter */}
+      <div className="flex items-center gap-2 mb-2 text-[13px] text-on-surface-secondary">
+        {currentQuestion > 0 && (
+          <button
+            onClick={handlePrevQuestion}
+            className="text-on-surface-secondary hover:text-on-surface transition-colors"
+            aria-label="이전 질문"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_back</span>
+          </button>
+        )}
+        <span>질문 {currentQuestion + 1} / {questions.length}</span>
+        <span className="ml-auto">{Math.round(progress)}%</span>
+      </div>
+      <div className="progress-bar mb-10">
+        <div className="progress-fill" style={{ width: `${progress}%` }} />
+      </div>
 
-          <div className="space-y-3">
-            {question.options.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => handleAnswer(question.key, option.value, option.score)}
-                className="w-full text-left px-5 py-4 rounded-xl card-v3 hover:bg-green-50 transition-all duration-200 text-green-800 font-medium active:scale-[0.98]"
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+      <div key={question.key} className="animate-slideUp">
+        <h3 className="text-xl font-bold mb-8 leading-relaxed">
+          {question.text}
+        </h3>
+
+        <div className="space-y-3">
+          {question.options.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => handleAnswer(question.key, option.value, option.score)}
+              className="w-full text-left px-6 py-4 rounded-2xl card card-raised hover:bg-surface-dim transition-all duration-200 font-medium active:scale-[0.98]"
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
       </div>
-    </main>
+    </div>
   );
 }
