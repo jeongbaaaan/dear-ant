@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
 import { clientStore, StoredReport, StoredMemo } from '@/lib/client-store';
 import { GradeBadge } from '@/components/GradeBadge';
+import CountUp from '@/components/CountUp';
+import Sparkline from '@/components/Sparkline';
+import ConditionGauge from '@/components/ConditionGauge';
 
 function getRelativeDate(dateStr: string): string {
   const now = new Date();
@@ -64,6 +67,32 @@ function getLast7DaysVolume(memos: StoredMemo[]): { label: string; value: number
   return days;
 }
 
+function getModeBadgeClass(mode: string): string {
+  switch (mode) {
+    case '적극': return 'badge-green';
+    case '신중': return 'badge-amber';
+    case '방어': return 'badge-red';
+    case '관망': return 'badge-blue';
+    default: return 'badge-gray';
+  }
+}
+
+function getGreetingTime(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return '좋은 아침이에요';
+  if (hour < 18) return '좋은 오후예요';
+  return '좋은 저녁이에요';
+}
+
+function getFormattedDate(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  return `${year}년 ${month}월 ${day}일 ${weekdays[now.getDay()]}`;
+}
+
 export default function Home() {
   const [reports, setReports] = useState<StoredReport[]>([]);
   const [memos, setMemos] = useState<StoredMemo[]>([]);
@@ -122,183 +151,363 @@ export default function Home() {
   const weeklyVolume = useMemo(() => getLast7DaysVolume(memos), [memos]);
   const maxVolume = Math.max(...weeklyVolume.map(d => d.value), 1);
 
+  // Sparkline data derived from reports
+  const conditionSparkline = useMemo(() =>
+    reports.slice(0, 12).reverse().map(r => r.mood_score), [reports]);
+  const reportCountByWeek = useMemo(() => {
+    return reports.slice(0, 12).reverse().map((_, i) => i + 1);
+  }, [reports]);
+
+  // Average mood score
+  const avgMoodScore = useMemo(() => {
+    if (reports.length === 0) return 0;
+    return Math.round(reports.reduce((sum, r) => sum + r.mood_score, 0) / reports.length);
+  }, [reports]);
+
+  // Combined timeline (reports + memos) sorted by date
+  const recentTimeline = useMemo(() => {
+    const items: { type: 'report' | 'memo'; date: string; data: StoredReport | StoredMemo }[] = [];
+    reports.slice(0, 5).forEach(r => items.push({ type: 'report', date: r.created_at, data: r }));
+    memos.slice(0, 5).forEach(m => items.push({ type: 'memo', date: m.created_at, data: m }));
+    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return items.slice(0, 5);
+  }, [reports, memos]);
+
   return (
-    <main className="min-h-screen pb-32">
-      {/* Header */}
-      <header className="fixed top-0 w-full z-50 glass-header flex justify-between items-center px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychiatry</span>
+    <div className="animate-slideUp">
+      {/* 1. Greeting */}
+      <section className="mb-10 stagger-1">
+        <p className="text-sm text-on-surface-tertiary mb-1">{getFormattedDate()}</p>
+        <h1 className="text-3xl font-extrabold leading-tight tracking-tight">
+          {getGreetingTime()} <span className="inline-block">&#9728;&#65039;</span>
+          <br />
+          <span className="text-on-surface-secondary">오늘 </span>
+          <span className="text-primary">투자 컨디션</span>
+          <span className="text-on-surface-secondary">은 어떤가요?</span>
+        </h1>
+      </section>
+
+      {/* 2. Hero CTA */}
+      <section className="mb-10 stagger-2">
+        <Link href="/survey" className="block">
+          <div className="card card-accent rounded-[20px] p-9 flex justify-between items-center transition-transform duration-150 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer">
+            <div className="flex-1">
+              <p className="text-xs font-semibold uppercase tracking-widest text-white/60 mb-3">
+                {streak > 0 ? `Today's Report · ${streak}일 연속` : "Today's Report"}
+              </p>
+              <h2 className="text-2xl font-extrabold leading-snug mb-2">오늘의 투자 판단 리포트 받기</h2>
+              <p className="text-sm text-white/75 leading-relaxed">감정과 컨디션을 분석해서 오늘의 투자 판단을 도와드릴게요</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 ml-8">
+              <span className="material-symbols-outlined text-white text-2xl">arrow_forward</span>
+            </div>
           </div>
-          <span className="font-headline font-extrabold text-primary text-xl tracking-tight">Dear,ANT</span>
+        </Link>
+      </section>
+
+      {/* 3. Stats Row (4-col grid) */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 stagger-3">
+        <div className="card card-raised p-5">
+          <p className="text-xs text-on-surface-tertiary font-medium mb-2">총 리포트</p>
+          <div className="flex items-end justify-between">
+            <CountUp end={reports.length} className="text-2xl font-extrabold tracking-tight" suffix="건" />
+            {reportCountByWeek.length >= 2 && (
+              <Sparkline data={reportCountByWeek} width={60} height={20} />
+            )}
+          </div>
         </div>
-        <button className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-200" aria-label="알림">
-          <span className="material-symbols-outlined text-primary">notifications</span>
-        </button>
-      </header>
-
-      <div className="pt-24 px-6 space-y-8 max-w-2xl mx-auto">
-        {/* Hero CTA Card */}
-        <section className="relative group">
-          <Link href="/report" className="block">
-            <div className="bg-gradient-to-br from-primary to-primary-dim rounded-2xl p-8 text-on-primary shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01]">
-              <div className="absolute -right-12 -top-12 w-48 h-48 bg-primary-container/20 rounded-full blur-3xl" />
-              <div className="relative z-10 space-y-4">
-                <div className="flex items-center gap-2">
-                  <span className="bg-primary-container/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-primary-container">
-                    {streak > 0 ? `🔥 ${streak}일 연속` : 'Insights'}
-                  </span>
-                </div>
-                <h2 className="text-3xl font-headline font-bold leading-tight">오늘,<br />투자해도 괜찮은<br />날일까요?</h2>
-                <p className="text-on-primary/80 max-w-[240px]">감정과 컨디션을 분석해서 오늘의 투자 판단을 도와드려요.</p>
-                <div className="mt-4 bg-surface-container-lowest text-primary px-6 py-3 rounded-full font-bold shadow-sm inline-flex items-center gap-2 hover:bg-primary-container transition-colors">
-                  <span>리포트 보기</span>
-                  <span className="material-symbols-outlined">arrow_forward</span>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </section>
-
-        {/* Last Report Card */}
-        {lastReport && (
-          <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm animate-fade-in">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">최근 리포트 · {getRelativeDate(lastReport.created_at)}</p>
-                <p className="font-headline font-bold text-lg text-on-surface mt-1">
-                  {lastReport.decision_mode} 모드
-                </p>
-                <p className="text-sm text-on-surface-variant mt-0.5">감정 흔들림 {lastReport.mood_score}%</p>
-              </div>
-              <GradeBadge grade={(['S','A','B','C','D','F'].includes(lastReport.invest_mood || '') ? lastReport.invest_mood : 'C') as 'S'|'A'|'B'|'C'|'D'|'F'} size="lg" />
-            </div>
-          </section>
-        )}
-
-        {/* Bento Grid */}
-        <section className="grid grid-cols-2 gap-4">
-          {/* 적금 vs 투자 (2col span) */}
-          <Link href="/calculator" className="col-span-2 bg-surface-container-low rounded-2xl p-6 flex flex-col justify-between h-48 relative overflow-hidden hover:bg-surface-container transition-colors">
-            <div className="z-10">
-              <span className="material-symbols-outlined text-primary mb-2">compare_arrows</span>
-              <h3 className="font-headline font-bold text-lg">적금 vs 투자</h3>
-              <p className="text-on-surface-variant">내 자산의 최적 비율 찾기</p>
-            </div>
-            <span className="text-primary font-bold z-10">비교하기</span>
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary/5 rounded-tl-full" />
-          </Link>
-
-          {/* 복리 계산기 */}
-          <Link href="/compound" className="bg-surface-container rounded-2xl p-5 flex flex-col justify-between aspect-square hover:bg-surface-container-high transition-colors">
-            <div className="w-10 h-10 rounded-xl bg-surface-container-lowest flex items-center justify-center shadow-sm">
-              <span className="material-symbols-outlined text-primary">calculate</span>
-            </div>
-            <div>
-              <h3 className="font-headline font-bold text-base leading-snug">복리 계산기</h3>
-              <span className="text-xs text-on-surface-variant mt-1 block">시간의 마법 확인</span>
-            </div>
-          </Link>
-
-          {/* 트레이딩 저널 */}
-          <Link href="/memo" className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between aspect-square shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center">
-              <span className="material-symbols-outlined text-on-surface">edit_note</span>
-            </div>
-            <div>
-              <h3 className="font-headline font-bold text-base leading-snug">트레이딩 저널</h3>
-              <span className="text-xs text-on-surface-variant mt-1 block">성공의 기록</span>
-            </div>
-          </Link>
-        </section>
-
-        {/* 투자 히스토리 */}
-        <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-headline font-bold text-xl">투자 히스토리</h3>
-            <Link href="/memo" className="text-primary font-bold text-sm">전체보기</Link>
+        <div className="card card-raised p-5">
+          <p className="text-xs text-on-surface-tertiary font-medium mb-2">평균 컨디션</p>
+          <div className="flex items-end justify-between">
+            <CountUp end={avgMoodScore} className="text-2xl font-extrabold tracking-tight" suffix="%" />
+            {conditionSparkline.length >= 2 && (
+              <Sparkline data={conditionSparkline} width={60} height={20} />
+            )}
           </div>
-          {memos.length === 0 ? (
-            <div className="flex flex-col items-center py-8 text-center">
-              <span className="material-symbols-outlined text-3xl text-outline mb-2">bar_chart</span>
-              <p className="text-on-surface-variant text-sm">표시할 히스토리가 없습니다</p>
-              <p className="text-on-surface-variant text-xs mt-1">저널에서 거래를 기록해보세요</p>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-end justify-between h-32 gap-3 mb-4">
-                {weeklyVolume.map((d, i) => {
-                  const h = maxVolume > 0 ? (d.value / maxVolume) * 100 : 0;
-                  const isToday = i === 6;
-                  return (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                      {isToday && d.value > 0 && (
-                        <div className="bg-on-surface text-surface text-[10px] px-2 py-0.5 rounded-md font-bold whitespace-nowrap">
-                          {d.value >= 10000 ? `${Math.round(d.value / 10000)}만` : d.value.toLocaleString()}
-                        </div>
-                      )}
-                      <div
-                        className={`w-full rounded-t-lg transition-all ${isToday ? 'bg-primary' : d.value > 0 ? 'bg-surface-container-high' : 'bg-surface-container'}`}
-                        style={{ height: `${d.value > 0 ? Math.max(h, 8) : 4}%` }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="flex justify-between text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">
-                {weeklyVolume.map((d, i) => <span key={i}>{d.label}</span>)}
-              </div>
-            </>
-          )}
-        </section>
+        </div>
+        <div className="card card-raised p-5">
+          <p className="text-xs text-on-surface-tertiary font-medium mb-2">누적 수익률</p>
+          <CountUp
+            end={portfolio.realizedPnl}
+            className={`text-2xl font-extrabold tracking-tight ${portfolio.realizedPnl >= 0 ? 'text-primary' : 'text-error'}`}
+            prefix={portfolio.realizedPnl >= 0 ? '+' : ''}
+            formatter={(n) => `${n.toLocaleString()}원`}
+          />
+        </div>
+        <div className="card card-raised p-5">
+          <p className="text-xs text-on-surface-tertiary font-medium mb-2">거래 기록</p>
+          <CountUp end={portfolio.tradeCount} className="text-2xl font-extrabold tracking-tight" suffix="건" />
+        </div>
+      </section>
 
-        {/* 포트폴리오 요약 */}
-        <section className="bg-surface-container-low rounded-2xl p-6">
-          <div className="flex flex-col gap-1 mb-4">
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Portfolio Summary</span>
-            {portfolio.tradeCount > 0 ? (
-              <span className="text-4xl font-headline font-extrabold text-on-surface">
-                ₩{portfolio.totalValue.toLocaleString()}
-              </span>
+      {/* 4. Two-col: 최근 리포트 + 이번 주 활동 */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 stagger-4">
+        {/* 최근 리포트 */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold">최근 리포트</h3>
+            <Link href="/report" className="text-sm text-on-surface-tertiary font-medium flex items-center gap-0.5 hover:text-primary transition-colors">
+              전체보기
+              <span className="material-symbols-outlined text-base">chevron_right</span>
+            </Link>
+          </div>
+          <div className="card card-raised">
+            {lastReport ? (
+              <div className="flex gap-6 items-center">
+                <ConditionGauge value={lastReport.mood_score} size={80} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className={`badge ${getModeBadgeClass(lastReport.decision_mode)}`}>
+                      {lastReport.decision_mode}
+                    </span>
+                    <GradeBadge grade={(['S','A','B','C','D','F'].includes(lastReport.invest_mood || '') ? lastReport.invest_mood : 'C') as 'S'|'A'|'B'|'C'|'D'|'F'} size="sm" />
+                  </div>
+                  <p className="text-base font-bold mb-1">
+                    투자 컨디션 {lastReport.mood_score >= 70 ? '양호' : lastReport.mood_score >= 40 ? '보통' : '주의'}
+                  </p>
+                  <p className="text-sm text-on-surface-tertiary leading-relaxed line-clamp-2">
+                    {lastReport.mood_score >= 70
+                      ? '오늘은 적극적인 투자가 가능한 날이에요.'
+                      : lastReport.mood_score >= 40
+                      ? '신중한 판단이 필요한 컨디션이에요.'
+                      : '투자를 자제하는 것이 좋겠어요.'}
+                  </p>
+                  <p className="text-xs text-on-surface-quaternary mt-2">{getRelativeDate(lastReport.created_at)}</p>
+                </div>
+              </div>
             ) : (
-              <p className="text-on-surface-variant text-sm mt-1">거래 기록이 없습니다</p>
-            )}
-            {portfolio.tradeCount > 0 && (
-              <span className="text-[11px] text-on-surface-variant">총 평가 금액 (평단가 기준)</span>
+              <div className="flex flex-col items-center py-6 text-center">
+                <span className="material-symbols-outlined text-3xl text-on-surface-quaternary mb-2">description</span>
+                <p className="text-sm text-on-surface-tertiary">아직 리포트가 없어요</p>
+                <p className="text-xs text-on-surface-quaternary mt-1">셀프체크를 시작해보세요</p>
+              </div>
             )}
           </div>
-          {portfolio.tradeCount > 0 && (
-            <>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-surface-container-lowest p-4 rounded-xl">
-                  <span className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">순 투자금</span>
-                  <span className="text-lg font-bold">₩{portfolio.totalValue.toLocaleString()}</span>
-                </div>
-                <div className="bg-surface-container-lowest p-4 rounded-xl">
-                  <span className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">실현 손익</span>
-                  <span className={`text-lg font-bold ${portfolio.realizedPnl >= 0 ? 'text-primary' : 'text-error'}`}>
-                    {portfolio.realizedPnl >= 0 ? '+' : ''}₩{portfolio.realizedPnl.toLocaleString()}
-                  </span>
-                </div>
+        </div>
+
+        {/* 이번 주 활동 */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold">이번 주 활동</h3>
+          </div>
+          <div className="card card-raised">
+            {memos.length === 0 && reports.length === 0 ? (
+              <div className="flex flex-col items-center py-6 text-center">
+                <span className="material-symbols-outlined text-3xl text-on-surface-quaternary mb-2">bar_chart</span>
+                <p className="text-sm text-on-surface-tertiary">표시할 활동이 없습니다</p>
+                <p className="text-xs text-on-surface-quaternary mt-1">거래를 기록해보세요</p>
               </div>
-              {portfolio.holdingStocks.length > 0 && (
-                <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">보유 종목</span>
-                  {portfolio.holdingStocks.map(s => (
-                    <div key={s.name} className="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl">
-                      <div>
-                        <span className="font-bold text-sm text-on-surface">{s.name}</span>
-                        <span className="text-xs text-on-surface-variant ml-2">{s.shares}주 · 평단가 ₩{s.avgPrice.toLocaleString()}</span>
+            ) : (
+              <>
+                <div className="flex items-end justify-between h-[120px] gap-2 mb-3">
+                  {weeklyVolume.map((d, i) => {
+                    const h = maxVolume > 0 ? (d.value / maxVolume) * 100 : 0;
+                    const isToday = i === 6;
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                        {isToday && d.value > 0 && (
+                          <div className="bg-on-surface text-surface text-[10px] px-2 py-0.5 rounded-md font-bold whitespace-nowrap">
+                            {d.value >= 10000 ? `${Math.round(d.value / 10000)}만` : d.value.toLocaleString()}
+                          </div>
+                        )}
+                        <div
+                          className={`w-full rounded-t-md transition-all duration-500 ${
+                            isToday
+                              ? 'bg-gradient-to-t from-primary to-[#00a82d]'
+                              : d.value > 0
+                              ? 'bg-surface-container-high'
+                              : 'bg-surface-container'
+                          }`}
+                          style={{ height: `${d.value > 0 ? Math.max(h, 8) : 4}%` }}
+                        />
                       </div>
-                      <span className="font-bold text-sm">₩{s.value.toLocaleString()}</span>
-                    </div>
+                    );
+                  })}
+                </div>
+                <div className="flex justify-between text-[11px] font-medium text-on-surface-tertiary">
+                  {weeklyVolume.map((d, i) => (
+                    <span key={i} className={i === 6 ? 'text-primary font-bold' : ''}>
+                      {d.label}
+                    </span>
                   ))}
                 </div>
-              )}
-            </>
-          )}
-        </section>
-      </div>
-    </main>
+                <div className="flex justify-between items-center mt-3 pt-3 border-t border-surface-border">
+                  <span className="text-sm text-on-surface-tertiary">
+                    리포트 {reports.filter(r => {
+                      const d = new Date(r.created_at);
+                      const now = new Date();
+                      const weekAgo = new Date(now);
+                      weekAgo.setDate(weekAgo.getDate() - 7);
+                      return d >= weekAgo;
+                    }).length}건 · 거래 {memos.filter(m => {
+                      const d = new Date(m.created_at);
+                      const now = new Date();
+                      const weekAgo = new Date(now);
+                      weekAgo.setDate(weekAgo.getDate() - 7);
+                      return d >= weekAgo;
+                    }).length}건
+                  </span>
+                  {streak > 0 && (
+                    <span className="text-sm font-semibold text-primary">활발</span>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. 투자 도구 (3-col grid) */}
+      <section className="mb-10 stagger-5">
+        <h3 className="text-lg font-bold mb-4">투자 도구</h3>
+        <div className="grid grid-cols-3 gap-3">
+          <Link href="/calculator" className="card card-raised p-5 text-center hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
+            <div className="w-11 h-11 rounded-xl bg-primary-container flex items-center justify-center mx-auto mb-3">
+              <span className="material-symbols-outlined text-primary">compare_arrows</span>
+            </div>
+            <p className="text-sm font-semibold mb-0.5">적금 vs 투자</p>
+            <p className="text-xs text-on-surface-tertiary">수익 비교 계산</p>
+          </Link>
+          <Link href="/compound" className="card card-raised p-5 text-center hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
+            <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center mx-auto mb-3">
+              <span className="material-symbols-outlined text-blue-600">trending_up</span>
+            </div>
+            <p className="text-sm font-semibold mb-0.5">복리 계산기</p>
+            <p className="text-xs text-on-surface-tertiary">복리의 마법 확인</p>
+          </Link>
+          <Link href="/tools/simulator" className="card card-raised p-5 text-center hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
+            <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center mx-auto mb-3">
+              <span className="material-symbols-outlined text-amber-600">calculate</span>
+            </div>
+            <p className="text-sm font-semibold mb-0.5">매매 시뮬레이터</p>
+            <p className="text-xs text-on-surface-tertiary">수익률 · 물타기</p>
+          </Link>
+        </div>
+      </section>
+
+      {/* 6. Two-col: 포트폴리오 + 최근 기록 */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-6">
+        {/* 포트폴리오 */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold">포트폴리오</h3>
+            <Link href="/memo" className="text-sm text-on-surface-tertiary font-medium flex items-center gap-0.5 hover:text-primary transition-colors">
+              상세보기
+              <span className="material-symbols-outlined text-base">chevron_right</span>
+            </Link>
+          </div>
+          <div className="card card-raised">
+            {portfolio.tradeCount > 0 ? (
+              <>
+                <div className="mb-4">
+                  <p className="text-xs text-on-surface-tertiary mb-1">총 평가 손익</p>
+                  <p className={`text-[28px] font-extrabold tracking-tight ${portfolio.realizedPnl >= 0 ? 'text-primary' : 'text-error'}`}>
+                    {portfolio.realizedPnl >= 0 ? '+' : ''}<CountUp end={portfolio.realizedPnl} formatter={(n) => `${n.toLocaleString()}원`} />
+                  </p>
+                </div>
+                {portfolio.holdingStocks.length > 0 && (
+                  <div>
+                    {portfolio.holdingStocks.map(s => (
+                      <div key={s.name} className="flex items-center justify-between py-3 border-b border-surface-border last:border-b-0">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-xs font-bold text-primary">
+                            {s.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold">{s.name}</p>
+                            <p className="text-xs text-on-surface-tertiary">{s.shares}주</p>
+                          </div>
+                        </div>
+                        <p className="text-sm font-bold">₩{s.value.toLocaleString()}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col items-center py-6 text-center">
+                <span className="material-symbols-outlined text-3xl text-on-surface-quaternary mb-2">account_balance_wallet</span>
+                <p className="text-sm text-on-surface-tertiary">거래 기록이 없습니다</p>
+                <p className="text-xs text-on-surface-quaternary mt-1">저널에서 거래를 기록해보세요</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 최근 기록 */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold">최근 기록</h3>
+            <Link href="/history" className="text-sm text-on-surface-tertiary font-medium flex items-center gap-0.5 hover:text-primary transition-colors">
+              전체보기
+              <span className="material-symbols-outlined text-base">chevron_right</span>
+            </Link>
+          </div>
+          <div className="card card-raised">
+            {recentTimeline.length === 0 ? (
+              <div className="flex flex-col items-center py-6 text-center">
+                <span className="material-symbols-outlined text-3xl text-on-surface-quaternary mb-2">history</span>
+                <p className="text-sm text-on-surface-tertiary">기록이 없습니다</p>
+              </div>
+            ) : (
+              <div>
+                {recentTimeline.map((item, i) => {
+                  if (item.type === 'report') {
+                    const r = item.data as StoredReport;
+                    return (
+                      <div key={`r-${i}`} className="flex items-center gap-3.5 py-3.5 border-b border-surface-border last:border-b-0">
+                        <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 ${
+                          r.mood_score >= 70 ? 'bg-primary-container text-primary' :
+                          r.mood_score >= 40 ? 'bg-amber-50 text-amber-600' :
+                          'bg-red-50 text-red-600'
+                        }`}>
+                          <span className="material-symbols-outlined text-lg">fact_check</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold">투자 리포트 생성</p>
+                          <p className="text-xs text-on-surface-tertiary mt-0.5">컨디션 {r.mood_score}% · {r.decision_mode} 모드</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <span className={`badge text-[10px] ${getModeBadgeClass(r.decision_mode)}`}>
+                            {r.decision_mode}
+                          </span>
+                          <p className="text-[11px] text-on-surface-quaternary mt-1">{getRelativeDate(r.created_at)}</p>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    const m = item.data as StoredMemo;
+                    const isBuy = m.action === 'buy';
+                    return (
+                      <div key={`m-${i}`} className="flex items-center gap-3.5 py-3.5 border-b border-surface-border last:border-b-0">
+                        <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 ${
+                          isBuy ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-600'
+                        }`}>
+                          <span className="material-symbols-outlined text-lg">
+                            {isBuy ? 'shopping_cart' : 'sell'}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold">{m.stock_name} {isBuy ? '매수' : '매도'}</p>
+                          <p className="text-xs text-on-surface-tertiary mt-0.5">
+                            {m.quantity}주 · {m.price?.toLocaleString()}원
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <span className={`badge text-[10px] ${isBuy ? 'badge-amber' : 'badge-red'}`}>
+                            {isBuy ? '매수' : '매도'}
+                          </span>
+                          <p className="text-[11px] text-on-surface-quaternary mt-1">{getRelativeDate(m.created_at)}</p>
+                        </div>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
