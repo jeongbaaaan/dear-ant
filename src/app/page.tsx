@@ -1,134 +1,168 @@
 import Link from 'next/link';
 import AntCharacter from '@/components/AntCharacter';
 
-const moodCards = [
-  {
-    title: '배달각 온 밤',
-    label: '피곤함 · 보상심리',
-    body: '바라가 10초만 같이 쉬어줘요. 참는 앱이 아니라 덜 무너지는 앱.',
-    icon: 'ramen_dining',
-    bg: 'bg-[#fff1e6]',
-  },
-  {
-    title: 'FOMO 온 순간',
-    label: '놓칠까 봐 불안함',
-    body: '지금 사야 할 것 같은 마음을 귀엽게 잠깐 멈춰요.',
-    icon: 'trending_up',
-    bg: 'bg-[#ffe9e9]',
-  },
-  {
-    title: '미래의 나 카드',
-    label: '작은 실천 · 저장하고 싶은 보상',
-    body: '5,000원을 보내면 미래의 내가 답장하는 카드를 남겨요.',
-    icon: 'mail',
-    bg: 'bg-[#e9f4e8]',
-  },
+const quickFacts = [
+  ['Type', 'Soft pause coach'],
+  ['Best for', '배달 · 쇼핑 · FOMO'],
+  ['Main reward', 'Future Me Card'],
+  ['Tone', 'gentle · calm · non-judgmental'],
 ];
 
-const quickActions = [
-  { href: '/survey', icon: 'favorite', title: '바라랑 10초 쉬기', desc: '지금 마음을 고르고 오늘의 바라로그를 만들어요' },
-  { href: '/memo', icon: 'edit_note', title: '바라로그 남기기', desc: '왜 눌렀는지, 어떤 마음이었는지 가볍게 기록해요' },
-  { href: '/report', icon: 'auto_awesome', title: 'Future Me 카드 보기', desc: '내가 저장한 감정 카드와 패턴을 모아봐요' },
-  { href: '/calculator', icon: 'savings', title: '5,000원의 미래 보기', desc: '작은 돈이 쌓이면 어떻게 되는지 부드럽게 확인해요' },
+const triggers = [
+  ['배달각 온 밤', '오늘 하루가 너무 길었고, 지금은 위로가 필요해요.'],
+  ['쇼핑각 온 순간', '기분 전환이 필요해서 결제 버튼이 가까워져요.'],
+  ['FOMO 온 순간', '지금 안 사면 놓칠 것 같은 마음이 커져요.'],
+];
+
+const messages = [
+  '오늘은 의지가 부족한 날이 아니라, 조금 지친 날이야.',
+  '다 참지 않아도 괜찮아. 조금만 미래의 너에게 남겨둘까?',
+  '지금의 너를 혼내지 않는 게 더 오래 가는 방법이야.',
+  '오늘의 작은 선택도 생각보다 큰 시작이 될 수 있어.',
+];
+
+const didYouKnow = [
+  ['피곤한 밤일수록', '지금 그냥 시켜 버튼은 더 쉬워 보여요.'],
+  ['작은 금액이라도', '즉각 보상이 있으면 더 오래 반복돼요.'],
+  ['소비 패턴은', '의지 부족보다 감정 신호와 더 가까울 수 있어요.'],
 ];
 
 export default function Home() {
   return (
-    <div className="animate-slideUp space-y-10">
-      <section className="relative overflow-hidden rounded-[44px] border border-surface-border bg-[radial-gradient(circle_at_76%_20%,#ffd8c6_0_18%,transparent_38%),radial-gradient(circle_at_20%_85%,#e3f1e4_0_20%,transparent_42%),linear-gradient(135deg,#fffaf2_0%,#fff0df_100%)] p-7 shadow-elevated md:p-11">
-        <div className="absolute right-8 top-8 rounded-full bg-white/60 px-4 py-2 text-xs font-black text-primary shadow-raised backdrop-blur">Dearbara · soft pause</div>
-        <div className="grid items-center gap-10 md:grid-cols-[1.05fr_0.95fr]">
+    <div className="animate-slideUp space-y-12">
+      <section className="grid gap-10 rounded-[44px] border border-surface-border bg-[#fffaf2]/90 p-7 shadow-elevated md:grid-cols-[1.05fr_0.95fr] md:p-12">
+        <div className="flex flex-col justify-between gap-10">
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-surface-border bg-white/70 px-4 py-2 text-sm font-extrabold text-primary shadow-sm">
-              <span className="material-symbols-outlined text-[18px]">spa</span>
-              cute pause before impulse
-            </div>
-            <h1 className="text-[44px] font-black leading-[0.98] tracking-[-0.07em] text-on-surface md:text-[72px]">
-              오늘도<br />배달앱 켰어?
-            </h1>
-            <p className="mt-6 max-w-[600px] text-xl font-black leading-8 text-on-surface-secondary md:text-2xl">
-              괜찮아. 일단 바라랑 10초만 쉬자.
+            <div className="mb-8 text-xs font-black uppercase tracking-[0.24em] text-primary">Home / Frombara / Soft Pause Coach</div>
+            <h1 className="text-[72px] font-black leading-[0.88] tracking-[-0.08em] text-on-surface md:text-[112px]">Bara</h1>
+            <p className="mt-5 text-2xl font-black italic tracking-[-0.04em] text-on-surface-secondary">A soft coach for impulsive nights</p>
+            <p className="mt-8 max-w-[620px] text-lg font-semibold leading-8 text-on-surface-secondary">
+              프롬바라는 충동적으로 돈을 쓰거나 투자하고 싶은 순간, 카피바라 바라가 짧은 메시지로 너를 부드럽게 멈춰주는 앱입니다.
             </p>
-            <p className="mt-4 max-w-[620px] text-base font-semibold leading-8 text-on-surface-tertiary">
-              디어바라는 충동적으로 돈을 쓰거나 투자하고 싶은 순간을 혼내지 않고, 카피바라 코치 바라가 Future Me Card로 바꿔주는 귀여운 습관 앱입니다.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/survey" className="btn btn-primary btn-lg shadow-[0_14px_30px_rgba(70,125,92,0.24)]">
-                <span className="material-symbols-outlined">favorite</span>
-                바라랑 쉬기
-              </Link>
-              <Link href="/memo" className="btn btn-secondary btn-lg">
-                <span className="material-symbols-outlined">edit_note</span>
-                오늘의 바라로그
-              </Link>
-            </div>
           </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/survey" className="btn btn-primary btn-lg">
+              <span className="material-symbols-outlined">mail</span>
+              바라의 메시지 받기
+            </Link>
+            <Link href="/report" className="btn btn-secondary btn-lg">
+              <span className="material-symbols-outlined">auto_awesome</span>
+              오늘의 카드 보기
+            </Link>
+          </div>
+        </div>
 
-          <div className="relative mx-auto w-full max-w-[380px]">
-            <div className="absolute -left-6 -top-6 rotate-[-7deg] rounded-[26px] bg-[#fff1e6] px-4 py-3 text-sm font-black text-[#b86b3c] shadow-raised">참아! 말고<br />잠깐 쉬자</div>
-            <div className="rounded-[42px] border border-surface-border bg-white/82 p-6 shadow-[0_24px_70px_rgba(62,42,25,0.16)] backdrop-blur">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-black text-primary">오늘의 바라 상태</p>
-                  <p className="text-2xl font-black tracking-[-0.05em]">soft pause mode</p>
-                </div>
-                <span className="rounded-full bg-[#fff1e6] px-3 py-1 text-xs font-black text-[#b86b3c]">밤 10:47</span>
-              </div>
-              <div className="grid place-items-center rounded-[34px] bg-[#fff6ea] py-8">
-                <AntCharacter size={172} expression="worried" speech="혼내러 온 거 아냐" />
-              </div>
-              <div className="mt-5 rounded-[28px] bg-primary-container p-5">
-                <p className="text-xs font-black text-primary">바라 says</p>
-                <p className="mt-1 text-xl font-black leading-snug tracking-[-0.03em]">배달은 시켜도 돼.<br />대신 5,000원만 미래의 너에게 보내볼까?</p>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded-full bg-white px-3 py-2 text-xs font-black text-on-surface-tertiary shadow-sm">피곤함</span>
-                <span className="rounded-full bg-white px-3 py-2 text-xs font-black text-on-surface-tertiary shadow-sm">보상받고 싶음</span>
-                <span className="rounded-full bg-white px-3 py-2 text-xs font-black text-on-surface-tertiary shadow-sm">10초 쉬기</span>
-              </div>
-            </div>
+        <div className="relative rounded-[38px] bg-[linear-gradient(180deg,#f4d8bf_0%,#fff1e6_55%,#e3f1e4_100%)] p-6 shadow-raised">
+          <div className="absolute right-6 top-6 rounded-full bg-white/70 px-4 py-2 text-xs font-black text-primary shadow-sm">From Bara</div>
+          <div className="grid min-h-[420px] place-items-center rounded-[32px] border border-white/70 bg-white/28">
+            <AntCharacter size={250} expression="happy" speech="참아! 말고 잠깐 쉬자" />
+          </div>
+          <div className="mt-5 rounded-[28px] bg-[#fffaf2]/90 p-5 shadow-sm">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Bara says</p>
+            <p className="mt-2 text-2xl font-black leading-tight tracking-[-0.04em]">배달은 시켜도 돼. 대신 5,000원만 미래의 너에게 보내볼까?</p>
           </div>
         </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-4">
-        {quickActions.map((action) => (
-          <Link key={action.href} href={action.href} className="card card-raised group block transition hover:-translate-y-1 hover:shadow-elevated">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-[20px] bg-primary-container text-primary transition group-hover:scale-105">
-              <span className="material-symbols-outlined text-[26px]">{action.icon}</span>
-            </div>
-            <p className="text-base font-black tracking-[-0.02em]">{action.title}</p>
-            <p className="mt-2 text-sm font-medium leading-6 text-on-surface-tertiary">{action.desc}</p>
-          </Link>
+        {quickFacts.map(([label, value]) => (
+          <div key={label} className="card card-raised">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">{label}</p>
+            <p className="mt-3 text-xl font-black tracking-[-0.04em] text-on-surface">{value}</p>
+          </div>
         ))}
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="card card-raised">
-          <p className="section-label">Dearbara loop</p>
-          <h2 className="text-2xl font-black tracking-[-0.04em]">누르기 전에 귀엽게 한 번 멈추는 루프.</h2>
-          <div className="mt-6 space-y-4">
-            {['충동이 올라옴', '바라가 10초 쉬자고 함', '감정 스티커 선택', '작은 미래 행동', 'Future Me Card 저장'].map((step, index) => (
-              <div key={step} className="grid grid-cols-[34px_1fr] items-start gap-3">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-primary-container text-sm font-black text-primary">{index + 1}</span>
-                <div>
-                  <p className="font-black">{step}</p>
-                  <p className="mt-1 text-sm leading-6 text-on-surface-tertiary">혼내지 않고, 과하게 설명하지 않고, 다음 선택만 조금 가볍게 바꿔요.</p>
+      <section className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
+        <aside className="card card-raised h-fit">
+          <p className="section-label">Profile</p>
+          <h2 className="text-4xl font-black tracking-[-0.06em]">Bara</h2>
+          <p className="mt-4 text-base font-semibold leading-7 text-on-surface-secondary">
+            바라는 너를 통제하려고 오지 않아요. 지금의 마음을 먼저 보고, 다음 선택을 조금 부드럽게 바꾸러 와요.
+          </p>
+          <div className="mt-6 rounded-[28px] bg-[#fff1e6] p-5">
+            <p className="text-xs font-black text-[#b86b3c]">FACT</p>
+            <p className="mt-2 text-lg font-black leading-snug">전부 참는 것보다, 조금 덜 무너지는 선택이 더 오래 가요.</p>
+          </div>
+        </aside>
+
+        <div className="space-y-10">
+          <section className="card card-raised">
+            <p className="section-label">Mood</p>
+            <h2 className="text-3xl font-black tracking-[-0.05em]">행동보다 먼저 마음을 봐요.</h2>
+            <p className="mt-4 text-base font-semibold leading-8 text-on-surface-secondary">
+              배달을 누르고 싶은 밤엔 보통 배고픔보다 피곤함, 허전함, 혹은 보상받고 싶은 마음이 먼저 와 있어요.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {['피곤함', '허전함', '보상받고 싶음', 'FOMO', '손실 만회', '아무 생각 없음'].map((item) => (
+                <span key={item} className="chip chip-default">{item}</span>
+              ))}
+            </div>
+          </section>
+
+          <section className="card card-raised">
+            <p className="section-label">Trigger</p>
+            <h2 className="text-3xl font-black tracking-[-0.05em]">바라는 이런 순간에 필요해져요.</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {triggers.map(([title, body]) => (
+                <div key={title} className="rounded-[28px] bg-[#fff6ea] p-5">
+                  <p className="text-lg font-black tracking-[-0.03em]">{title}</p>
+                  <p className="mt-3 text-sm font-semibold leading-6 text-on-surface-tertiary">{body}</p>
                 </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="card card-raised">
+            <p className="section-label">Tiny Action</p>
+            <h2 className="text-3xl font-black tracking-[-0.05em]">거대한 결심 대신, 작은 행동 하나.</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {['10초 쉬기', '5,000원 남기기', '기록만 하기'].map((item, index) => (
+                <div key={item} className="rounded-[28px] border border-surface-border bg-white/60 p-5">
+                  <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-sm font-black text-white">{index + 1}</span>
+                  <p className="mt-5 text-xl font-black tracking-[-0.04em]">{item}</p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-on-surface-tertiary">전부 참지 않아도 괜찮고, 조금만 바꾸면 충분해요.</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <div className="card card-raised">
+          <p className="section-label">Did You Know</p>
+          <div className="mt-2 space-y-4">
+            {didYouKnow.map(([title, body]) => (
+              <div key={title} className="rounded-[26px] bg-[#e3f1e4] p-5">
+                <p className="text-xl font-black tracking-[-0.04em]">{title}</p>
+                <p className="mt-2 text-sm font-bold leading-6 text-on-surface-secondary">{body}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          {moodCards.map((card) => (
-            <div key={card.title} className={`rounded-[32px] border border-surface-border p-5 shadow-raised ${card.bg}`}>
-              <span className="material-symbols-outlined text-[32px] text-primary">{card.icon}</span>
-              <p className="mt-5 text-lg font-black leading-tight tracking-[-0.03em]">{card.title}</p>
-              <p className="mt-2 text-xs font-black text-primary">{card.label}</p>
-              <p className="mt-4 text-sm font-semibold leading-6 text-on-surface-secondary">{card.body}</p>
-            </div>
-          ))}
+        <div className="card card-raised">
+          <p className="section-label">Messages from Bara</p>
+          <div className="grid gap-4">
+            {messages.map((message) => (
+              <div key={message} className="rounded-[28px] bg-[#fff1e6] p-5 text-xl font-black leading-snug tracking-[-0.04em] text-on-surface">
+                “{message}”
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-[44px] bg-primary p-8 text-white shadow-elevated md:p-10">
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-white/60">Future Me Card</p>
+        <h2 className="mt-4 text-4xl font-black tracking-[-0.06em] md:text-5xl">오늘의 5,000원, 생각보다 꽤 다정한 선택이었어.</h2>
+        <p className="mt-5 max-w-[720px] text-base font-semibold leading-8 text-white/75">
+          바라의 메시지는 그냥 지나가지 않아요. 작은 행동 뒤에는 미래의 내가 보내는 답장 같은 카드가 남아요.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link href="/survey" className="btn bg-white text-primary hover:bg-white/90">카드 받기</Link>
+          <Link href="/memo" className="btn border border-white/30 text-white hover:bg-white/10">바라로그 남기기</Link>
         </div>
       </section>
     </div>
